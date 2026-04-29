@@ -1,0 +1,121 @@
+/* Code Example Component Styles */
+
+.codeExample {
+  margin: 12px 0;
+}
+
+.codeLabel {
+  position: absolute;
+  top: -9px;
+  left: 12px;
+  font-size: 9px;
+  letter-spacing: 2px;
+  background: var(--bg-input);
+  padding: 0 6px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.codeBlock {
+  background: var(--bg-input);
+  border: 1px solid var(--border-mid);
+  border-left: 3px solid var(--neon-cyan);
+  padding: 14px 12px 12px;
+  position: relative;
+  overflow-x: auto;
+  font-size: 11px;
+  line-height: 1.9;
+  border-radius: var(--radius-sm);
+}
+
+.lineNumbers {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 36px;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-dim);
+  padding: 13px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.lineNumber {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: right;
+  padding: 0 7px;
+  line-height: 1;
+  height: 21px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.codeContent {
+  margin-left: 36px;
+  font-family: var(--font-mono);
+}
+
+.codeLine {
+  height: 21px;
+  display: flex;
+  align-items: center;
+  white-space: pre;
+}
+
+.codeLine.highlighted {
+  background: rgba(0, 255, 231, 0.08);
+}
+
+/* Syntax highlighting */
+.codeLine :global(.keyword) {
+  color: var(--neon-pink);
+}
+
+.codeLine :global(.string) {
+  color: var(--neon-yellow);
+}
+
+.codeLine :global(.number) {
+  color: var(--neon-orange);
+}
+
+.codeLine :global(.boolean) {
+  color: var(--neon-purple);
+}
+
+.codeLine :global(.function) {
+  color: var(--neon-purple);
+}
+
+.codeLine :global(.comment) {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.runButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  background: rgba(0, 255, 231, 0.05);
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.12s ease;
+  margin-top: 8px;
+}
+
+.runButton:hover {
+  background: rgba(0, 255, 231, 0.1);
+  box-shadow: 0 0 8px rgba(0, 255, 231, 0.3);
+}

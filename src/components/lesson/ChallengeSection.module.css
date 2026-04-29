@@ -1,0 +1,178 @@
+/* Challenge Section Component Styles */
+
+.challengeWrap {
+  background: rgba(255, 45, 154, 0.04);
+  border: 1px solid var(--border-mid);
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: var(--radius-sm);
+}
+
+.challengeHeader {
+  margin-bottom: 12px;
+}
+
+.challengeTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--neon-pink);
+  text-shadow: var(--glow-pink);
+  margin: 0;
+}
+
+.challengePrompt {
+  font-size: 12px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(191, 0, 255, 0.05);
+  border-left: 3px solid var(--neon-purple);
+  border-radius: var(--radius-sm);
+}
+
+.codeEditorPlaceholder {
+  margin: 16px 0;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.editorHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.editorLabel {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--neon-pink);
+  text-shadow: var(--glow-pink);
+}
+
+.resetButton {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  background: transparent;
+  border: 1px solid var(--border-mid);
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.12s ease;
+}
+
+.resetButton:hover {
+  border-color: var(--neon-pink);
+  color: var(--neon-pink);
+}
+
+.codeContent {
+  background: var(--bg-input);
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  overflow-x: auto;
+}
+
+.codeContent pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.hintsSection {
+  margin: 16px 0;
+}
+
+.hintButton {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  background: rgba(255, 230, 0, 0.1);
+  border: 1px solid var(--neon-yellow);
+  color: var(--neon-yellow);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.12s ease;
+}
+
+.hintButton:hover {
+  background: rgba(255, 230, 0, 0.2);
+  box-shadow: 0 0 8px rgba(255, 230, 0, 0.3);
+}
+
+.hintsContent {
+  background: rgba(255, 230, 0, 0.05);
+  border: 1px solid var(--neon-yellow);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+
+.hintItem {
+  font-size: 11px;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.hintItem strong {
+  color: var(--neon-yellow);
+}
+
+.nextHintButton {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid var(--neon-yellow);
+  color: var(--neon-yellow);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  margin-top: 8px;
+  transition: all 0.12s ease;
+}
+
+.nextHintButton:hover {
+  background: rgba(255, 230, 0, 0.1);
+}
+
+.testsSection {
+  margin: 16px 0;
+}
+
+.testsTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--neon-cyan);
+  text-shadow: var(--glow-cyan);
+  margin: 0 0 8px 0;
+}
+
+.testsList {
+  margin: 0;
+  padding: 0 0 0 16px;
+}
+
+.testItem {
+  font-size: 11px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+
+.testItem::marker {
+  color: var(--neon-cyan);
+}

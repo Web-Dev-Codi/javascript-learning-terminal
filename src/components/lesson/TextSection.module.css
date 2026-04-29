@@ -1,0 +1,32 @@
+/* Text Section Component Styles */
+
+.textSection {
+  margin-bottom: 14px;
+  line-height: 1.9;
+}
+
+.textLine {
+  font-size: 12px;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  line-height: 1.9;
+}
+
+.textLine:last-child {
+  margin-bottom: 0;
+}
+
+.inlineCode {
+  font-family: var(--font-mono);
+  background: rgba(191, 0, 255, 0.15);
+  border: 1px solid var(--border-dim);
+  color: var(--neon-purple);
+  padding: 1px 5px;
+  font-size: 11px;
+  border-radius: var(--radius-sm);
+}
+
+strong {
+  color: var(--neon-cyan);
+  font-weight: 600;
+}

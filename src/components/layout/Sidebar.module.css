@@ -1,0 +1,137 @@
+/* Sidebar Component Styles */
+
+.sidebar {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarHeader {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border-dim);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--neon-purple);
+  text-shadow: var(--glow-purple);
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.totalCount {
+  color: var(--text-muted);
+}
+
+.searchContainer {
+  margin: 10px 12px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-dim);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 8px 6px 26px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+  border-color: var(--neon-cyan);
+}
+
+.searchInput::placeholder {
+  color: var(--text-muted);
+}
+
+.searchContainer::before {
+  content: '⌕';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  font-size: 15px;
+}
+
+.lessonList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0 16px;
+}
+
+.sectionLabel {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 12px 14px 5px;
+}
+
+.lessonItem {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-dim);
+  border-left: 2px solid transparent;
+  transition: all 0.12s ease;
+}
+
+.lessonItem:hover {
+  background: rgba(191, 0, 255, 0.08);
+  color: var(--text-primary);
+  border-left-color: var(--neon-purple);
+}
+
+.lessonItem.active {
+  background: rgba(0, 255, 231, 0.06);
+  color: var(--neon-cyan);
+  border-left-color: var(--neon-cyan);
+}
+
+.lessonItem.completed {
+  color: var(--text-muted);
+}
+
+.statusIcon {
+  font-size: 11px;
+  flex-shrink: 0;
+  width: 14px;
+  text-align: center;
+}
+
+.statusIcon.completed {
+  color: var(--neon-green);
+  text-shadow: var(--glow-green);
+}
+
+.statusIcon.active {
+  color: var(--neon-cyan);
+  text-shadow: var(--glow-cyan);
+}
+
+.statusIcon.locked {
+  color: var(--text-muted);
+}
+
+.lessonNumber {
+  color: var(--text-muted);
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.lessonTitle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

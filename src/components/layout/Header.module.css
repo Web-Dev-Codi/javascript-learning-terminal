@@ -1,0 +1,85 @@
+/* Header Component Styles */
+
+.header {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--neon-purple);
+  box-shadow: 0 1px 0 #bf00ff33, 0 2px 20px #bf00ff22;
+  background: linear-gradient(90deg, #0d0028 0%, #150040 50%, #0d0028 100%);
+  z-index: var(--z-header);
+  flex-shrink: 0;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.logo {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: clamp(11px, 3.8vw, 18px);
+  letter-spacing: clamp(1px, 0.8vw, 4px);
+  color: var(--neon-cyan);
+  text-shadow: var(--glow-cyan);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.logoBracket {
+  color: var(--neon-pink);
+  text-shadow: var(--glow-pink);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.progressTrack {
+  width: 70px;
+  height: 3px;
+  background: var(--border-dim);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+  box-shadow: 0 0 8px var(--neon-pink);
+  transition: width 0.3s ease;
+}
+
+.progressText {
+  font-size: 10px;
+  color: var(--neon-purple);
+  text-shadow: var(--glow-purple);
+}
+
+.badge {
+  font-size: 9px;
+  padding: 2px 7px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: 2px;
+}
+
+.badgeLevel {
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.badgeStreak {
+  border: 1px solid var(--neon-orange);
+  color: var(--neon-orange);
+}
+
+@media (max-width: 380px) {
+  .badgeStreak {
+    display: none;
+  }
+}

@@ -1,0 +1,72 @@
+/* Mobile Tab Bar Component Styles */
+
+.tabBar {
+  display: none;
+  height: 54px;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border-mid);
+  box-shadow: 0 -1px 0 #bf00ff33;
+  z-index: var(--z-header);
+  flex-shrink: 0;
+}
+
+@media (max-width: 800px) {
+  .tabBar {
+    display: flex;
+  }
+}
+
+.tabButton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-top: 2px solid transparent;
+  transition: all 0.12s ease;
+  padding: 8px 0;
+  min-height: 44px; /* Minimum touch target */
+}
+
+.tabButton:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Tab-specific active states */
+.tabButton:nth-child(1).active {
+  color: var(--neon-purple);
+  text-shadow: var(--glow-purple);
+  border-top-color: var(--neon-purple);
+  background: rgba(191, 0, 255, 0.05);
+}
+
+.tabButton:nth-child(2).active {
+  color: var(--neon-pink);
+  text-shadow: var(--glow-pink);
+  border-top-color: var(--neon-pink);
+  background: rgba(255, 45, 154, 0.05);
+}
+
+.tabButton:nth-child(3).active {
+  color: var(--neon-green);
+  text-shadow: var(--glow-green);
+  border-top-color: var(--neon-green);
+  background: rgba(0, 255, 159, 0.05);
+}
+
+.tabIcon {
+  font-size: 17px;
+}
+
+.tabLabel {
+  font-weight: 500;
+}

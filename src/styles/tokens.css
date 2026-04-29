@@ -1,0 +1,55 @@
+/* SYNTHSCRIPT Design Tokens - CSS Custom Properties */
+/* Extracted from js-learning-platform-ui.html */
+
+:root {
+  /* Background Colors */
+  --bg-void:      #07001a;
+  --bg-panel:     #0d0028;
+  --bg-panel-alt: #110033;
+  --bg-input:     #08001f;
+
+  /* Border Colors */
+  --border-dim:   #2a0a5e;
+  --border-mid:   #5a0f9e;
+
+  /* Neon Colors */
+  --neon-pink:    #ff2d9a;
+  --neon-cyan:    #00ffe7;
+  --neon-purple:  #bf00ff;
+  --neon-yellow:  #ffe600;
+  --neon-orange:  #ff6b1a;
+  --neon-green:   #00ff9f;
+
+  /* Text Colors */
+  --text-primary: #e8d5ff;
+  --text-dim:     #7a5a9e;
+  --text-muted:   #3d1f6e;
+
+  /* Glow Effects */
+  --glow-pink:    0 0 6px #ff2d9a, 0 0 18px #ff2d9a44;
+  --glow-cyan:    0 0 6px #00ffe7, 0 0 18px #00ffe744;
+  --glow-purple:  0 0 6px #bf00ff, 0 0 18px #bf00ff44;
+  --glow-green:   0 0 6px #00ff9f, 0 0 18px #00ff9f44;
+
+  /* Typography */
+  --font-mono:    'Share Tech Mono', monospace;
+  --font-heading: 'Orbitron', sans-serif;
+
+  /* Spacing */
+  --space-xs:     4px;
+  --space-sm:     8px;
+  --space-md:     12px;
+  --space-lg:     16px;
+  --space-xl:     20px;
+  --space-2xl:    24px;
+
+  /* Border Radius */
+  --radius-sm:    2px;
+  --radius-md:    4px;
+
+  /* Z-Index Scale */
+  --z-base:       1;
+  --z-panel:      10;
+  --z-header:     100;
+  --z-overlay:    9000;
+}

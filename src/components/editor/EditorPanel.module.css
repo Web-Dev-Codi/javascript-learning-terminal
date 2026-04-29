@@ -1,0 +1,174 @@
+/* Editor Panel Component Styles */
+
+.editorPanel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Editor Section */
+.editorWrap {
+  flex: 0 0 45%;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--border-mid);
+  overflow: hidden;
+  min-height: 0;
+}
+
+@media (max-width: 800px) {
+  .editorWrap {
+    flex: 0 0 50%;
+  }
+}
+
+.editorBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border-dim);
+  background: var(--bg-panel);
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.editorTabs {
+  display: flex;
+  gap: 2px;
+}
+
+.editorTab {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 4px 11px;
+  border: 1px solid var(--border-dim);
+  color: var(--text-muted);
+  cursor: pointer;
+  background: transparent;
+  transition: all 0.12s ease;
+}
+
+.editorTab.active {
+  border-color: var(--neon-pink);
+  color: var(--neon-pink);
+  background: rgba(255, 45, 154, 0.06);
+}
+
+.editorActions {
+  display: flex;
+  gap: 5px;
+}
+
+.editorButton {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  background: transparent;
+  cursor: pointer;
+  border: 1px solid;
+  transition: all 0.12s ease;
+}
+
+.resetButton {
+  border-color: var(--border-mid);
+  color: var(--text-dim);
+}
+
+.resetButton:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.runButton {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  text-shadow: var(--glow-green);
+  box-shadow: 0 0 10px #00ff9f22;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.runButton:hover {
+  background: rgba(0, 255, 159, 0.1);
+}
+
+.runButton.executing {
+  background: rgba(255, 230, 0, 0.1);
+  border-color: var(--neon-yellow);
+  color: var(--neon-yellow);
+  text-shadow: var(--glow-yellow);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.runButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.runButton:disabled:hover {
+  background: transparent;
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  text-shadow: var(--glow-green);
+}
+
+.shortcut {
+  font-size: 9px;
+  color: var(--text-muted);
+  border: 1px solid var(--border-dim);
+  padding: 1px 4px;
+}
+
+.editorBody {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.editorContainer {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.bottomSection {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.consoleWrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.feedbackWrap {
+  width: 300px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border-mid);
+  overflow: hidden;
+}
+
+@media (max-width: 800px) {
+  .bottomSection {
+    flex-direction: column;
+  }
+  
+  .feedbackWrap {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border-mid);
+    height: 200px;
+  }
+}
+
