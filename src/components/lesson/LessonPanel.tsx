@@ -3,15 +3,17 @@ import { useLessonStore } from '../../store/lessonStore'
 import { lessons } from '../../data/lessons'
 import { LessonSection } from './LessonSection'
 import styles from './LessonPanel.module.css'
+import { useSandbox } from '../sandbox/useSandbox'
 
 export const LessonPanel: React.FC = () => {
   const { activeLesson } = useLessonStore()
+  const { executeTrusted } = useSandbox()
 
   const currentLesson = lessons.find(lesson => lesson.id === activeLesson)
 
   const handleRunExample = (code: string) => {
-    // This will be implemented when we connect the console
-    console.log('Running example code:', code)
+    // Execute trusted example code (bypasses syntax checker per spec I-09)
+    void executeTrusted(code)
   }
 
   return (

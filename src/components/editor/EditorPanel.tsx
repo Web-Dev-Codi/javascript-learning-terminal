@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import { useLessonStore } from '../../store/lessonStore'
 import { useEditorStore } from '../../store/editorStore'
 import { useEditor } from './useEditor'
 import { useSandbox } from '../sandbox/useSandbox'
+import { SandboxEngine } from '../sandbox/sandboxEngine'
 import { ConsolePanel } from './ConsolePanel'
 import { FeedbackPanel } from '../checker/FeedbackPanel'
 import styles from './EditorPanel.module.css'
@@ -10,7 +11,7 @@ import styles from './EditorPanel.module.css'
 export const EditorPanel: React.FC = () => {
   const { activeLesson } = useLessonStore()
   const { clearConsole, addConsoleMessage } = useEditorStore()
-  const { executeCode, isExecuting, isReady, error: sandboxError } = useSandbox()
+  const { executeCode, isExecuting, isReady } = useSandbox()
 
   // Get current lesson data for starter code
   const getCurrentLessonData = () => {
@@ -38,10 +39,6 @@ console.log("Level: " + level);`
     await executeCode(currentCode)
   }
 
-  const handleCursorChange = (line: number, column: number) => {
-    // Cursor position is already handled in the editor store
-  }
-
   const {
     containerRef,
     createEditor,
@@ -54,14 +51,15 @@ console.log("Level: " + level);`
   } = useEditor({
     lessonId,
     starterCode,
-    onRun: handleRun,
-    onCursorChange: handleCursorChange
+    onRun: handleRun
   })
 
   const handleReset = () => {
     resetCode()
     clearConsole()
     addConsoleMessage('info', '↺ Code reset to starter')
+    // Clear sandbox context per spec S-08
+    SandboxEngine.reset()
   }
 
   useEffect(() => {
@@ -70,6 +68,11 @@ console.log("Level: " + level);`
       destroyEditor()
     }
   }, [createEditor, destroyEditor])
+
+  // Clear sandbox when lesson changes (S-08)
+  useEffect(() => {
+    SandboxEngine.reset()
+  }, [lessonId])
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId)

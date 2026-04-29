@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useLessonStore } from '../../store/lessonStore'
 import { useEditorStore } from '../../store/editorStore'
 import { SyntaxChecker } from './syntaxChecker'
 import { RuleEngine } from './ruleEngine'
+import type { ESTreeAST } from './ruleEngine'
 import { MessageDictionary } from './messages'
 import type { Diagnostic, RuleId } from '../../types/lesson'
+import { lessons } from '../../data/lessons'
 
 interface UseSyntaxCheckerResult {
   diagnostics: Diagnostic[]
@@ -22,22 +24,16 @@ interface UseSyntaxCheckerResult {
 export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
   const { activeLesson } = useLessonStore()
   const { addConsoleMessage } = useEditorStore()
-  
+
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([])
   const [isChecking, setIsChecking] = useState(false)
   const [lastCheckedCode, setLastCheckedCode] = useState<string>('')
 
-  // Get active rules for current lesson
+  // Get active rules for current lesson from lessons.ts (LC-02, SC-06)
   const getActiveRules = useCallback((): RuleId[] => {
-    // For now, return default rules. This would be enhanced to get from lesson data
-    const defaultRules: RuleId[] = [
-      'require-semicolons',
-      'require-assignment-operator',
-      'no-var'
-    ]
-    
-    // In a real implementation, this would come from the current lesson's activeRules
-    return defaultRules
+    if (!activeLesson) return []
+    const lesson = lessons.find(l => l.id === activeLesson)
+    return lesson?.activeRules ?? []
   }, [activeLesson])
 
   const checkSyntax = useCallback((code: string, activeRules?: RuleId[]) => {
@@ -51,28 +47,39 @@ export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
     try {
       // Layer 1: Syntax parsing with Babel
       const syntaxResult = SyntaxChecker.checkSyntax(code)
-      
+
       if (!syntaxResult.success) {
         // If there are syntax errors, show them and stop
-        const formattedDiagnostics = syntaxResult.errors.map(diag => 
+        const formattedDiagnostics = syntaxResult.errors.map(diag =>
           MessageDictionary.formatDiagnostic(diag)
         )
         setDiagnostics(formattedDiagnostics)
-        
+
         addConsoleMessage('error', `✕ ${syntaxResult.errors.length} syntax error(s) found`)
         return
       }
 
       // Layer 2: Rule engine for style and logical issues
       const rulesToCheck = activeRules || getActiveRules()
-      const ruleDiagnostics = RuleEngine.runRules(syntaxResult.ast, rulesToCheck)
-      
+      const ruleDiagnostics = RuleEngine.runRules(syntaxResult.ast as unknown as ESTreeAST, rulesToCheck)
+
+      // If strictMode, escalate warnings to errors (LC-02 strictMode)
+      let finalDiagnostics = ruleDiagnostics
+      if (activeLesson) {
+        const lesson = lessons.find(l => l.id === activeLesson)
+        if (lesson?.strictMode) {
+          finalDiagnostics = ruleDiagnostics.map(d =>
+            d.severity === 'warning' ? { ...d, severity: 'error' as const } : d
+          )
+        }
+      }
+
       // Combine all diagnostics
-      const allDiagnostics = [...syntaxResult.errors, ...ruleDiagnostics]
-      const formattedDiagnostics = allDiagnostics.map(diag => 
+      const allDiagnostics = [...syntaxResult.errors, ...finalDiagnostics]
+      const formattedDiagnostics = allDiagnostics.map(diag =>
         MessageDictionary.formatDiagnostic(diag)
       )
-      
+
       setDiagnostics(formattedDiagnostics)
 
       // Provide console feedback
@@ -108,7 +115,7 @@ export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
     } finally {
       setIsChecking(false)
     }
-  }, [lastCheckedCode, getActiveRules, addConsoleMessage])
+  }, [lastCheckedCode, getActiveRules, addConsoleMessage, activeLesson])
 
   const clearDiagnostics = useCallback(() => {
     setDiagnostics([])

@@ -9,17 +9,9 @@ interface ParseError {
   }
 }
 
-interface ESTreeAST {
-  program: {
-    type: string
-    body: unknown[]
-  }
-  errors?: ParseError[]
-}
-
 export interface SyntaxCheckResult {
   errors: Diagnostic[]
-  ast: ESTreeAST
+  ast: unknown
   success: boolean
 }
 
@@ -37,7 +29,8 @@ export class SyntaxChecker {
       })
 
       // Convert Babel errors to our Diagnostic format
-      const errors: Diagnostic[] = (ast.errors as ParseError[]).map(error => ({
+      const parseErrors = ((ast as unknown as { errors?: ParseError[] }).errors) || []
+      const errors: Diagnostic[] = parseErrors.map(error => ({
         ruleId: 'syntax-error',
         severity: 'error' as const,
         line: error.loc.line,

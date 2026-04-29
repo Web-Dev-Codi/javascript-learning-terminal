@@ -1,7 +1,7 @@
 import type { Diagnostic, RuleId } from '../../types/lesson'
 
 // ESTree node types (simplified for our use case)
-interface ESTreeNode {
+export interface ESTreeNode {
   type: string
   loc?: {
     start: { line: number; column: number }
@@ -10,12 +10,12 @@ interface ESTreeNode {
   [key: string]: unknown
 }
 
-interface ESTreeProgram extends ESTreeNode {
+export interface ESTreeProgram extends ESTreeNode {
   type: 'Program'
   body: ESTreeNode[]
 }
 
-interface ESTreeAST {
+export interface ESTreeAST {
   program: ESTreeProgram
   errors?: Array<{
     message: string

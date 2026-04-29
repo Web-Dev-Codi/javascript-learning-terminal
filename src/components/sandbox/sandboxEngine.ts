@@ -14,11 +14,20 @@ export interface SandboxConfig {
 export class SandboxEngine {
   private static iframe: HTMLIFrameElement | null = null
   private static isInitialized = false
+  private static isReadyFlag = false
+  private static messageHandler: ((event: MessageEvent) => void) | null = null
+  private static pendingRuns: Map<string, {
+    outputs: string[]
+    resolve: (res: ExecutionResult) => void
+    startTime: number
+    timer: number
+    config: SandboxConfig
+  }> = new Map()
 
   private static readonly defaultConfig: SandboxConfig = {
     timeout: 5000,
     allowedGlobals: [
-      'console', 'Math', 'Date', 'Array', 'Object', 'String', 'Number', 
+      'console', 'Math', 'Date', 'Array', 'Object', 'String', 'Number',
       'Boolean', 'JSON', 'parseInt', 'parseFloat', 'isNaN', 'isFinite',
       'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'
     ],
@@ -35,7 +44,7 @@ export class SandboxEngine {
    * Initialize the sandbox iframe
    */
   static async initialize(): Promise<void> {
-    if (this.isInitialized) return
+    if (this.isInitialized && this.isReadyFlag) return
 
     return new Promise((resolve, reject) => {
       // Create hidden iframe
@@ -44,214 +53,140 @@ export class SandboxEngine {
       this.iframe.style.width = '0'
       this.iframe.style.height = '0'
       this.iframe.style.border = 'none'
-      
-      // Set sandbox attributes for security
-      this.iframe.sandbox = 'allow-scripts'
-      
-      // Set up load handler
-      this.iframe.onload = () => {
-        this.setupSandboxEnvironment()
-        this.isInitialized = true
-        resolve()
-      }
 
-      this.iframe.onerror = () => {
-        reject(new Error('Failed to initialize sandbox iframe'))
-      }
+      // Security: only allow scripts; no same-origin
+      this.iframe.sandbox.add('allow-scripts')
 
-      // Create the sandbox content
-      const sandboxContent = this.createSandboxHTML()
-      this.iframe.srcdoc = sandboxContent
-      
-      // Add to DOM
+      // Add to DOM first
       document.body.appendChild(this.iframe)
-    })
-  }
 
-  /**
-   * Create the HTML content for the sandbox
-   */
-  private static createSandboxHTML(): string {
-    return `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <title>SYNTHSCRIPT Sandbox</title>
-        <script>
-          // Custom console that captures output
-          window.capturedConsole = [];
-          window.customConsole = {
-            log: function(...args) {
-              const message = args.map(arg => {
-                if (typeof arg === 'object') {
-                  try {
-                    return JSON.stringify(arg, null, 2);
-                  } catch {
-                    return String(arg);
-                  }
-                }
-                return String(arg);
-              }).join(' ');
-              window.capturedConsole.push({ type: 'log', message });
-            },
-            error: function(...args) {
-              const message = args.map(String).join(' ');
-              window.capturedConsole.push({ type: 'error', message });
-            },
-            warn: function(...args) {
-              const message = args.map(String).join(' ');
-              window.capturedConsole.push({ type: 'warn', message });
-            },
-            info: function(...args) {
-              const message = args.map(String).join(' ');
-              window.capturedConsole.push({ type: 'info', message });
-            }
-          };
+      // Global message handler
+      const onMessage = (event: MessageEvent) => {
+        if (!this.iframe || event.source !== this.iframe.contentWindow) return
+        const data = event.data as any
+        if (!data || data.__synth__ !== true) return
 
-          // Override console
-          window.console = window.customConsole;
+        if (data.type === 'ready') {
+          this.isReadyFlag = true
+          this.isInitialized = true
+          resolve()
+          return
+        }
 
-          // Signal that sandbox is ready
-          window.isSandboxReady = true;
-        </script>
-      </head>
-      <body>
-        <div id="output"></div>
-      </body>
-      </html>
-    `
-  }
+        // Handle run messages
+        const run = data.execId ? this.pendingRuns.get(String(data.execId)) : undefined
+        if (!run) return
 
-  /**
-   * Set up the sandbox environment with security restrictions
-   */
-  private static setupSandboxEnvironment(): void {
-    if (!this.iframe || !this.iframe.contentWindow) return
+        if (data.type === 'log' || data.type === 'warn' || data.type === 'error' || data.type === 'info' || data.type === 'pass' || data.type === 'fail') {
+          const line = `[${data.type}] ${Array.isArray(data.args) ? data.args.join(' ') : ''}`
+          run.outputs.push(line)
+          // Cap at 200 lines (S-06)
+          if (run.outputs.length > 200) {
+            run.outputs.splice(0, run.outputs.length - 200)
+          }
+          return
+        }
 
-    const win = this.iframe.contentWindow
-
-    // Block dangerous globals
-    this.defaultConfig.blockedGlobals.forEach(global => {
-      try {
-        delete (win as any)[global]
-      } catch {
-        // Some globals can't be deleted, that's okay
+        if (data.type === 'done') {
+          clearTimeout(run.timer)
+          const runtime = Math.round(performance.now() - run.startTime)
+          this.pendingRuns.delete(String(data.execId))
+          run.resolve({ success: true, output: run.outputs, runtime })
+          return
+        }
       }
-    })
 
-    // Override dangerous functions
-    try {
-      (win as any).eval = () => { throw new Error('eval() is not allowed in sandbox') }
-      (win as any).Function = () => { throw new Error('Function constructor is not allowed in sandbox') }
-    } catch {
-      // Some overrides might fail due to security restrictions
-    }
+      this.messageHandler = onMessage
+      window.addEventListener('message', onMessage)
+
+      // Bootstrap srcdoc that only signals readiness
+      this.iframe.srcdoc = this.createBootstrapHTML()
+
+      // Safety: fallback timeout if ready never arrives
+      setTimeout(() => {
+        if (!this.isReadyFlag) {
+          reject(new Error('Failed to initialize sandbox iframe'))
+        }
+      }, 3000)
+    })
+  }
+
+  // Bootstrap doc that posts ready
+  private static createBootstrapHTML(): string {
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"><script>(function(){try{parent.postMessage({__synth__:true,type:'ready'},'*')}catch(e){}})();</script></head><body></body></html>`
+  }
+
+  // Build per-run HTML with preamble that forwards console and errors, then runs user code
+  private static createRunHTML(code: string, execId: string, cfg: SandboxConfig): string {
+    // Basic escape to avoid closing the script tag
+    const safeCode = code.replace(/<\\/script / gi, '<\\/script')
+    const blocked = JSON.stringify(cfg.blockedGlobals)
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"><script>(function(){
+  try{
+    var __BLOCKED__ = ${blocked};
+    for(var i=0;i<__BLOCKED__.length;i++){try{self[__BLOCKED__[i]]=undefined}catch(e){}}
+  }catch(e){}
+  function __send__(type){
+    var args = Array.prototype.slice.call(arguments,1).map(function(a){
+      try{ if (typeof a === 'object') return JSON.stringify(a) }catch(e){}
+      return String(a)
+    });
+    try{ parent.postMessage({__synth__:true,type:type,args:args,execId:'${execId}'}, '*') }catch(e){}
+  }
+  var __origOnError__ = self.onerror;
+  self.onerror = function(msg,src,line,col,err){
+    __send__('error', (msg||'Error') + (line?(' @ '+line+':'+(col||0)):'') );
+    if (typeof __origOnError__ === 'function') try{__origOnError__.apply(self, arguments)}catch(e){}
+  };
+  ['log','warn','error','info'].forEach(function(m){
+    var orig = console[m];
+    console[m] = function(){ __send__(m, Array.prototype.slice.call(arguments).join(' ')); try{orig&&orig.apply(console,arguments)}catch(e){} };
+  });
+})();</script></head><body><script>try{\n${safeCode}\n}catch(e){try{parent.postMessage({__synth__:true,type:'error',args:[e && e.message ? e.message : String(e)],execId:'${execId}'},'*')}catch(_){} } finally { try{parent.postMessage({__synth__:true,type:'done',execId:'${execId}'},'*')}catch(_){} }</script></body></html>`
   }
 
   /**
    * Execute JavaScript code in the sandbox
    */
   static async execute(code: string, config: Partial<SandboxConfig> = {}): Promise<ExecutionResult> {
-    if (!this.isInitialized) {
+    if (!this.isInitialized || !this.isReadyFlag) {
       await this.initialize()
     }
 
-    if (!this.iframe || !this.iframe.contentWindow) {
-      return {
-        success: false,
-        output: [],
-        error: 'Sandbox not available'
-      }
+    if (!this.iframe) {
+      return { success: false, output: [], error: 'Sandbox not available' }
     }
 
-    const finalConfig = { ...this.defaultConfig, ...config }
-    const win = this.iframe.contentWindow
+    const finalConfig: SandboxConfig = { ...this.defaultConfig, ...config }
     const startTime = performance.now()
+    const execId = `${Date.now()}-${Math.random().toString(36).slice(2)}`
 
-    try {
-      // Clear previous console output
-      (win as any).capturedConsole = []
-
-      // Check if sandbox is ready
-      if (!(win as any).isSandboxReady) {
-        return {
+    return new Promise<ExecutionResult>((resolve) => {
+      // Register pending run
+      const runRecord = {
+        outputs: [] as string[],
+        resolve,
+        startTime,
+        timer: 0 as unknown as number,
+        config: finalConfig
+      }
+      // Timeout handling (S-07)
+      runRecord.timer = window.setTimeout(() => {
+        this.pendingRuns.delete(execId)
+        resolve({
           success: false,
-          output: [],
-          error: 'Sandbox not ready'
-        }
-      }
+          output: runRecord.outputs,
+          error: `Execution timed out after ${Math.round(finalConfig.timeout / 1000)}s — check for infinite loops`,
+          runtime: Math.round(performance.now() - startTime)
+        })
+      }, finalConfig.timeout)
 
-      // Create a promise to handle execution timeout
-      const timeoutPromise = new Promise<ExecutionResult>((_, reject) => {
-        setTimeout(() => {
-          reject(new Error(`Execution timeout after ${finalConfig.timeout}ms`))
-        }, finalConfig.timeout)
-      })
+      this.pendingRuns.set(execId, runRecord)
 
-      // Create a promise to handle actual execution
-      const executionPromise = new Promise<ExecutionResult>((resolve, reject) => {
-        try {
-          // Execute the code
-          const result = (win as any).eval(`
-            (function() {
-              try {
-                ${code}
-                return { success: true };
-              } catch (error) {
-                return { 
-                  success: false, 
-                  error: error.message || String(error),
-                  stack: error.stack
-                };
-              }
-            })()
-          `)
-
-          const runtime = performance.now() - startTime
-          const capturedOutput = (win as any).capturedConsole || []
-
-          if (result.success) {
-            resolve({
-              success: true,
-              output: capturedOutput.map((log: any) => `[${log.type}] ${log.message}`),
-              runtime: Math.round(runtime)
-            })
-          } else {
-            resolve({
-              success: false,
-              output: capturedOutput.map((log: any) => `[${log.type}] ${log.message}`),
-              error: result.error,
-              runtime: Math.round(runtime)
-            })
-          }
-        } catch (error) {
-          const runtime = performance.now() - startTime
-          const capturedOutput = (win as any).capturedConsole || []
-          
-          resolve({
-            success: false,
-            output: capturedOutput.map((log: any) => `[${log.type}] ${log.message}`),
-            error: error instanceof Error ? error.message : String(error),
-            runtime: Math.round(runtime)
-          })
-        }
-      })
-
-      // Race between execution and timeout
-      return await Promise.race([executionPromise, timeoutPromise])
-
-    } catch (error) {
-      const runtime = performance.now() - startTime
-      const capturedOutput = (win as any).capturedConsole || []
-
-      return {
-        success: false,
-        output: capturedOutput.map((log: any) => `[${log.type}] ${log.message}`),
-        error: error instanceof Error ? error.message : String(error),
-        runtime: Math.round(runtime)
-      }
-    }
+      // Inject per-run srcdoc
+      const html = this.createRunHTML(code, execId, finalConfig)
+      this.iframe!.srcdoc = html
+    })
   }
 
   /**
@@ -263,15 +198,27 @@ export class SandboxEngine {
       this.iframe = null
     }
     this.isInitialized = false
+    this.isReadyFlag = false
+    this.pendingRuns.clear()
+    if (this.messageHandler) {
+      window.removeEventListener('message', this.messageHandler)
+      this.messageHandler = null
+    }
   }
 
   /**
    * Check if sandbox is ready
    */
   static isReady(): boolean {
-    return this.isInitialized && 
-           this.iframe !== null && 
-           this.iframe.contentWindow !== null &&
-           (this.iframe.contentWindow as any).isSandboxReady === true
+    return this.isInitialized && this.isReadyFlag && this.iframe !== null
+  }
+
+  /**
+   * Reset sandbox document to bootstrap (clear state)
+   */
+  static reset(): void {
+    if (!this.iframe) return
+    this.isReadyFlag = false
+    this.iframe.srcdoc = this.createBootstrapHTML()
   }
 }
