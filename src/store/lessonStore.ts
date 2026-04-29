@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Lesson, PanelType } from '../types/lesson'
+import type { PanelType } from '../types/lesson'
+import { lessons } from '../data/lessons'
 
 interface QuizAnswer {
   lessonId: string
@@ -12,16 +13,16 @@ interface LessonState {
   // Active state
   activeLesson: string | null
   activePanel: PanelType
-  
+
   // Progress tracking
   completedLessons: string[]
   startedLessons: string[]
   quizAnswers: QuizAnswer[]
-  
+
   // Streak tracking
   currentStreak: number
   lastCompletedDate: string | null
-  
+
   // Actions
   setActiveLesson: (lessonId: string) => void
   setActivePanel: (panel: PanelType) => void
@@ -77,7 +78,7 @@ export const useLessonStore = create<LessonState>()(
         if (!state.completedLessons.includes(lessonId)) {
           const newCompletedLessons = [...state.completedLessons, lessonId]
           set({ completedLessons: newCompletedLessons })
-          
+
           // Update streak
           get().updateStreak()
         }
@@ -149,7 +150,7 @@ export const useLessonStore = create<LessonState>()(
         const state = get()
         return {
           completed: state.completedLessons.length,
-          total: 12 // This should match the total number of lessons
+          total: lessons.length
         }
       },
 
