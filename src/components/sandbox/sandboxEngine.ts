@@ -119,7 +119,7 @@ export class SandboxEngine {
   // Build per-run HTML with preamble that forwards console and errors, then runs user code
   private static createRunHTML(code: string, execId: string, cfg: SandboxConfig): string {
     // Basic escape to avoid closing the script tag
-    const safeCode = code.replace(/<\\/script / gi, '<\\/script')
+    const safeCode = code.replace(/<\/script/gi, '<\\/script')
     const blocked = JSON.stringify(cfg.blockedGlobals)
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><script>(function(){
   try{

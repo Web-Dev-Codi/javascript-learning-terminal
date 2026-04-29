@@ -47,7 +47,8 @@ console.log("Level: " + level);`
     getCurrentCode,
     activeTab,
     setActiveTab,
-    diagnostics
+    diagnostics,
+    goToLine
   } = useEditor({
     lessonId,
     starterCode,
@@ -125,10 +126,7 @@ console.log("Level: " + level);`
         <div className={styles.feedbackWrap}>
           <FeedbackPanel
             diagnostics={diagnostics}
-            onGoToLine={(line) => {
-              // This would integrate with CodeMirror to jump to a line
-              console.log('Go to line:', line)
-            }}
+            onGoToLine={(line) => goToLine(line)}
           />
         </div>
       </div>

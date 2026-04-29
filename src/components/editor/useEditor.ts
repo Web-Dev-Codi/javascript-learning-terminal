@@ -1,12 +1,11 @@
-import { useCallback, useRef, useEffect } from 'react'
+import { useCallback, useRef } from 'react'
 import { EditorView } from '@codemirror/view'
 import { EditorState } from '@codemirror/state'
 import { javascript } from '@codemirror/lang-javascript'
-import { lint } from '@codemirror/lint'
+// Lint integration will be wired via hook; CodeMirror lint extensions are omitted here
 import { keymap } from '@codemirror/view'
 import { defaultKeymap } from '@codemirror/commands'
 import { useEditorStore } from '../../store/editorStore'
-import { useLessonStore } from '../../store/lessonStore'
 import { useSyntaxChecker } from '../checker/useSyntaxChecker'
 
 interface UseEditorProps {
@@ -29,9 +28,7 @@ export const useEditor = ({
     setActiveTab,
     setCursorPosition
   } = useEditorStore()
-  const { activeLesson } = useLessonStore()
-
-  const { checkSyntax, diagnostics } = useSyntaxChecker()
+  const { checkSyntax, diagnostics, clearDiagnostics } = useSyntaxChecker()
 
   const editorRef = useRef<EditorView | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -148,9 +145,8 @@ export const useEditor = ({
       extensions: [
         synthTheme,
         javascript(),
-        lint(),
         customKeymap,
-        defaultKeymap,
+        keymap.of(defaultKeymap),
         EditorView.lineWrapping,
         EditorView.updateListener.of((update) => {
           if (update.docChanged && lessonId) {
@@ -161,6 +157,8 @@ export const useEditor = ({
             setTimeout(() => {
               checkSyntax(newCode)
             }, 300) // Debounce syntax checking
+            // Clear diagnostics immediately on edit (E-08)
+            clearDiagnostics()
           }
 
           if (update.selectionSet) {
@@ -182,7 +180,7 @@ export const useEditor = ({
     })
 
     editorRef.current = view
-  }, [lessonId, starterCode, getCode, setCode, setCursorPosition, onRun, onCursorChange, synthTheme])
+  }, [lessonId, starterCode, getCode, setCode, setCursorPosition, onCursorChange, synthTheme, checkSyntax, clearDiagnostics, customKeymap])
 
   const destroyEditor = useCallback(() => {
     if (editorRef.current) {
@@ -209,6 +207,17 @@ export const useEditor = ({
     return editorRef.current?.state.doc.toString() || ''
   }, [])
 
+  // Placeholder: diagnostics are rendered in FeedbackPanel; CodeMirror overlay is deferred
+
+  const goToLine = useCallback((lineNumber: number, column = 1) => {
+    if (!editorRef.current) return
+    const view = editorRef.current
+    const line = view.state.doc.line(Math.max(1, lineNumber))
+    const pos = line.from + Math.max(0, column - 1)
+    view.dispatch({ selection: { anchor: pos }, scrollIntoView: true })
+    view.focus()
+  }, [])
+
   return {
     containerRef,
     createEditor,
@@ -217,6 +226,7 @@ export const useEditor = ({
     getCurrentCode,
     activeTab,
     setActiveTab,
-    diagnostics
+    diagnostics,
+    goToLine
   }
 }
