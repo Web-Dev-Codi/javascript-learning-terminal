@@ -1,30 +1,92 @@
 import React from 'react'
-import { useLessonStore } from '../../store/lessonStore'
-import { lessons } from '../../data/lessons'
+import { useLessonStore, findLessonById, findParentLesson } from '../../store/lessonStore'
 import { LessonSection } from './LessonSection'
 import styles from './LessonPanel.module.css'
 import { useSandbox } from '../sandbox/useSandbox'
 
 export const LessonPanel: React.FC = () => {
-  const { activeLesson } = useLessonStore()
+  const {
+    activeLesson,
+    navigateNext,
+    navigatePrev,
+    canNavigateNext,
+    canNavigatePrev,
+    getFlatNavList,
+    markLessonCompleted
+  } = useLessonStore()
+
   const { executeTrusted } = useSandbox()
 
-  const currentLesson = lessons.find(lesson => lesson.id === activeLesson)
+  const currentLesson = activeLesson ? findLessonById(activeLesson) : null
+  const parentLesson = activeLesson ? findParentLesson(activeLesson) : null
+  const isSubLesson = parentLesson !== null
+
+  const flatNav = getFlatNavList()
+  const currentIndex = flatNav.findIndex(e => e.lessonId === activeLesson)
+  const totalCount = flatNav.length
+
+  // Progress dots: show dots for parent + siblings when in a sub-lesson
+  const getProgressDots = () => {
+    if (!currentLesson) return []
+    if (isSubLesson && parentLesson?.subLessons) {
+      const parent = parentLesson
+      const siblings = [parent, ...(parent.subLessons ?? [])]
+      return siblings.map(l => ({
+        id: l.id,
+        active: l.id === activeLesson,
+        isSub: l.id !== parent.id
+      }))
+    }
+    return []
+  }
+
+  const dots = getProgressDots()
 
   const handleRunExample = (code: string) => {
-    // Execute trusted example code (bypasses syntax checker per spec I-09)
     void executeTrusted(code)
+  }
+
+  const handleNext = () => {
+    if (activeLesson) markLessonCompleted(activeLesson)
+    navigateNext()
+  }
+
+  const handlePrev = () => {
+    navigatePrev()
+  }
+
+  // Build the panel title
+  const getPanelTitle = () => {
+    if (!currentLesson) return '// SELECT A LESSON'
+    if (isSubLesson && parentLesson) {
+      const parentNum = parentLesson.id.split('-')[0]
+      return `// ${parentNum} › ${currentLesson.title.toUpperCase()}`
+    }
+    const num = currentLesson.id.split('-')[0]
+    return `// ${num.padStart(2, '0')} — ${currentLesson.title.toUpperCase()}`
+  }
+
+  const getDifficultyClass = (diff: string) => {
+    switch (diff) {
+      case 'beginner': return styles.pillBeginner
+      case 'intermediate': return styles.pillIntermediate
+      case 'advanced': return styles.pillAdvanced
+      default: return styles.pillBeginner
+    }
   }
 
   return (
     <div className={styles.lessonPanel}>
       <div className={styles.panelBar}>
-        <span className={styles.panelTitle}>
-          {currentLesson ? `// ${currentLesson.id.toUpperCase().replace('-', ' — ')}` : '// SELECT A LESSON'}
-        </span>
+        <span className={styles.panelTitle}>{getPanelTitle()}</span>
         {currentLesson && (
           <div className={styles.panelPills}>
-            <span className={`${styles.pill} ${styles[currentLesson.difficulty]}`}>
+            {isSubLesson && parentLesson && (
+              <span className={`${styles.pill} ${styles.pillParent}`}>
+                ↑ {parentLesson.title}
+              </span>
+            )}
+            <span className={`${styles.pill} ${getDifficultyClass(currentLesson.difficulty)}`}>
               {currentLesson.difficulty.toUpperCase()}
             </span>
             <span className={`${styles.pill} ${styles.pillTime}`}>
@@ -41,6 +103,29 @@ export const LessonPanel: React.FC = () => {
               {currentLesson.title.toUpperCase()}
             </h1>
 
+            {/* Sub-lesson breadcrumb */}
+            {isSubLesson && parentLesson && (
+              <div className={styles.breadcrumb}>
+                <span className={styles.breadcrumbParent}>{parentLesson.title}</span>
+                <span className={styles.breadcrumbSep}> › </span>
+                <span className={styles.breadcrumbCurrent}>{currentLesson.title}</span>
+              </div>
+            )}
+
+            {/* Sub-lesson navigator pills (show when in a parent lesson) */}
+            {!isSubLesson && currentLesson.subLessons && currentLesson.subLessons.length > 0 && (
+              <div className={styles.subLessonList}>
+                <div className={styles.subLessonLabel}>// IN THIS LESSON</div>
+                {currentLesson.subLessons.map((sub, idx) => (
+                  <div key={sub.id} className={styles.subLessonPill}>
+                    <span className={styles.subLessonNum}>{String(idx + 1).padStart(2, '0')}</span>
+                    <span className={styles.subLessonTitle}>{sub.title}</span>
+                    <span className={styles.subLessonTime}>⏱ {sub.estimatedMinutes}m</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {currentLesson.sections.map((section, index) => (
               <LessonSection
                 key={index}
@@ -49,28 +134,48 @@ export const LessonPanel: React.FC = () => {
               />
             ))}
 
+            {/* Navigation footer */}
             <div className={styles.lessonFooter}>
-              <button className={styles.pageButton}>
+              <button
+                className={`${styles.pageButton} ${!canNavigatePrev() ? styles.disabled : ''}`}
+                onClick={handlePrev}
+                disabled={!canNavigatePrev()}
+              >
                 ← PREV
               </button>
-              <div className={styles.dots}>
-                {currentLesson.sections.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`${styles.dot} ${index === 0 ? styles.active : ''}`}
-                  />
-                ))}
+
+              <div className={styles.navInfo}>
+                {dots.length > 0 ? (
+                  <div className={styles.dots}>
+                    {dots.map(d => (
+                      <div
+                        key={d.id}
+                        className={`${styles.dot} ${d.active ? styles.active : ''} ${d.isSub ? styles.dotSub : ''}`}
+                        title={d.id}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <span className={styles.navCounter}>
+                    {currentIndex + 1} / {totalCount}
+                  </span>
+                )}
               </div>
-              <button className={styles.pageButton}>
-                NEXT →
+
+              <button
+                className={`${styles.pageButton} ${styles.nextBtn} ${!canNavigateNext() ? styles.disabled : ''}`}
+                onClick={handleNext}
+                disabled={!canNavigateNext()}
+              >
+                {canNavigateNext() ? 'NEXT →' : 'COMPLETE ✓'}
               </button>
             </div>
           </div>
         ) : (
           <div className={styles.emptyState}>
-            <h1 className={styles.lessonTitle}>NO LESSON SELECTED</h1>
+            <h1 className={styles.lessonTitle}>READY TO LEARN?</h1>
             <p className={styles.lessonIntro}>
-              Choose a lesson from the sidebar to get started with your JavaScript learning journey.
+              Choose a lesson from the sidebar to begin your JavaScript journey.
             </p>
           </div>
         )}

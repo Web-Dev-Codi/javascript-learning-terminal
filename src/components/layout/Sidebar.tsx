@@ -1,46 +1,60 @@
 import React, { useState, useMemo } from 'react'
 import { useLessonStore } from '../../store/lessonStore'
 import { lessons } from '../../data/lessons'
+import type { Lesson } from '../../types/lesson'
 import styles from './Sidebar.module.css'
 
 export const Sidebar: React.FC = () => {
-  const { 
-    activeLesson, 
-    setActiveLesson, 
-    completedLessons, 
-    isLessonCompleted, 
-    isLessonStarted 
+  const {
+    activeLesson,
+    setActiveLesson,
+    isLessonCompleted,
+    isLessonStarted
   } = useLessonStore()
-  
-  const [searchQuery, setSearchQuery] = useState('')
 
-  // Filter lessons based on search query
+  const [searchQuery, setSearchQuery] = useState('')
+  const [expandedLessons, setExpandedLessons] = useState<Set<string>>(() => {
+    // Auto-expand the parent of the active lesson on first render
+    const initial = new Set<string>()
+    const parent = lessons.find(l => l.subLessons?.some(s => s.id === activeLesson ?? ''))
+    if (parent) initial.add(parent.id)
+    if (activeLesson && lessons.find(l => l.id === activeLesson)) initial.add(activeLesson)
+    return initial
+  })
+
+  const toggleExpanded = (lessonId: string) => {
+    setExpandedLessons(prev => {
+      const next = new Set(prev)
+      if (next.has(lessonId)) {
+        next.delete(lessonId)
+      } else {
+        next.add(lessonId)
+      }
+      return next
+    })
+  }
+
   const filteredLessons = useMemo(() => {
     if (!searchQuery.trim()) return lessons
-    
-    return lessons.filter(lesson =>
-      lesson.title.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    const q = searchQuery.toLowerCase()
+    return lessons.filter(lesson => {
+      const matchMain = lesson.title.toLowerCase().includes(q)
+      const matchSub = lesson.subLessons?.some(s => s.title.toLowerCase().includes(q))
+      return matchMain || matchSub
+    })
   }, [searchQuery])
 
-  // Group lessons by category based on their IDs
   const groupedLessons = useMemo(() => {
     const groups: Record<string, typeof lessons> = {
       'FUNDAMENTALS': [],
       'CONTROL FLOW': [],
       'ADVANCED': []
     }
-
     filteredLessons.forEach(lesson => {
-      if (lesson.id.startsWith('01') || lesson.id.startsWith('02') || lesson.id.startsWith('03') || lesson.id.startsWith('04')) {
-        groups['FUNDAMENTALS'].push(lesson)
-      } else if (lesson.id.startsWith('05') || lesson.id.startsWith('06') || lesson.id.startsWith('07') || lesson.id.startsWith('08') || lesson.id.startsWith('09')) {
-        groups['CONTROL FLOW'].push(lesson)
-      } else {
-        groups['ADVANCED'].push(lesson)
-      }
+      if (lesson.category === 'fundamentals') groups['FUNDAMENTALS'].push(lesson)
+      else if (lesson.category === 'control-flow') groups['CONTROL FLOW'].push(lesson)
+      else groups['ADVANCED'].push(lesson)
     })
-
     return groups
   }, [filteredLessons])
 
@@ -51,30 +65,48 @@ export const Sidebar: React.FC = () => {
     return 'locked'
   }
 
-  const getLessonNumber = (lessonId: string): string => {
-    const match = lessonId.match(/^(\d+)/)
-    return match ? match[1].padStart(2, '0') : '??'
-  }
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed': return '✓'
       case 'active': return '▶'
+      case 'started': return '◐'
       default: return '○'
     }
   }
 
-  const handleLessonClick = (lessonId: string) => {
-    setActiveLesson(lessonId)
+  const getLessonNum = (id: string) => id.split('-')[0].padStart(2, '0')
+
+  const isParentOfActive = (lesson: Lesson) =>
+    lesson.subLessons?.some(s => s.id === activeLesson) ?? false
+
+  const handleLessonClick = (lesson: Lesson) => {
+    setActiveLesson(lesson.id)
+    // Auto-expand when clicking a main lesson that has sub-lessons
+    if (lesson.subLessons?.length) {
+      setExpandedLessons(prev => {
+        const next = new Set(prev)
+        next.add(lesson.id)
+        return next
+      })
+    }
+  }
+
+  const handleSubLessonClick = (subId: string, parentId: string) => {
+    setActiveLesson(subId)
+    setExpandedLessons(prev => {
+      const next = new Set(prev)
+      next.add(parentId)
+      return next
+    })
   }
 
   return (
     <div className={styles.sidebar}>
       <div className={styles.sidebarHeader}>
         <span>// LESSONS</span>
-        <span className={styles.totalCount}>{lessons.length} TOTAL</span>
+        <span className={styles.totalCount}>{lessons.length} MODULES</span>
       </div>
-      
+
       <div className={styles.searchContainer}>
         <input
           type="text"
@@ -86,34 +118,69 @@ export const Sidebar: React.FC = () => {
       </div>
 
       <div className={styles.lessonList}>
-        {Object.entries(groupedLessons).map(([category, categoryLessons]) => (
+        {Object.entries(groupedLessons).map(([category, categoryLessons]) =>
           categoryLessons.length > 0 && (
             <React.Fragment key={category}>
-              <div className={styles.sectionLabel}>
-                // {category}
-              </div>
-              
+              <div className={styles.sectionLabel}>// {category}</div>
+
               {categoryLessons.map((lesson) => {
                 const status = getLessonStatus(lesson.id)
-                const lessonNumber = getLessonNumber(lesson.id)
-                
+                const num = getLessonNum(lesson.id)
+                const hasSubLessons = (lesson.subLessons?.length ?? 0) > 0
+                const isExpanded = expandedLessons.has(lesson.id)
+                const isActiveParent = isParentOfActive(lesson)
+
                 return (
-                  <div
-                    key={lesson.id}
-                    className={`${styles.lessonItem} ${styles[status]}`}
-                    onClick={() => handleLessonClick(lesson.id)}
-                  >
-                    <span className={`${styles.statusIcon} ${styles[status]}`}>
-                      {getStatusIcon(status)}
-                    </span>
-                    <span className={styles.lessonNumber}>{lessonNumber}</span>
-                    <span className={styles.lessonTitle}>{lesson.title}</span>
-                  </div>
+                  <React.Fragment key={lesson.id}>
+                    {/* Main lesson row */}
+                    <div
+                      className={`
+                        ${styles.lessonItem}
+                        ${styles[status]}
+                        ${isActiveParent ? styles.parentOfActive : ''}
+                      `}
+                      onClick={() => handleLessonClick(lesson)}
+                    >
+                      <span className={`${styles.statusIcon} ${styles[status]}`}>
+                        {getStatusIcon(status)}
+                      </span>
+                      <span className={styles.lessonNumber}>{num}</span>
+                      <span className={styles.lessonTitle}>{lesson.title}</span>
+                      {hasSubLessons && (
+                        <button
+                          className={`${styles.expandBtn} ${isExpanded ? styles.expanded : ''}`}
+                          onClick={(e) => { e.stopPropagation(); toggleExpanded(lesson.id) }}
+                          title={isExpanded ? 'Collapse' : 'Expand'}
+                        >
+                          {isExpanded ? '▾' : '▸'}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Sub-lessons */}
+                    {hasSubLessons && isExpanded && lesson.subLessons!.map((sub, idx) => {
+                      const subStatus = getLessonStatus(sub.id)
+                      return (
+                        <div
+                          key={sub.id}
+                          className={`${styles.subLessonItem} ${styles[subStatus]}`}
+                          onClick={() => handleSubLessonClick(sub.id, lesson.id)}
+                        >
+                          <span className={styles.subIndent} />
+                          <span className={`${styles.statusIcon} ${styles[subStatus]}`}>
+                            {getStatusIcon(subStatus)}
+                          </span>
+                          <span className={styles.subLessonNum}>{String(idx + 1).padStart(2, '0')}</span>
+                          <span className={styles.subLessonTitle}>{sub.title}</span>
+                        </div>
+                      )
+                    })}
+                  </React.Fragment>
                 )
               })}
             </React.Fragment>
           )
-        ))}
+        )}
       </div>
     </div>
   )

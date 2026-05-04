@@ -1,65 +1,70 @@
 /* SYNTHSCRIPT Lesson Type Definitions */
 
+export type LessonCategory = 'fundamentals' | 'control-flow' | 'advanced'
+
 export interface Lesson {
-  id: string;                       // e.g. "04-syntax-rules"
-  title: string;                    // e.g. "Syntax Rules & Semicolons"
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  estimatedMinutes: number;
-  activeRules: RuleId[];            // rules enforced in this lesson's challenge
-  strictMode?: boolean;             // if true, warnings become errors
-  sections: LessonSection[];
+  id: string
+  title: string
+  difficulty: 'beginner' | 'intermediate' | 'advanced'
+  estimatedMinutes: number
+  activeRules: RuleId[]
+  strictMode?: boolean
+  category: LessonCategory
+  parentId?: string          // set on sub-lessons; points to main lesson id
+  subLessons?: Lesson[]      // only on main lessons
+  sections: LessonSection[]
 }
 
 export type LessonSection =
   | TextSection
   | CodeExampleSection
   | QuizSection
-  | ChallengeSection;
+  | ChallengeSection
 
 export interface TextSection {
-  type: 'text';
-  content: string;                  // Markdown-lite string
+  type: 'text'
+  content: string
 }
 
 export interface CodeExampleSection {
-  type: 'code-example';
-  label?: string;                   // e.g. "EXAMPLE — CORRECT"
-  code: string;
-  highlightLines?: number[];        // lines to visually emphasise
+  type: 'code-example'
+  label?: string
+  code: string
+  highlightLines?: number[]
 }
 
 export interface QuizSection {
-  type: 'quiz';
-  question: string;
-  options: string[];
-  correctIndex: number;
-  explanation: string;
+  type: 'quiz'
+  question: string
+  options: string[]
+  correctIndex: number
+  explanation: string
 }
 
 export interface ChallengeSection {
-  type: 'challenge';
-  prompt: string;
-  starterCode: string;
-  hints?: string[];
-  tests?: ChallengeTest[];
+  type: 'challenge'
+  prompt: string
+  starterCode: string
+  hints?: string[]
+  tests?: ChallengeTest[]
 }
 
 export interface ChallengeTest {
-  description: string;              // e.g. "score should equal 100"
-  fn: string;                       // stringified assertion: "(output) => output.score === 100"
+  description: string
+  fn: string
 }
 
 export interface Diagnostic {
-  ruleId: string;                   // e.g. "require-semicolons"
-  severity: 'error' | 'warning' | 'info';
-  line: number;
-  column: number;
-  tokenName?: string;               // interpolated into the message
+  ruleId: string
+  severity: 'error' | 'warning' | 'info'
+  line: number
+  column: number
+  tokenName?: string
   messages: {
-    short: string;
-    long: string;
-    hint?: string;
-  };
+    short: string
+    long: string
+    hint?: string
+  }
 }
 
 export type RuleId =
@@ -68,13 +73,20 @@ export type RuleId =
   | 'no-var'
   | 'const-reassignment'
   | 'undefined-variable'
-  | 'missing-closing-bracket';
+  | 'missing-closing-bracket'
 
-export type PanelType = 'lessons' | 'lesson' | 'editor';
+export type PanelType = 'lessons' | 'lesson' | 'editor'
 
 export interface EditorTab {
-  id: string;
-  name: string;
-  content: string;
-  isReadOnly?: boolean;
+  id: string
+  name: string
+  content: string
+  isReadOnly?: boolean
+}
+
+/** Flat navigation entry — built from the main + sub lesson tree */
+export interface NavEntry {
+  lessonId: string
+  parentId?: string
+  isSubLesson: boolean
 }
