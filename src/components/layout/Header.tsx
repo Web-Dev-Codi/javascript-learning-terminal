@@ -9,7 +9,7 @@ export const Header: React.FC = () => {
   // Get lesson number from active lesson ID
   const getLessonNumber = (lessonId: string | null): string => {
     if (!lessonId) return '00'
-    const match = lessonId.match(/^(\d+)/)
+    const match = new RegExp(/^(\d+)/).exec(lessonId)
     return match ? match[1].padStart(2, '0') : '00'
   }
 

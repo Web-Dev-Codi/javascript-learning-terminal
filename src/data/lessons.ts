@@ -54,7 +54,7 @@ console.log(score);  // 100`
             code: `const MAX_LEVEL = 99;
 console.log(MAX_LEVEL);  // 99
 
-// MAX_LEVEL = 50;  // ← TypeError: Assignment to constant variable`
+MAX_LEVEL = 50;  // ← TypeError: Assignment to constant variable`
           },
           {
             type: 'quiz',
@@ -111,9 +111,9 @@ const MAX_LIVES = 5;       // SCREAMING_SNAKE for constants is also common`
           {
             type: 'code-example',
             label: 'INVALID names — these cause errors',
-            code: `// let 1player = "Brian";   // cannot start with a number
-// let my-score = 10;        // hyphens not allowed
-// let let = "hello";        // 'let' is a reserved keyword`
+            code: `let 1player = "Brian";   // cannot start with a number
+let my-score = 10;        // hyphens not allowed
+let let = "hello";        // 'let' is a reserved keyword`
           },
           {
             type: 'quiz',
@@ -294,8 +294,8 @@ console.log(message);`,
             code: `const price = 9.99;
 const lives = 3;
 
-console.log(typeof price);        // "number"
-console.log(typeof lives);        // "number"
+console.log(typeof price);        // number
+console.log(typeof lives);        // number
 
 console.log(10 / 0);             // Infinity
 console.log("hello" * 2);        // NaN
