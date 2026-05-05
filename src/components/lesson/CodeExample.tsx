@@ -12,10 +12,9 @@ interface CodeExampleProps {
 export const CodeExample: React.FC<CodeExampleProps> = ({
   label,
   code,
-  highlightLines,
-  onRun
+  highlightLines
 }) => {
-  const { executeTrusted } = useSandbox()
+  
   // Simple syntax highlighting for JavaScript
   const highlightCode = (code: string): React.ReactNode[] => {
     const lines = code.split('\n')
@@ -25,19 +24,27 @@ export const CodeExample: React.FC<CodeExampleProps> = ({
 
       // Basic syntax highlighting
       const highlightedLine = line
-        .replace(/\b(let|const|var|function|return|if|else|for|while|do|break|continue|switch|case|default|try|catch|finally|throw|new|typeof|instanceof|in|of|class|extends|import|export|from|async|await)\b/g,
-          '<span class="keyword">$1</span>')
-        .replace(/\b(true|false|null|undefined)\b/g,
-          '<span class="boolean">$1</span>')
-        .replace(/\b\d+(\.\d+)?\b/g,
-          '<span class="number">$&</span>')
-        .replace(/(["'`])((?:\\.|(?!\1)[^\\])*?)\1/g,
+        .replaceAll(/\/\/.*$/gm,
+          '<span class="comment">$&</span>')
+        .replaceAll(/\/\*[\s\S]*?\*\//g,
+          '<span class="comment">$&</span>')
+        .replaceAll(/(?<!class=)(["'`])((?:\\.|(?!\1)[^\\])*?)\1/g,
           '<span class="string">$&</span>')
-        .replace(/\/\/.*$/gm,
-          '<span class="comment">$&</span>')
-        .replace(/\/\*[\s\S]*?\*\//g,
-          '<span class="comment">$&</span>')
-        .replace(/\b(console|Math|Date|Array|Object|String|Number|Boolean|RegExp|JSON|parseInt|parseFloat|isNaN|isFinite|eval|setTimeout|setInterval|clearTimeout|clearInterval)\b/g,
+        .replaceAll(/(?<!<span )\b(let|const|var|function|class)\b/g,
+          '<span class="keyword">$1</span>')
+        .replaceAll(/(?<!<span )\b(if|else|for|while|do|break|continue|switch|case|default)\b/g,
+          '<span class="keyword">$1</span>')
+        .replaceAll(/(?<!<span )\b(try|catch|finally|throw)\b/g,
+          '<span class="keyword">$1</span>')
+        .replaceAll(/(?<!<span )\b(return|new|typeof|instanceof|in|of)\b/g,
+          '<span class="keyword">$1</span>')
+        .replaceAll(/(?<!<span )\b(extends|import|export|from|async|await)\b/g,
+          '<span class="keyword">$1</span>')
+        .replaceAll(/\b(true|false|null|undefined)\b/g,
+          '<span class="boolean">$1</span>')
+        .replaceAll(/\b\d+(\.\d+)?\b/g,
+          '<span class="number">$&</span>')
+        .replaceAll(/\b(console|Math|Date|Array|Object|String|Number|Boolean|RegExp|JSON|parseInt|parseFloat|isNaN|isFinite|eval|setTimeout|setInterval|clearTimeout|clearInterval)\b/g,
           '<span class="function">$1</span>')
 
       return (
@@ -51,13 +58,7 @@ export const CodeExample: React.FC<CodeExampleProps> = ({
     })
   }
 
-  const handleRunClick = () => {
-    if (onRun) {
-      onRun(code)
-      return
-    }
-    void executeTrusted(code)
-  }
+ 
 
   return (
     <div className={styles.codeExample}>
@@ -80,12 +81,7 @@ export const CodeExample: React.FC<CodeExampleProps> = ({
           {highlightCode(code)}
         </div>
       </div>
-
-      {onRun && (
-        <button className={styles.runButton} onClick={handleRunClick}>
-          ▶ RUN EXAMPLE
-        </button>
-      )}
+      
     </div>
   )
 }

@@ -55,11 +55,7 @@ export const ChallengeSection: React.FC<ChallengeSectionProps> = ({
       {/* Hints Section */}
       {hints.length > 0 && (
         <div className={styles.hintsSection}>
-          {!showHints ? (
-            <button className={styles.hintButton} onClick={handleShowHint}>
-              💡 SHOW HINT
-            </button>
-          ) : (
+          {showHints ? (
             <div className={styles.hintsContent}>
               <div className={styles.hintItem}>
                 <strong>💡 HINT {currentHintIndex + 1}:</strong> {hints[currentHintIndex]}
@@ -70,6 +66,10 @@ export const ChallengeSection: React.FC<ChallengeSectionProps> = ({
                 </button>
               )}
             </div>
+          ) : (
+            <button className={styles.hintButton} onClick={handleShowHint}>
+              💡 SHOW HINT
+            </button>
           )}
         </div>
       )}
