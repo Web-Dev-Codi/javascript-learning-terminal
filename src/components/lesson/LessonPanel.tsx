@@ -1,10 +1,9 @@
-import React from 'react'
 import { useLessonStore, findLessonById, findParentLesson } from '../../store/lessonStore'
 import { LessonSection } from './LessonSection'
 import styles from './LessonPanel.module.css'
 import { useSandbox } from '../sandbox/useSandbox'
 
-export const LessonPanel: React.FC = () => {
+export function LessonPanel () {
   const {
     activeLesson,
     navigateNext,
@@ -45,6 +44,11 @@ export const LessonPanel: React.FC = () => {
   const handleRunExample = (code: string) => {
     void executeTrusted(code)
   }
+
+  const canPrev = canNavigatePrev()
+  const canNext = canNavigateNext()
+  const isPrevDisabled = canPrev === false
+  const isNextDisabled = canNext === false
 
   const handleNext = () => {
     if (activeLesson) markLessonCompleted(activeLesson)
@@ -115,7 +119,9 @@ export const LessonPanel: React.FC = () => {
             {/* Sub-lesson navigator pills (show when in a parent lesson) */}
             {!isSubLesson && currentLesson.subLessons && currentLesson.subLessons.length > 0 && (
               <div className={styles.subLessonList}>
-                <div className={styles.subLessonLabel}>// IN THIS LESSON</div>
+                <div className={styles.subLessonLabel}>
+                  {'// IN THIS LESSON'}
+                </div>
                 {currentLesson.subLessons.map((sub, idx) => (
                   <div key={sub.id} className={styles.subLessonPill}>
                     <span className={styles.subLessonNum}>{String(idx + 1).padStart(2, '0')}</span>
@@ -126,20 +132,29 @@ export const LessonPanel: React.FC = () => {
               </div>
             )}
 
-            {currentLesson.sections.map((section, index) => (
-              <LessonSection
-                key={index}
-                section={section}
-                onRunExample={handleRunExample}
-              />
-            ))}
+            {currentLesson.sections.map((section, index) => {
+              const sectionKey = section.type === 'challenge' && section.id
+                ? section.id
+                : `${currentLesson.id}-${section.type}-${index}`
+
+              return (
+                <LessonSection
+                  key={sectionKey}
+                  lessonId={currentLesson.id}
+                  sectionIndex={index}
+                  section={section}
+                  onRunExample={handleRunExample}
+                />
+              )
+            })}
 
             {/* Navigation footer */}
             <div className={styles.lessonFooter}>
               <button
-                className={`${styles.pageButton} ${!canNavigatePrev() ? styles.disabled : ''}`}
+                className={`${styles.pageButton} ${isPrevDisabled ? styles.disabled : ''}`}
                 onClick={handlePrev}
-                disabled={!canNavigatePrev()}
+                disabled={isPrevDisabled}
+                type="button"
               >
                 ← PREV
               </button>
@@ -163,11 +178,12 @@ export const LessonPanel: React.FC = () => {
               </div>
 
               <button
-                className={`${styles.pageButton} ${styles.nextBtn} ${!canNavigateNext() ? styles.disabled : ''}`}
+                className={`${styles.pageButton} ${styles.nextBtn} ${isNextDisabled ? styles.disabled : ''}`}
                 onClick={handleNext}
-                disabled={!canNavigateNext()}
+                disabled={isNextDisabled}
+                type="button"
               >
-                {canNavigateNext() ? 'NEXT →' : 'COMPLETE ✓'}
+                {canNext ? 'NEXT →' : 'COMPLETE ✓'}
               </button>
             </div>
           </div>

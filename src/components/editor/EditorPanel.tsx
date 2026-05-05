@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react'
-import { useLessonStore } from '../../store/lessonStore'
+import { useEffect } from 'react'
 import { useEditorStore } from '../../store/editorStore'
-import { useEditor } from './useEditor'
-import { useSandbox } from '../sandbox/useSandbox'
-import { SandboxEngine } from '../sandbox/sandboxEngine'
-import { ConsolePanel } from './ConsolePanel'
+import { useLessonStore } from '../../store/lessonStore'
 import { FeedbackPanel } from '../checker/FeedbackPanel'
+import { SandboxEngine } from '../sandbox/sandboxEngine'
+import { useSandbox } from '../sandbox/useSandbox'
+import { ConsolePanel } from './ConsolePanel'
 import styles from './EditorPanel.module.css'
+import { useEditor } from './useEditor'
 
-export const EditorPanel: React.FC = () => {
+export function EditorPanel () {
   const { activeLesson } = useLessonStore()
   const { clearConsole, addConsoleMessage } = useEditorStore()
   const { executeCode, isExecuting, isReady } = useSandbox()
@@ -72,7 +72,10 @@ console.log("Level: " + level);`
 
   // Clear sandbox when lesson changes (S-08)
   useEffect(() => {
-    SandboxEngine.reset()
+    const hasLesson = Boolean(lessonId)
+    if (hasLesson) {
+      SandboxEngine.reset()
+    }
   }, [lessonId])
 
   const handleTabClick = (tabId: string) => {
@@ -86,12 +89,14 @@ console.log("Level: " + level);`
         <div className={styles.editorBar}>
           <div className={styles.editorTabs}>
             <button
+              type="button"
               className={`${styles.editorTab} ${activeTab === 'challenge' ? styles.active : ''}`}
               onClick={() => handleTabClick('challenge')}
             >
               challenge.js
             </button>
             <button
+              type="button"
               className={`${styles.editorTab} ${activeTab === 'scratch' ? styles.active : ''}`}
               onClick={() => handleTabClick('scratch')}
             >
@@ -99,10 +104,11 @@ console.log("Level: " + level);`
             </button>
           </div>
           <div className={styles.editorActions}>
-            <button className={`${styles.editorButton} ${styles.resetButton}`} onClick={handleReset}>
+            <button type="button" className={`${styles.editorButton} ${styles.resetButton}`} onClick={handleReset}>
               ↺ RESET
             </button>
             <button
+              type="button"
               className={`${styles.editorButton} ${styles.runButton} ${isExecuting ? styles.executing : ''}`}
               onClick={handleRun}
               disabled={isExecuting || !isReady}

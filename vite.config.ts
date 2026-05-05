@@ -6,4 +6,10 @@ export default defineConfig({
   plugins: [
     react(),
   ],
+  server: {
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
+  },
 })

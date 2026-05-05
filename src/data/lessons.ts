@@ -70,6 +70,7 @@ MAX_LEVEL = 50;  // ← TypeError: Assignment to constant variable`
           },
           {
             type: 'challenge',
+            id: 'challenge-01',
             prompt: 'Declare a `const` called `gameName` set to `"SYNTHSCRIPT"`, then declare a `let` called `lives` set to `3`. Log both to the console.',
             starterCode: `// Declare gameName as a const
 const gameName
@@ -124,6 +125,7 @@ let let = "hello";        // 'let' is a reserved keyword`
           },
           {
             type: 'challenge',
+            id: 'challenge-02',
             prompt: 'Rename the poorly-named variables below to proper camelCase, then log each one.',
             starterCode: `const max_level = 10;
 let Player_Name = "Brian";
@@ -174,6 +176,7 @@ console.log(energy);     // 75`
           },
           {
             type: 'challenge',
+            id: 'challenge-03',
             prompt: 'A player starts with 100 health. They take 30 damage, then find a potion that restores 20 health. Track the health using `let` and log the final value.',
             starterCode: `let health = 100;
 
@@ -230,7 +233,7 @@ console.log("Final health:", health); // should print 90`,
         sections: [
           {
             type: 'text',
-            content: 'A **string** is a sequence of characters — text. Wrap text in single quotes `\'..\'`, double quotes `"..."`, or backticks `` `...` ``.\n\nBacktick strings are called **template literals**. They let you embed expressions directly inside the string using `${expression}` syntax — no need to concatenate with `+`.\n\nStrings have a `.length` property and many built-in methods: `.toUpperCase()`, `.toLowerCase()`, `.includes()`, `.slice()`, `.trim()`, and more.'
+            content: 'A **string** is a sequence of characters — text. Wrap text in single quotes `\'..\'`, double quotes `"..."`, or backticks `` `...` ``.\n\nBacktick strings are called **template literals**. They let you embed expressions directly inside the string using the syntax with a dollar sign and curly braces, like $ {expression} — no need to concatenate with `+`.\n\nStrings have a `.length` property and many built-in methods: `.toUpperCase()`, `.toLowerCase()`, `.includes()`, `.slice()`, `.trim()`, and more.'
           },
           {
             type: 'code-example',
@@ -400,8 +403,8 @@ console.log(score);           // undefined — declared but not assigned
 let activePlayer = null;
 console.log(activePlayer);    // null — intentionally empty
 
-console.log(typeof undefined); // "undefined"
-console.log(typeof null);      // "object" — historic JavaScript quirk!
+console.log(typeof undefined); // undefined
+console.log(typeof null);      // object — historic JavaScript quirk!
 
 // Checking for either
 console.log(score == null);    // true (== checks both null and undefined)
@@ -432,14 +435,14 @@ console.log(score === null);   // false (=== is strict)`
           {
             type: 'code-example',
             label: 'typeof in practice',
-            code: `console.log(typeof "hello");     // "string"
-console.log(typeof 42);          // "number"
-console.log(typeof true);        // "boolean"
-console.log(typeof undefined);   // "undefined"
-console.log(typeof null);        // "object" — quirk!
-console.log(typeof {});          // "object"
-console.log(typeof []);          // "object" — arrays too!
-console.log(typeof function(){}); // "function"`
+            code: `console.log(typeof "hello");     // string
+console.log(typeof 42);          // number
+console.log(typeof true);        // boolean
+console.log(typeof undefined);   // undefined
+console.log(typeof null);        // object — quirk!
+console.log(typeof {});          // object
+console.log(typeof []);          // object — arrays too!
+console.log(typeof function(){}); // function`
           },
           {
             type: 'challenge',
@@ -651,7 +654,7 @@ console.log(!hasKey);             // false — NOT: flip it
 
 // Short-circuit default value
 const name = "" || "Anonymous";
-console.log(name);  // "Anonymous" — empty string is falsy`
+console.log(name);  // Anonymous — empty string is falsy`
           },
           {
             type: 'quiz',
@@ -1015,7 +1018,7 @@ console.log("Can unlock bonus stage:", canUnlock); // false — level is only 4`
 
 // || triggers for ANY falsy — bad for 0
 const displayScoreA = userScore || "No score";
-console.log(displayScoreA);  // "No score" — wrong! 0 is a valid score
+console.log(displayScoreA);  // No score — wrong! 0 is a valid score
 
 // ?? only triggers for null/undefined — correct
 const displayScoreB = userScore ?? "No score";
@@ -1023,7 +1026,7 @@ console.log(displayScoreB);  // 0 — correct!
 
 // Optional chaining
 const user = { profile: { name: "Brian" } };
-console.log(user?.profile?.name);   // "Brian"
+console.log(user?.profile?.name);   // Brian
 console.log(user?.settings?.theme); // undefined — no error`
           },
           {
@@ -1058,11 +1061,11 @@ console.log(user?.settings?.theme); // undefined — no error`
             label: 'Ternary operator',
             code: `const score = 750;
 const grade = score >= 800 ? "A" : score >= 600 ? "B" : "C";
-console.log(grade);  // "B"
+console.log(grade);  // B
 
 const lives = 0;
 const status = lives > 0 ? "Alive" : "Game Over";
-console.log(status);  // "Game Over"
+console.log(status);  // Game Over
 
 // Equivalent if/else
 let statusVerbose;
@@ -1385,7 +1388,7 @@ console.log(volume);  // 0 — correct! || would give 50
 const user = { name: "Brian", address: null };
 
 console.log(user?.address?.city);       // undefined — no error
-console.log(user?.address?.city ?? "Unknown city");  // "Unknown city"`
+console.log(user?.address?.city ?? "Unknown city");  // Unknown city`
           },
           {
             type: 'quiz',
@@ -2075,11 +2078,11 @@ console.log(APP_NAME);  // works here too`
 
 function getLocalName() {
   const name = "Local Alex";  // shadows the outer name
-  console.log(name);           // "Local Alex"
+  console.log(name);           // Local Alex
 }
 
 getLocalName();
-console.log(name);  // "Global Brian" — unchanged
+console.log(name);  // Global Brian — unchanged
 
 // Cannot access local variables outside
 function createSecret() {
@@ -2294,8 +2297,8 @@ let y = 10;`
             label: 'Array fundamentals',
             code: `const heroes = ["Arthur", "Merlin", "Guinevere"];
 
-console.log(heroes[0]);          // "Arthur"
-console.log(heroes[2]);          // "Guinevere"
+console.log(heroes[0]);          // Arthur
+console.log(heroes[2]);          // Guinevere
 console.log(heroes.length);      // 3
 console.log(heroes[heroes.length - 1]);  // last element
 
@@ -2341,7 +2344,7 @@ inventory.push("bow");
 console.log(inventory);  // ["sword","shield","potion","bow"]
 
 const dropped = inventory.pop();
-console.log(dropped);    // "bow"
+console.log(dropped);    // bow
 console.log(inventory);  // ["sword","shield","potion"]
 
 inventory.unshift("helmet");
@@ -2429,14 +2432,14 @@ console.log("Result:", result); // 240`,
 };
 
 // Dot notation
-console.log(player.name);       // "Brian"
+console.log(player.name);       // Brian
 
 // Bracket notation
 console.log(player["level"]);   // 12
 
 // Dynamic key
 const prop = "class";
-console.log(player[prop]);      // "Mage"
+console.log(player[prop]);      // Mage
 
 // Add / update properties
 player.xp = 8400;

@@ -1,19 +1,22 @@
-import React from 'react'
-import type { LessonSection } from '../../types/lesson'
-import { TextSection } from './TextSection'
+import type { LessonSection as LessonSectionType } from '../../types/lesson'
+import { ChallengeSection } from './ChallengeSection'
 import { CodeExample } from './CodeExample'
 import { QuizBlock } from './QuizBlock'
-import { ChallengeSection } from './ChallengeSection'
+import { TextSection } from './TextSection'
 
 interface LessonSectionProps {
-  section: LessonSection
-  onRunExample?: (code: string) => void
+  readonly lessonId: string
+  readonly sectionIndex: number
+  readonly section: LessonSectionType
+  readonly onRunExample?: (code: string) => void
 }
 
-export const LessonSection: React.FC<LessonSectionProps> = ({ 
-  section, 
-  onRunExample 
-}) => {
+export function LessonSection ({
+  lessonId,
+  sectionIndex,
+  section,
+  onRunExample,
+}: LessonSectionProps) {
   switch (section.type) {
     case 'text':
       return <TextSection content={section.content} />
@@ -38,15 +41,21 @@ export const LessonSection: React.FC<LessonSectionProps> = ({
         />
       )
     
-    case 'challenge':
+    case 'challenge': {
+      const challengeId = section.id
+        ? section.id
+        : `${lessonId}-challenge-${sectionIndex}`
+
       return (
         <ChallengeSection 
+          challengeId={challengeId}
           prompt={section.prompt}
           starterCode={section.starterCode}
           hints={section.hints}
           tests={section.tests}
         />
       )
+    }
     
     default:
       console.warn('Unknown lesson section type:', section)

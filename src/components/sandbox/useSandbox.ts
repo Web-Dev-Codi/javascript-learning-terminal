@@ -54,16 +54,8 @@ export const useSandbox = (): UseSandboxResult => {
       return result
     }
 
-    // Check if there are blocking syntax errors
     if (shouldBlockExecution) {
-      const result: ExecutionResult = {
-        success: false,
-        output: [],
-        error: 'Code has syntax errors that must be fixed before execution'
-      }
-      // Per spec CO-06: show single warn line when blocked
-      addConsoleMessage('warn', 'Execution halted — fix errors and retry')
-      return result
+      addConsoleMessage('warn', 'Syntax issues found — running anyway')
     }
 
     setIsExecuting(true)
@@ -77,7 +69,11 @@ export const useSandbox = (): UseSandboxResult => {
       const result = await SandboxEngine.execute(code)
 
       if (result.success) {
-        addConsoleMessage('info', `✓ Code executed successfully (${result.runtime}ms)`)
+        const hasOutputErrors = result.output.some(output => output.startsWith('[error]'))
+        const statusMessage = hasOutputErrors
+          ? `⚠ Execution completed with errors (${result.runtime}ms)`
+          : `✓ Code executed successfully (${result.runtime}ms)`
+        addConsoleMessage(hasOutputErrors ? 'error' : 'info', statusMessage)
 
         // Add all console output
         result.output.forEach(output => {
@@ -166,7 +162,11 @@ export const useSandbox = (): UseSandboxResult => {
       const result = await SandboxEngine.execute(code)
 
       if (result.success) {
-        addConsoleMessage('info', `✓ Example executed (${result.runtime}ms)`)
+        const hasOutputErrors = result.output.some(output => output.startsWith('[error]'))
+        const statusMessage = hasOutputErrors
+          ? `⚠ Example completed with errors (${result.runtime}ms)`
+          : `✓ Example executed (${result.runtime}ms)`
+        addConsoleMessage(hasOutputErrors ? 'error' : 'info', statusMessage)
         result.output.forEach(output => {
           const [type, ...messageParts] = output.split(' ')
           const message = messageParts.join(' ')

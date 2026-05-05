@@ -62,9 +62,9 @@ export class SandboxEngine {
 
       // Global message handler
       const onMessage = (event: MessageEvent) => {
-        if (!this.iframe || event.source !== this.iframe.contentWindow) return
-        const data = event.data as any
-        if (!data || data.__synth__ !== true) return
+        if (event.source !== this.iframe?.contentWindow) return
+        const data = event.data
+        if (data?.__synth__ !== true) return
 
         if (data.type === 'ready') {
           this.isReadyFlag = true
@@ -92,7 +92,6 @@ export class SandboxEngine {
           const runtime = Math.round(performance.now() - run.startTime)
           this.pendingRuns.delete(String(data.execId))
           run.resolve({ success: true, output: run.outputs, runtime })
-          return
         }
       }
 
@@ -119,7 +118,7 @@ export class SandboxEngine {
   // Build per-run HTML with preamble that forwards console and errors, then runs user code
   private static createRunHTML(code: string, execId: string, cfg: SandboxConfig): string {
     // Basic escape to avoid closing the script tag
-    const safeCode = code.replace(/<\/script/gi, '<\\/script')
+    const safeCode = code.replaceAll(/<\/script/gi, String.raw`<\/script`)
     const blocked = JSON.stringify(cfg.blockedGlobals)
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><script>(function(){
   try{
@@ -171,7 +170,7 @@ export class SandboxEngine {
         config: finalConfig
       }
       // Timeout handling (S-07)
-      runRecord.timer = window.setTimeout(() => {
+      runRecord.timer = globalThis.setTimeout(() => {
         this.pendingRuns.delete(execId)
         resolve({
           success: false,
@@ -193,8 +192,8 @@ export class SandboxEngine {
    * Clean up the sandbox
    */
   static cleanup(): void {
-    if (this.iframe && this.iframe.parentNode) {
-      this.iframe.parentNode.removeChild(this.iframe)
+    if (this.iframe?.parentNode) {
+      this.iframe.remove()
       this.iframe = null
     }
     this.isInitialized = false

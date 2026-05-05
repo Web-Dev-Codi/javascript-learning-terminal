@@ -1,12 +1,7 @@
-import { useCallback, useRef } from 'react'
-import { EditorView } from '@codemirror/view'
-import { EditorState } from '@codemirror/state'
-import { javascript } from '@codemirror/lang-javascript'
-// Lint integration will be wired via hook; CodeMirror lint extensions are omitted here
-import { keymap } from '@codemirror/view'
-import { defaultKeymap } from '@codemirror/commands'
+import { useCallback, useEffect } from 'react'
 import { useEditorStore } from '../../store/editorStore'
 import { useSyntaxChecker } from '../checker/useSyntaxChecker'
+import { useCodeMirror } from './useCodeMirror'
 
 interface UseEditorProps {
   lessonId?: string
@@ -16,217 +11,77 @@ interface UseEditorProps {
 }
 
 export const useEditor = ({
-  lessonId = '',
-  starterCode = '',
-  onRun,
-  onCursorChange
+	lessonId = '',
+	starterCode = '',
+	onRun,
+	onCursorChange,
 }: UseEditorProps) => {
-  const {
-    getCode,
-    setCode,
-    activeTab,
-    setActiveTab,
-    setCursorPosition
-  } = useEditorStore()
-  const { checkSyntax, diagnostics, clearDiagnostics } = useSyntaxChecker()
+	const {
+		getCode,
+		setCode,
+		activeTab,
+		setActiveTab,
+		setCursorPosition,
+	} = useEditorStore()
+	const { checkSyntax, diagnostics, clearDiagnostics } = useSyntaxChecker()
 
-  const editorRef = useRef<EditorView | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+	const initialCode = lessonId
+		? getCode(lessonId) || starterCode
+		: starterCode
 
-  // Create custom synthwave theme
-  const synthTheme = EditorView.theme({
-    '&': {
-      color: 'var(--text-primary)',
-      backgroundColor: 'var(--bg-input)',
-      fontFamily: 'var(--font-mono)',
-      fontSize: '12px'
-    },
-    '.cm-content': {
-      caretColor: 'var(--neon-cyan)',
-      padding: '13px 14px',
-      lineHeight: '1'
-    },
-    '.cm-focused': {
-      outline: 'none'
-    },
-    '.cm-gutters': {
-      backgroundColor: 'var(--bg-panel)',
-      borderRight: '1px solid var(--border-dim)',
-      color: 'var(--text-muted)',
-      fontSize: '11px'
-    },
-    '.cm-lineNumbers .cm-gutterElement': {
-      padding: '0 7px',
-      minWidth: '36px',
-      textAlign: 'right',
-      lineHeight: '21px',
-      height: '21px'
-    },
-    '.cm-activeLineGutter': {
-      backgroundColor: 'rgba(0, 255, 231, 0.04)',
-      color: 'var(--neon-cyan)'
-    },
-    '.cm-activeLine': {
-      backgroundColor: 'rgba(0, 255, 231, 0.04)'
-    },
-    '.cm-selectionBackground, ::selection': {
-      backgroundColor: 'rgba(191, 0, 255, 0.2)'
-    },
-    '.cm-cursor': {
-      borderLeftColor: 'var(--neon-cyan)',
-      boxShadow: '0 0 6px var(--neon-cyan)'
-    },
-    // Syntax highlighting
-    '& .cm-keyword': { color: 'var(--neon-pink)' },
-    '& .cm-variable': { color: 'var(--neon-cyan)' },
-    '& .cm-string': { color: 'var(--neon-yellow)' },
-    '& .cm-number': { color: 'var(--neon-orange)' },
-    '& .cm-comment': { color: 'var(--text-muted)', fontStyle: 'italic' },
-    '& .cm-property': { color: 'var(--neon-purple)' },
-    '& .cm-def': { color: 'var(--neon-purple)' },
-    '& .cm-operator': { color: 'var(--text-primary)' },
-    '& .cm-punctuation': { color: 'var(--text-primary)' },
-    '& .cm-bracket': { color: 'var(--text-primary)' },
-    // Lint styling
-    '.cm-lint-marker': {
-      width: '16px',
-      height: '16px'
-    },
-    '.cm-lint-marker-error': {
-      backgroundColor: 'var(--neon-pink)',
-      borderRadius: '50%'
-    },
-    '.cm-lint-marker-warning': {
-      backgroundColor: 'var(--neon-yellow)',
-      borderRadius: '50%'
-    },
-    '.cm-lint-marker-error::before': {
-      content: '"✕"',
-      color: 'var(--bg-void)',
-      fontSize: '10px',
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)'
-    },
-    '.cm-lint-marker-warning::before': {
-      content: '"△"',
-      color: 'var(--bg-void)',
-      fontSize: '10px',
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)'
-    }
-  })
+	const handleChange = useCallback((newCode: string) => {
+		if (!lessonId) return
 
-  // Custom keymap for Ctrl+Enter to run
-  const customKeymap = keymap.of([
-    {
-      key: 'Ctrl-Enter',
-      run: () => {
-        if (onRun) {
-          onRun()
-          return true
-        }
-        return false
-      }
-    }
-  ])
+		setCode(lessonId, newCode)
+		clearDiagnostics()
+		setTimeout(() => {
+			checkSyntax(newCode)
+		}, 300)
+	}, [lessonId, setCode, checkSyntax, clearDiagnostics])
 
-  const createEditor = useCallback(() => {
-    if (!containerRef.current) return
+	const handleCursorChange = useCallback((line: number, column: number) => {
+		setCursorPosition(line, column)
+		if (onCursorChange) {
+			onCursorChange(line, column)
+		}
+	}, [setCursorPosition, onCursorChange])
 
-    // Get initial code - either from store or starter code
-    const initialCode = lessonId ? getCode(lessonId) || starterCode : starterCode
+	const {
+		containerRef,
+		createEditor,
+		destroyEditor,
+		setCode: setEditorCode,
+		getCode: getEditorCode,
+		goToLine,
+	} = useCodeMirror({
+		initialCode,
+		onChange: handleChange,
+		onCursorChange: handleCursorChange,
+		onRun,
+	})
 
-    const startState = EditorState.create({
-      doc: initialCode,
-      extensions: [
-        synthTheme,
-        javascript(),
-        customKeymap,
-        keymap.of(defaultKeymap),
-        EditorView.lineWrapping,
-        EditorView.updateListener.of((update) => {
-          if (update.docChanged && lessonId) {
-            const newCode = update.state.doc.toString()
-            setCode(lessonId, newCode)
+	useEffect(() => {
+		setEditorCode(initialCode)
+	}, [initialCode, setEditorCode])
 
-            // Run syntax checking on code change
-            setTimeout(() => {
-              checkSyntax(newCode)
-            }, 300) // Debounce syntax checking
-            // Clear diagnostics immediately on edit (E-08)
-            clearDiagnostics()
-          }
+	const resetCode = useCallback(() => {
+		if (!lessonId) return
 
-          if (update.selectionSet) {
-            const cursor = update.state.selection.main.head
-            const line = update.state.doc.lineAt(cursor)
-            const column = cursor - line.from + 1
-            setCursorPosition(line.number, column)
-            if (onCursorChange) {
-              onCursorChange(line.number, column)
-            }
-          }
-        })
-      ]
-    })
+		setEditorCode(starterCode)
+		setCode(lessonId, starterCode)
+	}, [lessonId, starterCode, setCode, setEditorCode])
 
-    const view = new EditorView({
-      state: startState,
-      parent: containerRef.current
-    })
+	const getCurrentCode = useCallback(() => getEditorCode(), [getEditorCode])
 
-    editorRef.current = view
-  }, [lessonId, starterCode, getCode, setCode, setCursorPosition, onCursorChange, synthTheme, checkSyntax, clearDiagnostics, customKeymap])
-
-  const destroyEditor = useCallback(() => {
-    if (editorRef.current) {
-      editorRef.current.destroy()
-      editorRef.current = null
-    }
-  }, [])
-
-  const resetCode = useCallback(() => {
-    if (editorRef.current && lessonId) {
-      const transaction = editorRef.current.state.update({
-        changes: {
-          from: 0,
-          to: editorRef.current.state.doc.length,
-          insert: starterCode
-        }
-      })
-      editorRef.current.dispatch(transaction)
-      setCode(lessonId, starterCode)
-    }
-  }, [lessonId, starterCode, setCode])
-
-  const getCurrentCode = useCallback(() => {
-    return editorRef.current?.state.doc.toString() || ''
-  }, [])
-
-  // Placeholder: diagnostics are rendered in FeedbackPanel; CodeMirror overlay is deferred
-
-  const goToLine = useCallback((lineNumber: number, column = 1) => {
-    if (!editorRef.current) return
-    const view = editorRef.current
-    const line = view.state.doc.line(Math.max(1, lineNumber))
-    const pos = line.from + Math.max(0, column - 1)
-    view.dispatch({ selection: { anchor: pos }, scrollIntoView: true })
-    view.focus()
-  }, [])
-
-  return {
-    containerRef,
-    createEditor,
-    destroyEditor,
-    resetCode,
-    getCurrentCode,
-    activeTab,
-    setActiveTab,
-    diagnostics,
-    goToLine
-  }
+	return {
+		containerRef,
+		createEditor,
+		destroyEditor,
+		resetCode,
+		getCurrentCode,
+		activeTab,
+		setActiveTab,
+		diagnostics,
+		goToLine,
+	}
 }

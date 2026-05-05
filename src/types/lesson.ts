@@ -42,6 +42,7 @@ export interface QuizSection {
 }
 
 export interface ChallengeSection {
+	id?: string
   type: 'challenge'
   prompt: string
   starterCode: string
@@ -50,6 +51,7 @@ export interface ChallengeSection {
 }
 
 export interface ChallengeTest {
+  id: string
   description: string
   fn: string
 }

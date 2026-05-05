@@ -1,0 +1,207 @@
+/* Challenge Editor Styles */
+
+.editorWrap {
+	margin: 16px 0;
+	border: 1px solid var(--border-mid);
+	border-radius: var(--radius-sm);
+	overflow: hidden;
+	background: var(--bg-input);
+}
+
+.editorHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 12px;
+	background: var(--bg-panel);
+	border-bottom: 1px solid var(--border-dim);
+	gap: 8px;
+}
+
+.editorLabel {
+	font-size: 9px;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	color: var(--neon-pink);
+	text-shadow: var(--glow-pink);
+}
+
+.editorActions {
+	display: flex;
+	gap: 6px;
+}
+
+.editorButton {
+	font-family: var(--font-mono);
+	font-size: 9px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	padding: 4px 10px;
+	background: transparent;
+	border: 1px solid;
+	cursor: pointer;
+	transition: all 0.12s ease;
+}
+
+.resetButton {
+	border-color: var(--border-mid);
+	color: var(--text-dim);
+}
+
+.resetButton:hover {
+	border-color: var(--neon-pink);
+	color: var(--neon-pink);
+}
+
+.runButton {
+	border-color: var(--neon-green);
+	color: var(--neon-green);
+	text-shadow: var(--glow-green);
+	box-shadow: 0 0 10px #00ff9f22;
+}
+
+.runButton:hover:not(:disabled) {
+	background: rgba(0, 255, 159, 0.1);
+}
+
+.runButton:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.editorBody {
+	background: var(--bg-input);
+}
+
+.editorContainer {
+	min-height: 160px;
+	max-height: 320px;
+	overflow: auto;
+}
+
+.editorContainer > div {
+	height: 100%;
+}
+
+.consoleWrap {
+	border-top: 1px solid var(--border-dim);
+	background: var(--bg-panel);
+	display: flex;
+	flex-direction: column;
+}
+
+.consoleHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 6px 12px;
+	border-bottom: 1px solid var(--border-dim);
+	background: var(--bg-panel);
+}
+
+.consoleTitle {
+	font-size: 9px;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	color: var(--neon-cyan);
+	text-shadow: var(--glow-cyan);
+}
+
+.clearButton {
+	font-family: var(--font-mono);
+	font-size: 9px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	padding: 3px 9px;
+	background: transparent;
+	border: 1px solid var(--border-dim);
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: all 0.12s ease;
+}
+
+.clearButton:hover {
+	border-color: var(--text-primary);
+	color: var(--text-primary);
+}
+
+.consoleOutput {
+	padding: 10px 12px;
+	font-size: 11px;
+	line-height: 1.4;
+}
+
+.consoleLine {
+	display: flex;
+	gap: 8px;
+	align-items: baseline;
+	padding: 3px 0;
+}
+
+.consoleType {
+	font-size: 9px;
+	letter-spacing: 1px;
+	flex-shrink: 0;
+	width: 48px;
+	text-align: right;
+	opacity: 0.7;
+}
+
+.consoleMessage {
+	flex: 1;
+	min-width: 0;
+	word-break: break-word;
+}
+
+.log .consoleType,
+.log .consoleMessage {
+	color: var(--text-dim);
+}
+
+.error .consoleType,
+.error .consoleMessage {
+	color: var(--neon-pink);
+}
+
+.warn .consoleType,
+.warn .consoleMessage {
+	color: var(--neon-yellow);
+}
+
+.info .consoleType,
+.info .consoleMessage {
+	color: var(--neon-cyan);
+}
+
+.pass .consoleType,
+.pass .consoleMessage {
+	color: var(--neon-green);
+}
+
+.fail .consoleType,
+.fail .consoleMessage {
+	color: var(--neon-pink);
+}
+
+.emptyMessage {
+	display: flex;
+	gap: 8px;
+	align-items: baseline;
+	padding: 12px 0;
+	justify-content: center;
+	opacity: 0.6;
+}
+
+.emptyType {
+	font-size: 9px;
+	letter-spacing: 1px;
+	flex-shrink: 0;
+	width: 48px;
+	text-align: right;
+	color: var(--text-muted);
+}
+
+.emptyContent {
+	color: var(--text-muted);
+	font-style: italic;
+}

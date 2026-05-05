@@ -1,23 +1,23 @@
-import React, { useState } from 'react'
-import type { ChallengeSection as ChallengeSectionType } from '../../types/lesson'
+import { useState } from 'react'
+import type { ChallengeTest } from '../../types/lesson'
+import { ChallengeEditor } from './ChallengeEditor'
 import styles from './ChallengeSection.module.css'
 
 interface ChallengeSectionProps {
-  prompt: string
-  starterCode: string
-  hints?: string[]
-  tests?: Array<{
-    description: string
-    fn: string
-  }>
+  readonly challengeId: string
+  readonly prompt: string
+  readonly starterCode: string
+  readonly hints?: string[]
+  readonly tests?: ChallengeTest[]
 }
 
-export const ChallengeSection: React.FC<ChallengeSectionProps> = ({
+export function ChallengeSection({
+  challengeId,
   prompt,
   starterCode,
   hints = [],
-  tests = []
-}) => {
+  tests = [],
+}: ChallengeSectionProps) {
   const [currentHintIndex, setCurrentHintIndex] = useState(0)
   const [showHints, setShowHints] = useState(false)
 
@@ -41,16 +41,10 @@ export const ChallengeSection: React.FC<ChallengeSectionProps> = ({
         {prompt}
       </div>
 
-      {/* Code editor placeholder - will be integrated with actual editor */}
-      <div className={styles.codeEditorPlaceholder}>
-        <div className={styles.editorHeader}>
-          <span className={styles.editorLabel}>CHALLENGE CODE</span>
-          <button className={styles.resetButton}>↺ RESET</button>
-        </div>
-        <div className={styles.codeContent}>
-          <pre>{starterCode}</pre>
-        </div>
-      </div>
+      <ChallengeEditor
+        challengeId={challengeId}
+        starterCode={starterCode}
+      />
 
       {/* Hints Section */}
       {hints.length > 0 && (
@@ -58,16 +52,27 @@ export const ChallengeSection: React.FC<ChallengeSectionProps> = ({
           {showHints ? (
             <div className={styles.hintsContent}>
               <div className={styles.hintItem}>
-                <strong>💡 HINT {currentHintIndex + 1}:</strong> {hints[currentHintIndex]}
+                <strong>
+                  💡 HINT {currentHintIndex + 1}:
+                </strong>{' '}
+                {hints[currentHintIndex]}
               </div>
               {hasMoreHints && (
-                <button className={styles.nextHintButton} onClick={handleShowHint}>
+                <button
+                  className={styles.nextHintButton}
+                  onClick={handleShowHint}
+                  type="button"
+                >
                   💡 NEXT HINT
                 </button>
               )}
             </div>
           ) : (
-            <button className={styles.hintButton} onClick={handleShowHint}>
+            <button
+              className={styles.hintButton}
+              onClick={handleShowHint}
+              type="button"
+            >
               💡 SHOW HINT
             </button>
           )}
@@ -79,8 +84,8 @@ export const ChallengeSection: React.FC<ChallengeSectionProps> = ({
         <div className={styles.testsSection}>
           <h4 className={styles.testsTitle}>📋 TESTS</h4>
           <ul className={styles.testsList}>
-            {tests.map((test, index) => (
-              <li key={index} className={styles.testItem}>
+            {tests.map((test) => (
+              <li key={test.id} className={styles.testItem}>
                 {test.description}
               </li>
             ))}

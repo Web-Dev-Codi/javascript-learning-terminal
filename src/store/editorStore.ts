@@ -19,6 +19,8 @@ interface RunHistory {
 interface EditorState {
   // Code content per lesson
   codeByLessonId: Record<string, string>
+  // Code content per challenge
+  challengeCodeById: Record<string, string>
   
   // Editor state
   activeTab: string
@@ -38,6 +40,9 @@ interface EditorState {
   setCode: (lessonId: string, code: string) => void
   getCode: (lessonId: string) => string
   resetCode: (lessonId: string, starterCode: string) => void
+  setChallengeCode: (challengeId: string, code: string) => void
+  getChallengeCode: (challengeId: string) => string
+  resetChallengeCode: (challengeId: string, starterCode: string) => void
   
   // Tab management
   setActiveTab: (tabId: string) => void
@@ -61,6 +66,7 @@ export const useEditorStore = create<EditorState>()(
     (set, get) => ({
       // Initial state
       codeByLessonId: {},
+      challengeCodeById: {},
       activeTab: 'challenge',
       tabs: [
         {
@@ -105,6 +111,25 @@ export const useEditorStore = create<EditorState>()(
 
       resetCode: (lessonId: string, starterCode: string) => {
         get().setCode(lessonId, starterCode)
+      },
+
+      setChallengeCode: (challengeId: string, code: string) => {
+        const state = get()
+        set({
+          challengeCodeById: {
+            ...state.challengeCodeById,
+            [challengeId]: code,
+          },
+        })
+      },
+
+      getChallengeCode: (challengeId: string) => {
+        const state = get()
+        return state.challengeCodeById[challengeId] || ''
+      },
+
+      resetChallengeCode: (challengeId: string, starterCode: string) => {
+        get().setChallengeCode(challengeId, starterCode)
       },
 
       // Tab management
@@ -185,6 +210,7 @@ export const useEditorStore = create<EditorState>()(
       name: 'synthscript-editor-store',
       partialize: (state) => ({
         codeByLessonId: state.codeByLessonId,
+        challengeCodeById: state.challengeCodeById,
         tabs: state.tabs,
         runHistory: state.runHistory.slice(0, 10) // Only persist last 10 runs
       })
