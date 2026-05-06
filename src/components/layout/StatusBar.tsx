@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import { lessons } from '../../data/lessons'
 import { useEditorStore } from '../../store/editorStore'
 import { useLessonStore } from '../../store/lessonStore'

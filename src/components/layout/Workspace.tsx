@@ -1,19 +1,19 @@
-import React from 'react'
-import { Group, Panel, Separator } from 'react-resizable-panels'
-import { Sidebar } from './Sidebar'
-import { LessonPanel } from '../lesson/LessonPanel'
-import { EditorPanel } from '../editor/EditorPanel'
-import { MobileTabBar } from './MobileTabBar'
-import { useLessonStore } from '../../store/lessonStore'
-import styles from './Workspace.module.css'
+import type React from "react";
+import { Group, Panel, Separator } from "react-resizable-panels";
+import { useLessonStore } from "../../store/lessonStore";
+import { EditorPanel } from "../editor/EditorPanel";
+import { LessonPanel } from "../lesson/LessonPanel";
+import { MobileTabBar } from "./MobileTabBar";
+import { Sidebar } from "./Sidebar";
+import styles from "./Workspace.module.css";
 
 export const Workspace: React.FC = () => {
-	const { activePanel } = useLessonStore()
+	const { activePanel } = useLessonStore();
 
 	return (
 		<div className={styles.workspace}>
 			<div className={styles.desktopLayout}>
-				<Group direction="horizontal">
+				<Group orientation="horizontal">
 					<Panel defaultSize={15} minSize={10} maxSize={25}>
 						<aside className={styles.sidebar}>
 							<Sidebar />
@@ -35,17 +35,17 @@ export const Workspace: React.FC = () => {
 			</div>
 
 			<div className={styles.mobileLayout}>
-				{activePanel === 'lessons' && (
+				{activePanel === "lessons" && (
 					<aside className={styles.panel}>
 						<Sidebar />
 					</aside>
 				)}
-				{activePanel === 'lesson' && (
+				{activePanel === "lesson" && (
 					<section className={styles.panel}>
 						<LessonPanel />
 					</section>
 				)}
-				{activePanel === 'editor' && (
+				{activePanel === "editor" && (
 					<div className={styles.panel}>
 						<EditorPanel />
 					</div>
@@ -53,5 +53,5 @@ export const Workspace: React.FC = () => {
 				<MobileTabBar />
 			</div>
 		</div>
-	)
-}
+	);
+};

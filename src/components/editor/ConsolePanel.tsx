@@ -1,4 +1,3 @@
-import React from "react";
 import { useEditorStore } from "../../store/editorStore";
 import styles from "./ConsolePanel.module.css";
 
@@ -35,7 +34,7 @@ export const ConsolePanel: React.FC = () => {
 					<div className={styles.statusDot}></div>
 					CONSOLE
 				</div>
-				<button className={styles.clearButton} onClick={handleClear}>
+				<button className={styles.clearButton} type="button" onClick={handleClear}>
 					CLEAR
 				</button>
 			</div>
