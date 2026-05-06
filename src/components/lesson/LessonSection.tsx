@@ -1,5 +1,4 @@
 import type { LessonSection as LessonSectionType } from "../../types/lesson";
-import { ChallengeSection } from "./ChallengeSection";
 import { CodeExample } from "./CodeExample";
 import { QuizBlock } from "./QuizBlock";
 import { TextSection } from "./TextSection";
