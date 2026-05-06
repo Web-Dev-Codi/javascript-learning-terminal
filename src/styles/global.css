@@ -2,6 +2,7 @@
 /* Base styles, scanline effects, and perspective grid */
 
 @import './tokens.css';
+@import './resize-handle.css';
 
 /* Reset and Base Styles */
 *, *::before, *::after {
