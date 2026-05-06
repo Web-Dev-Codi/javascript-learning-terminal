@@ -61,7 +61,7 @@ export const runInWorker = ({
 			}
 		})
 
-		worker.on('error', (error) => {
+		worker.on('error', (error: Error) => {
 			clearTimeout(timeout)
 			onEvent({
 				type: 'error',
