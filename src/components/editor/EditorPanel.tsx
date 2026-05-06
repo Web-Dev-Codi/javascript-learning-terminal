@@ -4,6 +4,7 @@ import { findLessonById, useLessonStore } from '../../store/lessonStore'
 import type { Diagnostic, ChallengeSection } from '../../types/lesson'
 import { FeedbackPanel } from '../checker/FeedbackPanel'
 import { useRunner } from '../runner/useRunner'
+import { ChallengeInfo } from './ChallengeInfo'
 import { ConsolePanel } from './ConsolePanel'
 import styles from './EditorPanel.module.css'
 import { useEditor } from './useEditor'
@@ -132,6 +133,7 @@ console.log("Hello, world!");`
 
   return (
     <div className={styles.editorPanel}>
+      <ChallengeInfo />
       {/* Editor Section */}
       <div className={styles.editorWrap}>
         <div className={styles.editorBar}>

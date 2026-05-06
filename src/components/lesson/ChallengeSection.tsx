@@ -1,20 +1,15 @@
 import { useState } from "react";
 import type { ChallengeTest } from "../../types/lesson";
-import { ChallengeEditor } from "./ChallengeEditor";
 import styles from "./ChallengeSection.module.css";
 
 interface ChallengeSectionProps {
-	readonly challengeId: string;
 	readonly prompt: string;
-	readonly starterCode: string;
 	readonly hints?: string[];
 	readonly tests?: ChallengeTest[];
 }
 
 export function ChallengeSection({
-	challengeId,
 	prompt,
-	starterCode,
 	hints = [],
 	tests = [],
 }: ChallengeSectionProps) {
@@ -38,8 +33,6 @@ export function ChallengeSection({
 			</div>
 
 			<div className={styles.challengePrompt}>{prompt}</div>
-
-			<ChallengeEditor challengeId={challengeId} starterCode={starterCode} />
 
 			{/* Hints Section */}
 			{hints.length > 0 && (

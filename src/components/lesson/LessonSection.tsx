@@ -40,21 +40,14 @@ export function LessonSection({
 				/>
 			);
 
-		case "challenge": {
-			const challengeId = section.id
-				? section.id
-				: `${lessonId}-challenge-${sectionIndex}`;
-
+		case "challenge":
 			return (
 				<ChallengeSection
-					challengeId={challengeId}
 					prompt={section.prompt}
-					starterCode={section.starterCode}
 					hints={section.hints}
 					tests={section.tests}
 				/>
 			);
-		}
 
 		default:
 			console.warn("Unknown lesson section type:", section);
