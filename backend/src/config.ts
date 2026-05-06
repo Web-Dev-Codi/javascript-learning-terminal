@@ -1,5 +1,5 @@
 export const config = {
-	port: Number.parseInt(process.env.PORT ?? "8000", 10),
+	port: Number.parseInt(process.env.PORT ?? "4000", 10),
 	redisUrl: process.env.REDIS_URL ?? "redis://localhost:6379",
 	useMemoryQueue: process.env.USE_MEMORY_QUEUE === "true",
 	workerTimeoutMs: Number.parseInt(process.env.RUNNER_TIMEOUT_MS ?? "5000", 10),
