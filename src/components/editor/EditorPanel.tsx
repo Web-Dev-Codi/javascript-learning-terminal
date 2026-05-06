@@ -110,7 +110,6 @@ console.log("Hello, world!");`
     setActiveTab,
     diagnostics,
     goToLine,
-    shouldBlockExecution,
   } = useEditor({
     lessonId,
     starterCode,
