@@ -17,10 +17,17 @@ export const Header: React.FC = () => {
 
   return (
     <header className={styles.header}>
-      <div className={styles.logo}>
-        <span className={styles.logoBracket}>{'{'}</span>
-        SYNTHSCRIPT
-        <span className={styles.logoBracket}>{'}'}</span>
+      <div className={styles.logoSection}>
+        <div className={styles.logo}>
+          <span className={styles.logoBracket}>{'{'}</span>
+          SYNTHSCRIPT
+          <span className={styles.logoBracket}>{'}'}</span>
+        </div>
+        <div className={styles.tagline}>
+          <span>JAVASCRIPT</span>
+          <span>LEARNING</span>
+          <span>TERMINAL</span>
+        </div>
       </div>
       
       <div className={styles.headerRight}>
