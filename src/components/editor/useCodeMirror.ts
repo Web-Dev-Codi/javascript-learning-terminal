@@ -1,8 +1,19 @@
 import { defaultKeymap } from '@codemirror/commands'
 import { javascript } from '@codemirror/lang-javascript'
-import { EditorState, type Extension } from '@codemirror/state'
-import { EditorView, keymap } from '@codemirror/view'
-import { useCallback, useEffect, useRef } from 'react'
+import {
+	type Diagnostic as LintDiagnostic,
+	lintGutter,
+	setDiagnostics as setLintDiagnostics,
+} from '@codemirror/lint'
+import { EditorState, type Extension, StateField } from '@codemirror/state'
+import {
+	Decoration,
+	EditorView,
+	keymap,
+	lineNumbers,
+} from '@codemirror/view'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
+import type { Diagnostic as AppDiagnostic } from '../../types/lesson'
 
 interface UseCodeMirrorOptions {
 	initialCode: string
@@ -10,6 +21,7 @@ interface UseCodeMirrorOptions {
 	onCursorChange?: (line: number, column: number) => void
 	onRun?: () => void
 	readOnly?: boolean
+	highlightLines?: number[]
 }
 
 const synthTheme = EditorView.theme({
@@ -89,6 +101,7 @@ export const useCodeMirror = ({
 	onCursorChange,
 	onRun,
 	readOnly = false,
+	highlightLines = [],
 }: UseCodeMirrorOptions) => {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const editorRef = useRef<EditorView | null>(null)
@@ -113,19 +126,54 @@ export const useCodeMirror = ({
 		onRunRef.current = onRun
 	}, [onRun])
 
+	const highlightExtension = useMemo(() => {
+		if (highlightLines.length === 0) return null
+		return StateField.define({
+			create(state) {
+				const decorations = highlightLines
+					.map((lineNumber) => {
+						const line = state.doc.line(
+							Math.max(1, lineNumber),
+						)
+						return Decoration.line({
+							class: 'cm-highlight-line',
+						}).range(line.from)
+					})
+				return Decoration.set(decorations)
+			},
+			update(_decorations, tr) {
+				if (!tr.docChanged) return _decorations
+				const decorations = highlightLines
+					.map((lineNumber) => {
+						const line = tr.state.doc.line(
+							Math.max(1, lineNumber),
+						)
+						return Decoration.line({
+							class: 'cm-highlight-line',
+						}).range(line.from)
+					})
+				return Decoration.set(decorations)
+			},
+			provide: (field) => EditorView.decorations.from(field),
+		})
+	}, [highlightLines])
+
 	const createEditor = useCallback(() => {
 		if (!containerRef.current || editorRef.current) return
 
 		const runKeymap = buildRunKeymap(() => onRunRef.current?.())
 		const extensions: Extension[] = [
 			synthTheme,
+			lineNumbers(),
 			javascript(),
+			lintGutter(),
 			EditorView.editable.of(!readOnly),
 			keymap.of(defaultKeymap),
 			EditorView.lineWrapping,
 		]
 
 		if (runKeymap) extensions.push(runKeymap)
+		if (highlightExtension) extensions.push(highlightExtension)
 
 		extensions.push(
 			EditorView.updateListener.of((update) => {
@@ -152,7 +200,7 @@ export const useCodeMirror = ({
 			state: startState,
 			parent: containerRef.current,
 		})
-	}, [readOnly])
+	}, [readOnly, highlightExtension])
 
 	const destroyEditor = useCallback(() => {
 		if (editorRef.current) {
@@ -182,6 +230,36 @@ export const useCodeMirror = ({
 		return editorRef.current?.state.doc.toString() ?? ''
 	}, [])
 
+	const setEditorDiagnostics = useCallback((
+		diagnostics: AppDiagnostic[],
+	) => {
+		if (!editorRef.current) return
+		const view = editorRef.current
+
+		const lintDiagnostics: LintDiagnostic[] = diagnostics.map(
+			(diagnostic) => {
+				const line = view.state.doc.line(
+					Math.max(1, diagnostic.line),
+				)
+				const from = line.from + Math.max(0, diagnostic.column - 1)
+				const to = Math.min(line.to, from + 1)
+
+				return {
+					from,
+					to,
+					severity: diagnostic.severity,
+					message: diagnostic.messages.short,
+				}
+			},
+		)
+
+		const transaction = setLintDiagnostics(
+			view.state,
+			lintDiagnostics,
+		)
+		view.dispatch(transaction)
+	}, [])
+
 	const goToLine = useCallback((lineNumber: number, column = 1) => {
 		if (!editorRef.current) return
 
@@ -202,6 +280,7 @@ export const useCodeMirror = ({
 		destroyEditor,
 		setCode,
 		getCode,
+		setEditorDiagnostics,
 		goToLine,
 	}
 }

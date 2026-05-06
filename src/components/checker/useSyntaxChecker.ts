@@ -1,12 +1,12 @@
-import { useCallback, useState } from 'react'
-import { useLessonStore } from '../../store/lessonStore'
-import { useEditorStore } from '../../store/editorStore'
-import { SyntaxChecker } from './syntaxChecker'
-import { RuleEngine } from './ruleEngine'
-import type { ESTreeAST } from './ruleEngine'
-import { MessageDictionary } from './messages'
-import type { Diagnostic, RuleId } from '../../types/lesson'
+import { useCallback, useMemo, useState } from 'react'
 import { lessons } from '../../data/lessons'
+import { useEditorStore } from '../../store/editorStore'
+import { useLessonStore } from '../../store/lessonStore'
+import type { Diagnostic, RuleId } from '../../types/lesson'
+import { MessageDictionary } from './messages'
+import type { ESTreeAST } from './ruleEngine'
+import { RuleEngine } from './ruleEngine'
+import { SyntaxChecker } from './syntaxChecker'
 
 interface UseSyntaxCheckerResult {
   diagnostics: Diagnostic[]
@@ -123,21 +123,10 @@ export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
   }, [])
 
   const shouldBlockExecution = diagnostics.some(d => d.severity === 'error')
-
-  const issueSummary = diagnostics.reduce((summary, diagnostic) => {
-    switch (diagnostic.severity) {
-      case 'error':
-        summary.errors++
-        break
-      case 'warning':
-        summary.warnings++
-        break
-      case 'info':
-        summary.info++
-        break
-    }
-    return summary
-  }, { errors: 0, warnings: 0, info: 0 })
+  const issueSummary = useMemo(
+    () => SyntaxChecker.getIssueSummary(diagnostics),
+    [diagnostics],
+  )
 
   return {
     diagnostics,

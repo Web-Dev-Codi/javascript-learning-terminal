@@ -1,237 +1,261 @@
 /* Lesson Panel Component Styles */
 
 .lessonPanel {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
 }
 
 .panelBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--border-dim);
-  background: var(--bg-panel);
-  flex-shrink: 0;
-  gap: 8px;
-  flex-wrap: wrap;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 14px;
+	border-bottom: 1px solid var(--border-dim);
+	background: var(--bg-panel);
+	flex-shrink: 0;
+	gap: 8px;
+	flex-wrap: wrap;
 }
 
 .panelTitle {
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--neon-pink);
-  text-shadow: var(--glow-pink);
-  white-space: nowrap;
+	font-size: 11px;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	color: var(--neon-pink);
+	text-shadow: var(--glow-pink);
+	white-space: nowrap;
 }
 
 .panelPills {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+	display: flex;
+	gap: 6px;
+	flex-wrap: wrap;
 }
 
 .pill {
-  font-size: 9px;
-  letter-spacing: 1px;
-  padding: 2px 7px;
-  border: 1px solid;
-  text-transform: uppercase;
-  white-space: nowrap;
+	font-size: 9px;
+	letter-spacing: 1px;
+	padding: 2px 7px;
+	border: 1px solid;
+	text-transform: uppercase;
+	white-space: nowrap;
 }
 
-.pillBeginner     { border-color: var(--neon-green);  color: var(--neon-green); }
-.pillIntermediate { border-color: var(--neon-yellow); color: var(--neon-yellow); }
-.pillAdvanced     { border-color: var(--neon-pink);   color: var(--neon-pink); }
-.pillTime         { border-color: var(--text-muted);  color: var(--text-muted); }
+.pillBeginner {
+	border-color: var(--neon-green);
+	color: var(--neon-green);
+}
+.pillIntermediate {
+	border-color: var(--neon-yellow);
+	color: var(--neon-yellow);
+}
+.pillAdvanced {
+	border-color: var(--neon-pink);
+	color: var(--neon-pink);
+}
+.pillTime {
+	border-color: var(--text-muted);
+	color: var(--text-muted);
+}
 .pillParent {
-  border-color: var(--neon-purple);
-  color: var(--neon-purple);
-  cursor: pointer;
+	border-color: var(--neon-purple);
+	color: var(--neon-purple);
+	cursor: pointer;
 }
 
 /* ─── Body ─── */
 .lessonBody {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 18px 0;
-  line-height: 1.7;
+	flex: 1;
+	overflow-y: auto;
+	padding: 20px 18px 0;
+	line-height: 1.7;
 }
 
 .lessonTitle {
-  font-family: var(--font-heading);
-  font-size: clamp(15px, 3vw, 21px);
-  font-weight: 700;
-  color: var(--neon-cyan);
-  text-shadow: var(--glow-cyan);
-  letter-spacing: 2px;
-  margin-bottom: 12px;
-  line-height: 1.3;
+	font-family: var(--font-heading);
+	font-size: clamp(15px, 3vw, 21px);
+	font-weight: 700;
+	color: var(--neon-cyan);
+	text-shadow: var(--glow-cyan);
+	letter-spacing: 2px;
+	margin-bottom: 12px;
+	line-height: 1.3;
 }
 
 .lessonIntro {
-  font-size: 12px;
-  color: var(--text-primary);
-  margin-bottom: 20px;
-  border-left: 2px solid var(--neon-purple);
-  padding-left: 14px;
-  line-height: 1.9;
+	font-size: 12px;
+	color: var(--text-primary);
+	margin-bottom: 20px;
+	border-left: 2px solid var(--neon-purple);
+	padding-left: 14px;
+	line-height: 1.9;
 }
 
 /* ─── Breadcrumb ─── */
 .breadcrumb {
-  font-size: 10px;
-  letter-spacing: 1px;
-  margin-bottom: 16px;
-  padding: 5px 10px;
-  background: rgba(191, 0, 255, 0.06);
-  border-left: 2px solid var(--neon-purple);
+	font-size: 10px;
+	letter-spacing: 1px;
+	margin-bottom: 16px;
+	padding: 5px 10px;
+	background: rgba(191, 0, 255, 0.06);
+	border-left: 2px solid var(--neon-purple);
 }
 
-.breadcrumbParent { color: var(--text-dim); }
-.breadcrumbSep    { color: var(--text-muted); margin: 0 4px; }
-.breadcrumbCurrent { color: var(--neon-purple); text-shadow: var(--glow-purple); }
+.breadcrumbParent {
+	color: var(--text-dim);
+}
+.breadcrumbSep {
+	color: var(--text-muted);
+	margin: 0 4px;
+}
+.breadcrumbCurrent {
+	color: var(--neon-purple);
+	text-shadow: var(--glow-purple);
+}
 
 /* ─── Sub-lesson overview list ─── */
 .subLessonList {
-  background: rgba(0, 255, 231, 0.03);
-  border: 1px solid var(--border-dim);
-  margin-bottom: 22px;
-  overflow: hidden;
+	background: rgba(0, 255, 231, 0.03);
+	border: 1px solid var(--border-dim);
+	margin-bottom: 22px;
+	overflow: hidden;
 }
 
 .subLessonLabel {
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--neon-cyan);
-  text-shadow: var(--glow-cyan);
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--border-dim);
+	font-size: 9px;
+	letter-spacing: 3px;
+	text-transform: uppercase;
+	color: var(--neon-cyan);
+	text-shadow: var(--glow-cyan);
+	padding: 8px 12px;
+	border-bottom: 1px solid var(--border-dim);
 }
 
 .subLessonPill {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 12px;
-  font-size: 11px;
-  color: var(--text-dim);
-  border-bottom: 1px solid var(--border-dim);
-  transition: background 0.1s;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 7px 12px;
+	font-size: 11px;
+	color: var(--text-dim);
+	border-bottom: 1px solid var(--border-dim);
+	transition: background 0.1s;
 }
 
-.subLessonPill:last-child { border-bottom: none; }
+.subLessonPill:last-child {
+	border-bottom: none;
+}
 
 .subLessonPill:hover {
-  background: rgba(0, 255, 231, 0.05);
-  color: var(--text-primary);
+	background: rgba(0, 255, 231, 0.05);
+	color: var(--text-primary);
 }
 
 .subLessonNum {
-  font-size: 9px;
-  color: var(--text-muted);
-  flex-shrink: 0;
-  width: 18px;
+	font-size: 9px;
+	color: var(--text-muted);
+	flex-shrink: 0;
+	width: 18px;
 }
 
-.subLessonTitle { flex: 1; }
+.subLessonTitle {
+	flex: 1;
+}
 
 .subLessonTime {
-  font-size: 9px;
-  color: var(--text-muted);
-  flex-shrink: 0;
+	font-size: 9px;
+	color: var(--text-muted);
+	flex-shrink: 0;
 }
 
 /* ─── Footer navigation ─── */
 .lessonFooter {
-  padding: 12px 14px;
-  border-top: 1px solid var(--border-dim);
-  background: var(--bg-panel);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0;
-  margin-top: 24px;
-  position: sticky;
-  bottom: 0;
+	padding: 12px 14px;
+	border-top: 1px solid var(--border-dim);
+	background: var(--bg-panel);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-shrink: 0;
+	margin-top: 24px;
+	position: sticky;
+	bottom: 0;
 }
 
 .pageButton {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  padding: 6px 12px;
-  background: transparent;
-  cursor: pointer;
-  border: 1px solid var(--border-mid);
-  color: var(--text-dim);
-  transition: all 0.12s ease;
+	font-family: var(--font-mono);
+	font-size: 10px;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	padding: 6px 12px;
+	background: transparent;
+	cursor: pointer;
+	border: 1px solid var(--border-mid);
+	color: var(--text-dim);
+	transition: all 0.12s ease;
 }
 
 .pageButton:hover:not(.disabled) {
-  border-color: var(--text-primary);
-  color: var(--text-primary);
+	border-color: var(--text-primary);
+	color: var(--text-primary);
 }
 
 .nextBtn {
-  border-color: var(--neon-pink);
-  color: var(--neon-pink);
-  text-shadow: var(--glow-pink);
+	border-color: var(--neon-pink);
+	color: var(--neon-pink);
+	text-shadow: var(--glow-pink);
 }
 
 .nextBtn:hover:not(.disabled) {
-  background: rgba(255, 45, 154, 0.1);
+	background: rgba(255, 45, 154, 0.1);
 }
 
 .disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+	opacity: 0.3;
+	cursor: not-allowed;
 }
 
 /* ─── Nav counter and dots ─── */
 .navInfo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 60px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 60px;
 }
 
 .navCounter {
-  font-size: 10px;
-  color: var(--text-muted);
-  letter-spacing: 1px;
+	font-size: 10px;
+	color: var(--text-muted);
+	letter-spacing: 1px;
 }
 
 .dots {
-  display: flex;
-  gap: 4px;
-  align-items: center;
+	display: flex;
+	gap: 4px;
+	align-items: center;
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
-  border: 1px solid var(--border-mid);
-  border-radius: 50%;
-  transition: all 0.12s ease;
+	width: 6px;
+	height: 6px;
+	border: 1px solid var(--border-mid);
+	border-radius: 50%;
+	transition: all 0.12s ease;
 }
 
 .dot.dotSub {
-  width: 4px;
-  height: 4px;
+	width: 4px;
+	height: 4px;
 }
 
 .dot.active {
-  background: var(--neon-cyan);
-  border-color: var(--neon-cyan);
-  box-shadow: var(--glow-cyan);
+	background: var(--neon-cyan);
+	border-color: var(--neon-cyan);
+	box-shadow: var(--glow-cyan);
 }
 
 .emptyState {
-  text-align: center;
-  padding: 40px 20px;
+	text-align: center;
+	padding: 40px 20px;
 }

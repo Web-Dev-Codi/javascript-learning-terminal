@@ -1,5 +1,6 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useEditorStore } from '../../store/editorStore'
+import type { Diagnostic } from '../../types/lesson'
 import { useSyntaxChecker } from '../checker/useSyntaxChecker'
 import { useCodeMirror } from './useCodeMirror'
 
@@ -8,22 +9,31 @@ interface UseEditorProps {
   starterCode?: string
   onRun?: () => void
   onCursorChange?: (line: number, column: number) => void
+  extraDiagnostics?: Diagnostic[]
 }
 
 export const useEditor = ({
-	lessonId = '',
-	starterCode = '',
-	onRun,
-	onCursorChange,
+  lessonId = '',
+  starterCode = '',
+  onRun,
+  onCursorChange,
+  extraDiagnostics = [],
 }: UseEditorProps) => {
-	const {
-		getCode,
-		setCode,
-		activeTab,
-		setActiveTab,
-		setCursorPosition,
-	} = useEditorStore()
-	const { checkSyntax, diagnostics, clearDiagnostics } = useSyntaxChecker()
+  const {
+    getCode,
+    setCode,
+    activeTab,
+    setActiveTab,
+    setCursorPosition,
+    setIssueSummary,
+  } = useEditorStore()
+  const {
+    checkSyntax,
+    diagnostics,
+    clearDiagnostics,
+    issueSummary,
+    shouldBlockExecution,
+  } = useSyntaxChecker()
 
 	const initialCode = lessonId
 		? getCode(lessonId) || starterCode
@@ -52,6 +62,7 @@ export const useEditor = ({
 		destroyEditor,
 		setCode: setEditorCode,
 		getCode: getEditorCode,
+		setEditorDiagnostics,
 		goToLine,
 	} = useCodeMirror({
 		initialCode,
@@ -60,9 +71,19 @@ export const useEditor = ({
 		onRun,
 	})
 
+	const mergedDiagnostics = useMemo(
+		() => [...diagnostics, ...extraDiagnostics],
+		[diagnostics, extraDiagnostics],
+	)
+
 	useEffect(() => {
 		setEditorCode(initialCode)
 	}, [initialCode, setEditorCode])
+
+	useEffect(() => {
+		setEditorDiagnostics(mergedDiagnostics)
+		setIssueSummary(issueSummary)
+	}, [mergedDiagnostics, issueSummary, setEditorDiagnostics, setIssueSummary])
 
 	const resetCode = useCallback(() => {
 		if (!lessonId) return
@@ -83,5 +104,6 @@ export const useEditor = ({
 		setActiveTab,
 		diagnostics,
 		goToLine,
+		shouldBlockExecution,
 	}
 }

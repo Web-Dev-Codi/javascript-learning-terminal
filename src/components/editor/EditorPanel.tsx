@@ -1,17 +1,22 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useEditorStore } from '../../store/editorStore'
 import { useLessonStore } from '../../store/lessonStore'
+import type { Diagnostic } from '../../types/lesson'
 import { FeedbackPanel } from '../checker/FeedbackPanel'
-import { SandboxEngine } from '../sandbox/sandboxEngine'
-import { useSandbox } from '../sandbox/useSandbox'
+import { useRunner } from '../runner/useRunner'
 import { ConsolePanel } from './ConsolePanel'
 import styles from './EditorPanel.module.css'
 import { useEditor } from './useEditor'
 
 export function EditorPanel () {
   const { activeLesson } = useLessonStore()
-  const { clearConsole, addConsoleMessage } = useEditorStore()
-  const { executeCode, isExecuting, isReady } = useSandbox()
+  const {
+    clearConsole,
+    addConsoleMessage,
+    setRunnerStatus,
+  } = useEditorStore()
+  const { runCode, isExecuting, isReady, status } = useRunner()
+  const [runtimeDiagnostics, setRuntimeDiagnostics] = useState<Diagnostic[]>([])
 
   // Get current lesson data for starter code
   const getCurrentLessonData = () => {
@@ -36,7 +41,57 @@ console.log("Level: " + level);`
 
   const handleRun = async () => {
     const currentCode = getCurrentCode()
-    await executeCode(currentCode)
+    setRuntimeDiagnostics([])
+    clearConsole()
+    addConsoleMessage('info', '▶ Running code...')
+    setRunnerStatus('running')
+
+    await runCode(currentCode, {
+      onEvent: (event) => {
+        switch (event.type) {
+          case 'stdout':
+            addConsoleMessage('log', event.data.message ?? '')
+            break
+          case 'stderr':
+            addConsoleMessage('error', event.data.message ?? '')
+            break
+          case 'error':
+            addConsoleMessage('error', `✕ ${event.data.message}`)
+            if (event.data.line) {
+              setRuntimeDiagnostics([
+                {
+                  ruleId: 'runtime-error',
+                  severity: 'error',
+                  line: event.data.line,
+                  column: event.data.column ?? 1,
+                  messages: {
+                    short: 'Runtime error',
+                    long: event.data.message ?? 'Runtime error',
+                  },
+                },
+              ])
+            }
+            break
+          case 'done':
+            if (event.data.success) {
+              addConsoleMessage(
+                'info',
+                `✓ Code executed (${event.data.runtimeMs ?? 0}ms)`,
+              )
+              setRunnerStatus('ready')
+            } else {
+              addConsoleMessage(
+                'error',
+                `✕ Execution failed (${event.data.runtimeMs ?? 0}ms)`,
+              )
+              setRunnerStatus('error')
+            }
+            break
+          default:
+            break
+        }
+      },
+    })
   }
 
   const {
@@ -52,15 +107,15 @@ console.log("Level: " + level);`
   } = useEditor({
     lessonId,
     starterCode,
-    onRun: handleRun
+    onRun: handleRun,
+    extraDiagnostics: runtimeDiagnostics,
   })
 
   const handleReset = () => {
     resetCode()
     clearConsole()
     addConsoleMessage('info', '↺ Code reset to starter')
-    // Clear sandbox context per spec S-08
-    SandboxEngine.reset()
+    setRuntimeDiagnostics([])
   }
 
   useEffect(() => {
@@ -72,11 +127,8 @@ console.log("Level: " + level);`
 
   // Clear sandbox when lesson changes (S-08)
   useEffect(() => {
-    const hasLesson = Boolean(lessonId)
-    if (hasLesson) {
-      SandboxEngine.reset()
-    }
-  }, [lessonId])
+    setRunnerStatus(status === 'running' ? 'running' : 'ready')
+  }, [status, setRunnerStatus])
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId)

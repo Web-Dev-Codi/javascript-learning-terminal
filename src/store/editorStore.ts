@@ -16,6 +16,12 @@ interface RunHistory {
   hadErrors: boolean
 }
 
+interface IssueSummary {
+  errors: number
+  warnings: number
+  info: number
+}
+
 interface EditorState {
   // Code content per lesson
   codeByLessonId: Record<string, string>
@@ -35,6 +41,8 @@ interface EditorState {
   
   // Cursor position
   cursorPosition: { line: number; column: number }
+  issueSummary: IssueSummary
+  runnerStatus: 'idle' | 'ready' | 'running' | 'error'
   
   // Actions
   setCode: (lessonId: string, code: string) => void
@@ -59,6 +67,8 @@ interface EditorState {
   
   // Cursor position
   setCursorPosition: (line: number, column: number) => void
+  setIssueSummary: (summary: IssueSummary) => void
+  setRunnerStatus: (status: EditorState['runnerStatus']) => void
 }
 
 export const useEditorStore = create<EditorState>()(
@@ -86,6 +96,8 @@ export const useEditorStore = create<EditorState>()(
       maxConsoleMessages: 200,
       runHistory: [],
       cursorPosition: { line: 1, column: 1 },
+      issueSummary: { errors: 0, warnings: 0, info: 0 },
+      runnerStatus: 'idle',
 
       // Code management
       setCode: (lessonId: string, code: string) => {
@@ -204,6 +216,12 @@ export const useEditorStore = create<EditorState>()(
       // Cursor position
       setCursorPosition: (line: number, column: number) => {
         set({ cursorPosition: { line, column } })
+      },
+      setIssueSummary: (summary: IssueSummary) => {
+        set({ issueSummary: summary })
+      },
+      setRunnerStatus: (status: EditorState['runnerStatus']) => {
+        set({ runnerStatus: status })
       }
     }),
     {

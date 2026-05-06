@@ -1,67 +1,70 @@
 import React from 'react'
+import { lessons } from '../../data/lessons'
 import { useEditorStore } from '../../store/editorStore'
 import { useLessonStore } from '../../store/lessonStore'
 import styles from './StatusBar.module.css'
 
 export const StatusBar: React.FC = () => {
-  const { cursorPosition, consoleMessages } = useEditorStore()
+  const { cursorPosition, runnerStatus, issueSummary } = useEditorStore()
   const { activeLesson } = useLessonStore()
 
-  const getActiveRules = (): string => {
-    // This would be enhanced to show actual active rules from the current lesson
-    return activeLesson ? 'SYNTAX' : 'NONE'
+  const activeRules = activeLesson
+    ? lessons.find((l) => l.id === activeLesson)?.activeRules ?? []
+    : []
+
+  const getStatusDotClass = () => {
+    switch (runnerStatus) {
+      case 'running':
+        return styles.running
+      case 'error':
+        return styles.error
+      case 'ready':
+        return styles.ready
+      default:
+        return styles.ready
+    }
   }
 
-  const getIssueCount = (): number => {
-    // This would be enhanced to count actual syntax issues
-    return 0
+  const getStatusText = () => {
+    switch (runnerStatus) {
+      case 'running':
+        return 'RUNNING'
+      case 'error':
+        return 'ERROR'
+      case 'ready':
+        return 'READY'
+      default:
+        return 'IDLE'
+    }
   }
 
-  const getSandboxStatus = (): 'ready' | 'running' | 'error' => {
-    // This would be enhanced to show actual sandbox status
-    return 'ready'
-  }
-
-  const sandboxStatus = getSandboxStatus()
-  const issueCount = getIssueCount()
-  const activeRules = getActiveRules()
+  const totalIssues = issueSummary.errors + issueSummary.warnings + issueSummary.info
 
   return (
     <div className={styles.statusBar}>
       <div className={styles.statusLeft}>
         <div className={styles.statusItem}>
-          <div className={`${styles.statusDot} ${styles[sandboxStatus]}`} />
-          <span>SANDBOX</span>
+          <div className={`${styles.statusDot} ${getStatusDotClass()}`} />
+          <span>{getStatusText()}</span>
         </div>
-        
         <div className={styles.statusSeparator} />
-        
         <div className={styles.statusItem}>
-          <span>{issueCount} ISSUES</span>
+          <span>{totalIssues} ISSUE{totalIssues === 1 ? '' : 'S'}</span>
         </div>
-        
         <div className={styles.statusSeparator} />
-        
-        <div className={styles.statusItem}>
-          <span>{activeRules}</span>
+        <div className={`${styles.statusItem} ${styles.hideOnSmall}`}>
+          <span>
+            ACTIVE RULES: {activeRules.length > 0 ? activeRules.length : '—'}
+          </span>
         </div>
       </div>
-
       <div className={styles.statusRight}>
-        <div className={`${styles.statusItem} ${styles.hideOnSmall}`}>
-          <span>LINE {cursorPosition.line}</span>
-        </div>
-        
-        <div className={styles.statusSeparator} />
-        
-        <div className={`${styles.statusItem} ${styles.hideOnSmall}`}>
-          <span>COL {cursorPosition.column}</span>
-        </div>
-        
-        <div className={styles.statusSeparator} />
-        
         <div className={styles.statusItem}>
-          <span>JAVASCRIPT</span>
+          <span>LN {cursorPosition.line}</span>
+        </div>
+        <div className={styles.statusSeparator} />
+        <div className={styles.statusItem}>
+          <span>COL {cursorPosition.column}</span>
         </div>
       </div>
     </div>
