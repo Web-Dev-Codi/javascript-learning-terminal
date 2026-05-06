@@ -28,6 +28,9 @@ const buildWebSocketUrl = (baseUrl: string, runId: string) => {
 	return `${wsBase}/api/runs/${encodeURIComponent(runId)}`
 }
 
+const RUN_FETCH_TIMEOUT_MS = 8_000
+const RUN_OVERALL_TIMEOUT_MS = 15_000
+
 export const useRunner = (): UseRunnerResult => {
 	const [isExecuting, setIsExecuting] = useState(false)
 	const [status, setStatus] = useState<RunnerStatus>('idle')
@@ -79,14 +82,17 @@ export const useRunner = (): UseRunnerResult => {
 		setStatus('running')
 		setError(null)
 
+		const abortController = new AbortController()
+		const fetchTimeout = setTimeout(() => abortController.abort(), RUN_FETCH_TIMEOUT_MS)
+
 		try {
 			const response = await fetch(`${baseUrl}/api/runs`, {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ code }),
+				signal: abortController.signal,
 			})
+			clearTimeout(fetchTimeout)
 
 			if (!response.ok) {
 				const message = await response.text()
@@ -96,73 +102,89 @@ export const useRunner = (): UseRunnerResult => {
 			const data = (await response.json()) as RunResponse
 			const wsUrl = buildWebSocketUrl(baseUrl, data.runId)
 
-			return await new Promise((resolve) => {
-				const socket = new WebSocket(wsUrl)
-				socketRef.current = socket
+			return await Promise.race([
+				new Promise<RunnerResult>((resolve) => {
+					const socket = new WebSocket(wsUrl)
+					socketRef.current = socket
 
-				socket.onmessage = (event) => {
-					const message = JSON.parse(event.data) as RunnerEvent
-					options?.onEvent?.(message)
+					let resolved = false
+					const safeResolve = (result: RunnerResult) => {
+						if (resolved) return
+						resolved = true
+						setIsExecuting(false)
+						socket.close()
+						socketRef.current = null
+						resolve(result)
+					}
 
-					if (message.type === 'status') {
-						const status = message.data.status
-						if (status === 'failed') {
-							setStatus('error')
-							setError('Runner failed')
-						} else if (status === 'waiting' || status === 'active') {
-							setStatus('running')
-						} else if (status === 'completed') {
+					socket.onmessage = (event) => {
+						const message = JSON.parse(event.data) as RunnerEvent
+						options?.onEvent?.(message)
+
+						if (message.type === 'status') {
+							const s = message.data.status
+							if (s === 'failed') {
+								setStatus('error')
+								setError('Runner failed')
+							} else if (s === 'waiting' || s === 'active') {
+								setStatus('running')
+							} else if (s === 'completed') {
+								setStatus('ready')
+							}
+						}
+
+						if (message.type === 'error' && message.data.message) {
+							setError(message.data.message)
+						}
+
+						if (message.type === 'done') {
 							setStatus('ready')
+							safeResolve({
+								success: message.data.success ?? false,
+								runtimeMs: message.data.runtimeMs ?? 0,
+								error: message.data.message,
+								line: message.data.line,
+								column: message.data.column,
+							})
 						}
 					}
 
-					if (message.type === 'error' && message.data.message) {
-						setError(message.data.message)
-					}
-
-					if (message.type === 'done') {
-						setIsExecuting(false)
-						setStatus('ready')
-						socket.close()
-						resolve({
-							success: message.data.success ?? false,
-							runtimeMs: message.data.runtimeMs ?? 0,
-							error: message.data.message,
-							line: message.data.line,
-							column: message.data.column,
+					socket.onerror = () => {
+						setError('Runner WebSocket error')
+						setStatus('error')
+						safeResolve({
+							success: false,
+							runtimeMs: 0,
+							error: 'Runner WebSocket error',
 						})
 					}
-				}
 
-				socket.onerror = () => {
-					setError('Runner WebSocket error')
-					setStatus('error')
-					setIsExecuting(false)
-					socket.close()
-					resolve({
-						success: false,
-						runtimeMs: 0,
-						error: 'Runner WebSocket error',
-					})
-				}
-
-				socket.onclose = () => {
-					if (socketRef.current === socket) {
-						setIsExecuting(false)
-						setStatus('ready')
-						socketRef.current = null
-						resolve({
+					socket.onclose = () => {
+						safeResolve({
 							success: false,
 							runtimeMs: 0,
 							error: 'Connection closed unexpectedly',
 						})
 					}
-				}
-			})
+				}),
+				new Promise<RunnerResult>((resolve) => {
+					setTimeout(() => {
+						setIsExecuting(false)
+						setStatus('error')
+						setError('Run timed out — runner may be stuck.')
+						socketRef.current?.close()
+						socketRef.current = null
+						resolve({
+							success: false,
+							runtimeMs: 0,
+							error: 'Run timed out',
+						})
+					}, RUN_OVERALL_TIMEOUT_MS)
+				}),
+			])
 		} catch (err) {
-			const message = err instanceof Error
-				? err.message
-				: 'Runner request failed'
+			clearTimeout(fetchTimeout)
+			const message = err instanceof Error ? err.message : 'Runner request failed'
 			setIsExecuting(false)
 			setStatus('error')
 			setError(message)
