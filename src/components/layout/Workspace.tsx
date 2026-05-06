@@ -14,19 +14,19 @@ export const Workspace: React.FC = () => {
 		<div className={styles.workspace}>
 			<div className={styles.desktopLayout}>
 				<Group orientation="horizontal">
-					<Panel defaultSize={30} minSize={15} maxSize={40}>
+					<Panel defaultSize="30%" minSize="15%" maxSize="40%">
 						<aside className={styles.sidebar}>
 							<Sidebar />
 						</aside>
 					</Panel>
 					<Separator className="resizeHandle" />
-					<Panel defaultSize={35} minSize={25} maxSize={50}>
+					<Panel defaultSize="35%" minSize="25%" maxSize="50%">
 						<section className={styles.lessonPanel}>
 							<LessonPanel />
 						</section>
 					</Panel>
 					<Separator className="resizeHandle" />
-					<Panel defaultSize={35} minSize={25} maxSize={55}>
+					<Panel defaultSize="35%" minSize="25%" maxSize="55%">
 						<div className={styles.rightColumn}>
 							<EditorPanel />
 						</div>

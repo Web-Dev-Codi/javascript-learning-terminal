@@ -40,15 +40,6 @@ export function LessonSection({
 				/>
 			);
 
-		case "challenge":
-			return (
-				<ChallengeSection
-					prompt={section.prompt}
-					hints={section.hints}
-					tests={section.tests}
-				/>
-			);
-
 		default:
 			console.warn("Unknown lesson section type:", section);
 			return null;
