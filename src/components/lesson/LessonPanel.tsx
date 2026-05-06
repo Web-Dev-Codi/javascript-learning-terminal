@@ -9,6 +9,7 @@ import { LessonSection } from "./LessonSection";
 export function LessonPanel() {
 	const {
 		activeLesson,
+		setActiveLesson,
 		navigateNext,
 		navigatePrev,
 		canNavigateNext,
@@ -132,7 +133,19 @@ export function LessonPanel() {
 										{"// IN THIS LESSON"}
 									</div>
 									{currentLesson.subLessons.map((sub, idx) => (
-										<div key={sub.id} className={styles.subLessonPill}>
+										<div
+											key={sub.id}
+											role="button"
+											tabIndex={0}
+											className={styles.subLessonPill}
+											onClick={() => setActiveLesson(sub.id)}
+											onKeyDown={(e) => {
+												if (e.key === 'Enter' || e.key === ' ') {
+													e.preventDefault()
+													setActiveLesson(sub.id)
+												}
+											}}
+										>
 											<span className={styles.subLessonNum}>
 												{String(idx + 1).padStart(2, "0")}
 											</span>
