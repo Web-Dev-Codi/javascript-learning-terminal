@@ -35,9 +35,9 @@ export const QuizBlock: React.FC<QuizBlockProps> = ({
 	const getOptionClass = (index: number) => {
 		if (selectedOption === null) return styles.option;
 
-		if (index === correctIndex) return styles.correct;
+		if (index === correctIndex) return `${styles.option} ${styles.correct}`;
 		if (index === selectedOption && index !== correctIndex)
-			return styles.incorrect;
+			return `${styles.option} ${styles.incorrect}`;
 
 		return styles.option;
 	};

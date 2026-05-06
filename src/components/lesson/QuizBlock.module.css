@@ -52,16 +52,17 @@
 }
 
 .option.correct {
-	border-color: var(--neon-green);
+	border: 2px solid var(--neon-green);
 	color: var(--neon-green);
 	background: rgba(0, 255, 159, 0.06);
+	box-shadow: 0 0 8px rgba(0, 255, 159, 0.3), inset 0 0 8px rgba(0, 255, 159, 0.05);
 }
 
 .option.incorrect {
-	border-color: var(--neon-pink);
+	border: 2px solid var(--neon-pink);
 	color: var(--neon-pink);
 	background: rgba(255, 45, 154, 0.06);
-	opacity: 0.6;
+	box-shadow: 0 0 8px rgba(255, 45, 154, 0.3), inset 0 0 8px rgba(255, 45, 154, 0.05);
 }
 
 .optionKey {
