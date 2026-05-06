@@ -166,19 +166,21 @@ console.log("Hello, world!");`;
 						</button>
 					</div>
 					<div className={styles.editorActions}>
-						<button
-							type="button"
-							className={`${styles.editorButton} ${styles.resetButton}`}
-							onClick={handleReset}
-						>
-							↺ RESET
-						</button>
-						<button
-							type="button"
-							className={`${styles.editorButton} ${styles.runButton} ${isExecuting ? styles.executing : ""}`}
-							onClick={handleRun}
-							disabled={isExecuting}
-						>
+					<button
+						type="button"
+						className={`${styles.editorButton} ${styles.resetButton}`}
+						onClick={handleReset}
+						data-tooltip="Reset code to starter template"
+					>
+						↺ RESET
+					</button>
+					<button
+						type="button"
+						className={`${styles.editorButton} ${styles.runButton} ${isExecuting ? styles.executing : ""}`}
+						onClick={handleRun}
+						disabled={isExecuting}
+						data-tooltip={isExecuting ? "Code is running…" : "Run code (Ctrl+Enter)"}
+					>
 							{isExecuting
 								? "⏳ RUNNING..."
 								: isReady

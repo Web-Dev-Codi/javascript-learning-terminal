@@ -35,6 +35,14 @@
   --font-mono:    'Share Tech Mono', monospace;
   --font-heading: 'Orbitron', sans-serif;
 
+  /* Font Sizes */
+  --text-xs:      10px;
+  --text-sm:      11px;
+  --text-md:      12px;
+  --text-lg:      14px;
+  --text-xl:      16px;
+  --text-2xl:     18px;
+
   /* Spacing */
   --space-xs:     4px;
   --space-sm:     8px;

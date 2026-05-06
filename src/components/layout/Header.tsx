@@ -31,7 +31,7 @@ export const Header: React.FC = () => {
       </div>
       
       <div className={styles.headerRight}>
-        <div className={styles.progressTrack}>
+        <div className={styles.progressTrack} data-tooltip="Course progress">
           <div 
             className={styles.progressFill}
             style={{ width: `${progressPercentage}%` }}
@@ -42,11 +42,11 @@ export const Header: React.FC = () => {
           {progress.completed}/{progress.total}
         </span>
         
-        <span className={`${styles.badge} ${styles.badgeLevel}`}>
+        <span className={`${styles.badge} ${styles.badgeLevel}`} data-tooltip="Current level">
           L{getLessonNumber(activeLesson)}
         </span>
         
-        <span className={`${styles.badge} ${styles.badgeStreak}`}>
+        <span className={`${styles.badge} ${styles.badgeStreak}`} data-tooltip="Day streak">
           🔥 {currentStreak}
         </span>
       </div>

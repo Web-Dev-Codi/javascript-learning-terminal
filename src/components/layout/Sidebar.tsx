@@ -168,16 +168,16 @@ export const Sidebar: React.FC = () => {
 													{lesson.title}
 												</span>
 												{hasSubLessons && (
-													<button
-														className={`${styles.expandBtn} ${isExpanded ? styles.expanded : ""}`}
-														onClick={(e) => {
-															e.stopPropagation();
-															toggleExpanded(lesson.id);
-														}}
-														title={isExpanded ? "Collapse" : "Expand"}
-													>
-														{isExpanded ? "▾" : "▸"}
-													</button>
+											<button
+												className={`${styles.expandBtn} ${isExpanded ? styles.expanded : ""}`}
+												onClick={(e) => {
+													e.stopPropagation();
+													toggleExpanded(lesson.id);
+												}}
+												data-tooltip={isExpanded ? "Collapse" : "Expand"}
+											>
+												{isExpanded ? "▾" : "▸"}
+											</button>
 												)}
 											</div>
 
