@@ -50,7 +50,7 @@ const synthTheme = EditorView.theme({
 		color: 'var(--text-primary)',
 		backgroundColor: 'var(--bg-input)',
 		fontFamily: 'var(--font-mono)',
-		fontSize: '12px',
+    fontSize: '14px',
 	},
 	'.cm-content': {
 		caretColor: 'var(--neon-cyan)',
@@ -64,7 +64,7 @@ const synthTheme = EditorView.theme({
 		backgroundColor: 'var(--bg-panel)',
 		borderRight: '1px solid var(--border-dim)',
 		color: 'var(--text-muted)',
-		fontSize: '11px',
+  fontSize: '13px',
 	},
 	'.cm-lineNumbers .cm-gutterElement': {
 		padding: '0 7px',

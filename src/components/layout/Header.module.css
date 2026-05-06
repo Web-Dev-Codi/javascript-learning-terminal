@@ -18,7 +18,7 @@
 .logo {
   font-family: var(--font-heading);
   font-weight: 900;
-  font-size: clamp(11px, 3.8vw, 18px);
+  font-size: clamp(17px, 3.8vw, 18px);
   letter-spacing: clamp(1px, 0.8vw, 4px);
   color: var(--neon-cyan);
   text-shadow: var(--glow-cyan);
@@ -38,7 +38,7 @@
   flex-direction: column;
   line-height: 1.15;
   font-family: var(--font-heading);
-  font-size: clamp(7px, 1.4vw, 10px);
+  font-size: clamp(21px, 1.4vw, 10px);
   letter-spacing: clamp(1px, 0.3vw, 3px);
   color: var(--text-dim);
   text-shadow: 0 0 6px rgba(122, 90, 158, 0.3);
@@ -76,13 +76,13 @@
 }
 
 .progressText {
-  font-size: 10px;
+  font-size: 21px;
   color: var(--neon-purple);
   text-shadow: var(--glow-purple);
 }
 
 .badge {
-  font-size: 9px;
+  font-size: 21px;
   padding: 2px 7px;
   letter-spacing: 1px;
   text-transform: uppercase;

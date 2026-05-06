@@ -19,7 +19,7 @@
 }
 
 .panelTitle {
-	font-size: 11px;
+	font-size: 17px;
 	letter-spacing: 2px;
 	text-transform: uppercase;
 	color: var(--neon-pink);
@@ -34,7 +34,7 @@
 }
 
 .pill {
-	font-size: 9px;
+	font-size: 21px;
 	letter-spacing: 1px;
 	padding: 2px 7px;
 	border: 1px solid;
@@ -74,7 +74,7 @@
 
 .lessonTitle {
 	font-family: var(--font-heading);
-	font-size: clamp(15px, 3vw, 21px);
+	font-size: clamp(17px, 3vw, 21px);
 	font-weight: 700;
 	color: var(--neon-cyan);
 	text-shadow: var(--glow-cyan);
@@ -84,7 +84,7 @@
 }
 
 .lessonIntro {
-	font-size: 12px;
+	font-size: 21px;
 	color: var(--text-primary);
 	margin-bottom: 20px;
 	border-left: 2px solid var(--neon-purple);
@@ -94,7 +94,7 @@
 
 /* ─── Breadcrumb ─── */
 .breadcrumb {
-	font-size: 10px;
+	font-size: 21px;
 	letter-spacing: 1px;
 	margin-bottom: 16px;
 	padding: 5px 10px;
@@ -123,7 +123,7 @@
 }
 
 .subLessonLabel {
-	font-size: 9px;
+	font-size: 21px;
 	letter-spacing: 3px;
 	text-transform: uppercase;
 	color: var(--neon-cyan);
@@ -137,7 +137,7 @@
 	align-items: center;
 	gap: 10px;
 	padding: 7px 12px;
-	font-size: 11px;
+	font-size: 17px;
 	color: var(--text-dim);
 	border-bottom: 1px solid var(--border-dim);
 	transition: background 0.1s;
@@ -154,7 +154,7 @@
 }
 
 .subLessonNum {
-	font-size: 9px;
+	font-size: 21px;
 	color: var(--text-muted);
 	flex-shrink: 0;
 	width: 18px;
@@ -165,7 +165,7 @@
 }
 
 .subLessonTime {
-	font-size: 9px;
+	font-size: 21px;
 	color: var(--text-muted);
 	flex-shrink: 0;
 }
@@ -186,7 +186,7 @@
 
 .pageButton {
 	font-family: var(--font-mono);
-	font-size: 10px;
+	font-size: 21px;
 	letter-spacing: 2px;
 	text-transform: uppercase;
 	padding: 6px 12px;
@@ -226,7 +226,7 @@
 }
 
 .navCounter {
-	font-size: 10px;
+	font-size: 21px;
 	color: var(--text-muted);
 	letter-spacing: 1px;
 }

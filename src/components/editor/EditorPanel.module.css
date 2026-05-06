@@ -40,7 +40,7 @@
 
 .editorTab {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 21px;
   letter-spacing: 1px;
   padding: 4px 11px;
   border: 1px solid var(--border-dim);
@@ -63,7 +63,7 @@
 
 .editorButton {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 21px;
   letter-spacing: 1px;
   text-transform: uppercase;
   padding: 4px 10px;
@@ -118,7 +118,7 @@
 }
 
 .shortcut {
-  font-size: 9px;
+  font-size: 21px;
   color: var(--text-muted);
   border: 1px solid var(--border-dim);
   padding: 1px 4px;
