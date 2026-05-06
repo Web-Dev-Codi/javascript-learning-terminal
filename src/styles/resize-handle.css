@@ -14,7 +14,7 @@
 	background: var(--neon-purple);
 }
 
-.resizeHandle[data-resize-handle-state="drag"] {
+.resizeHandle:active {
 	background: var(--neon-cyan);
-	box-shadow: 0 0 8px var(--glow-cyan);
+	box-shadow: 0 0 8px rgba(0, 255, 231, 0.4);
 }
