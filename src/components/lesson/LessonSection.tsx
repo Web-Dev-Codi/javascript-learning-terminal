@@ -8,14 +8,12 @@ interface LessonSectionProps {
 	readonly lessonId: string;
 	readonly sectionIndex: number;
 	readonly section: LessonSectionType;
-	readonly onRunExample?: (code: string) => void;
 }
 
 export function LessonSection({
 	lessonId,
 	sectionIndex,
 	section,
-	onRunExample,
 }: LessonSectionProps) {
 	switch (section.type) {
 		case "text":
@@ -27,13 +25,14 @@ export function LessonSection({
 					label={section.label}
 					code={section.code}
 					highlightLines={section.highlightLines}
-					onRun={onRunExample}
 				/>
 			);
 
 		case "quiz":
 			return (
 				<QuizBlock
+					lessonId={lessonId}
+					questionIndex={sectionIndex}
 					question={section.question}
 					options={section.options}
 					correctIndex={section.correctIndex}

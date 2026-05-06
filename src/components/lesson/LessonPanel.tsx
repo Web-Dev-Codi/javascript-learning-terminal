@@ -1,11 +1,8 @@
-import { useEditorStore } from "../../store/editorStore";
 import {
 	findLessonById,
 	findParentLesson,
 	useLessonStore,
 } from "../../store/lessonStore";
-import type { RunnerEvent } from "../runner/types";
-import { useRunner } from "../runner/useRunner";
 import styles from "./LessonPanel.module.css";
 import { LessonSection } from "./LessonSection";
 
@@ -19,9 +16,6 @@ export function LessonPanel() {
 		getFlatNavList,
 		markLessonCompleted,
 	} = useLessonStore();
-
-	const { addConsoleMessage } = useEditorStore();
-	const { runCode } = useRunner();
 
 	const currentLesson = activeLesson ? findLessonById(activeLesson) : null;
 	const parentLesson = activeLesson ? findParentLesson(activeLesson) : null;
@@ -47,34 +41,6 @@ export function LessonPanel() {
 	};
 
 	const dots = getProgressDots();
-
-	const handleRunExample = (code: string) => {
-		runCode(code, {
-			onEvent: (event: RunnerEvent) => {
-				switch (event.type) {
-					case "stdout":
-						addConsoleMessage("log", event.data.message ?? "");
-						break;
-					case "stderr":
-						addConsoleMessage("error", event.data.message ?? "");
-						break;
-					case "error":
-						addConsoleMessage("error", `✕ ${event.data.message}`);
-						break;
-					case "done":
-						if (event.data.success) {
-							addConsoleMessage(
-								"info",
-								`✓ Example executed (${event.data.runtimeMs ?? 0}ms)`,
-							);
-						}
-						break;
-					default:
-						break;
-				}
-			},
-		});
-	};
 
 	const canPrev = canNavigatePrev();
 	const canNext = canNavigateNext();
@@ -186,13 +152,12 @@ export function LessonPanel() {
 									: `${currentLesson.id}-${section.type}-${index}`;
 
 							return (
-								<LessonSection
-									key={sectionKey}
-									lessonId={currentLesson.id}
-									sectionIndex={index}
-									section={section}
-									onRunExample={handleRunExample}
-								/>
+							<LessonSection
+								key={sectionKey}
+								lessonId={currentLesson.id}
+								sectionIndex={index}
+								section={section}
+							/>
 							);
 						})}
 
