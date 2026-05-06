@@ -16,11 +16,19 @@ export function EditorPanel () {
     addConsoleMessage,
     setRunnerStatus,
     setIsConsoleLive,
+    activeTab,
   } = useEditorStore()
   const { runCode, isExecuting, isReady, status } = useRunner()
   const [runtimeDiagnostics, setRuntimeDiagnostics] = useState<Diagnostic[]>([])
 
   const getCurrentLessonData = () => {
+    if (activeTab === 'scratch') {
+      return {
+        lessonId: 'scratch',
+        starterCode: `// JavaScript Playground\n// Write any code and press RUN!\n\nconsole.log("Hello from scratch.js!");\n`
+      }
+    }
+
     const lesson = activeLesson ? findLessonById(activeLesson) : null
     const starterCode = lesson?.sections?.find(
       (s): s is ChallengeSection => s.type === 'challenge'
@@ -135,7 +143,7 @@ console.log("Hello, world!");`
 
   return (
     <div className={styles.editorPanel}>
-      <ChallengeInfo />
+      {activeTab !== 'scratch' && <ChallengeInfo />}
       {/* Editor Section */}
       <div className={styles.editorWrap}>
         <div className={styles.editorBar}>

@@ -47,6 +47,9 @@ interface EditorState {
   issueSummary: IssueSummary
   runnerStatus: 'idle' | 'ready' | 'running' | 'error'
   
+  scratchCode: string
+  setScratchCode: (code: string) => void
+
   // Actions
   setCode: (lessonId: string, code: string) => void
   getCode: (lessonId: string) => string
@@ -102,6 +105,7 @@ export const useEditorStore = create<EditorState>()(
       issueSummary: { errors: 0, warnings: 0, info: 0 },
       runnerStatus: 'idle',
       isConsoleLive: false,
+      scratchCode: '',
 
       // Code management
       setCode: (lessonId: string, code: string) => {
@@ -224,6 +228,10 @@ export const useEditorStore = create<EditorState>()(
       setIssueSummary: (summary: IssueSummary) => {
         set({ issueSummary: summary })
       },
+      setScratchCode: (code: string) => {
+        set({ scratchCode: code })
+      },
+
       setIsConsoleLive: (live: boolean) => {
         set({ isConsoleLive: live })
       },
@@ -242,6 +250,7 @@ export const useEditorStore = create<EditorState>()(
           codeByLessonId: Object.fromEntries(codeEntries),
           challengeCodeById: Object.fromEntries(challengeEntries),
           tabs: state.tabs,
+          scratchCode: state.scratchCode,
           runHistory: state.runHistory.slice(0, 10)
         }
       }
