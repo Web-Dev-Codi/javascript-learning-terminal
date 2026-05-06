@@ -26,6 +26,28 @@
   flex-shrink: 0;
 }
 
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.tagline {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  font-family: var(--font-heading);
+  font-size: clamp(7px, 1.4vw, 10px);
+  letter-spacing: clamp(1px, 0.3vw, 3px);
+  color: var(--text-dim);
+  text-shadow: 0 0 6px rgba(122, 90, 158, 0.3);
+}
+
+.tagline span {
+  display: block;
+}
+
 .logoBracket {
   color: var(--neon-pink);
   text-shadow: var(--glow-pink);

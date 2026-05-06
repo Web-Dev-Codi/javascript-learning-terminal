@@ -29,29 +29,5 @@
 }
 
 .codeEditor {
-	min-height: 120px;
-}
-
-
-.runButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  padding: 5px 14px;
-  background: rgba(0, 255, 231, 0.05);
-  border: 1px solid var(--neon-cyan);
-  color: var(--neon-cyan);
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition: all 0.12s ease;
-  margin-top: 8px;
-}
-
-.runButton:hover {
-  background: rgba(0, 255, 231, 0.1);
-  box-shadow: 0 0 8px rgba(0, 255, 231, 0.3);
+  min-height: 120px;
 }

@@ -107,9 +107,10 @@ export const useLessonStore = create<LessonState>()(
 
       getQuizAnswer: (lessonId: string, questionIndex: number) => {
         const state = get()
-        return state.quizAnswers.find(
+        const found = state.quizAnswers.find(
           a => a.lessonId === lessonId && a.questionIndex === questionIndex
-        )?.selectedOption ?? null
+        )
+        return found !== undefined ? found.selectedOption : null
       },
 
       updateStreak: () => {

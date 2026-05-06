@@ -6,14 +6,12 @@ interface CodeExampleProps {
   label?: string
   code: string
   highlightLines?: number[]
-  onRun?: (code: string) => void
 }
 
 export const CodeExample: FC<CodeExampleProps> = ({
   label,
   code,
   highlightLines,
-  onRun
 }) => {
   const { containerRef, createEditor, destroyEditor } = useCodeMirror({
     initialCode: code,
@@ -39,16 +37,6 @@ export const CodeExample: FC<CodeExampleProps> = ({
       <div className={styles.codeBlock}>
         <div ref={containerRef} className={styles.codeEditor} />
       </div>
-
-      {onRun && (
-        <button
-          className={styles.runButton}
-          onClick={() => onRun(code)}
-          type="button"
-        >
-          ▶ RUN EXAMPLE
-        </button>
-      )}
     </div>
   )
 }

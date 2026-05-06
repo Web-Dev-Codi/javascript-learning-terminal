@@ -55,8 +55,8 @@
 	color: var(--neon-pink);
 }
 .pillTime {
-	border-color: var(--text-muted);
-	color: var(--text-muted);
+	border-color: var(--neon-cyan);
+	color: var(--neon-cyan);
 }
 .pillParent {
 	border-color: var(--neon-purple);
@@ -141,6 +141,7 @@
 	color: var(--text-dim);
 	border-bottom: 1px solid var(--border-dim);
 	transition: background 0.1s;
+	cursor: pointer;
 }
 
 .subLessonPill:last-child {

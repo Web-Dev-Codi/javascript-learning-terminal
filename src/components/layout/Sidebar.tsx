@@ -16,7 +16,7 @@ export const Sidebar: React.FC = () => {
 			l.subLessons?.some((s) => s.id === activeLesson),
 		);
 		if (parent) initial.add(parent.id);
-		if (activeLesson && lessons.find((l) => l.id === activeLesson))
+		if (activeLesson && lessons.some((l) => l.id === activeLesson))
 			initial.add(activeLesson);
 		return initial;
 	});

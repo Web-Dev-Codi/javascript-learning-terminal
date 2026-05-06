@@ -101,7 +101,10 @@ app.post("/api/runs", async (req: Request, res: Response) => {
 	const now = Date.now();
 	const entry = rateLimitMap.get(clientIp);
 	if (!entry || now > entry.resetAt) {
-		rateLimitMap.set(clientIp, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+		rateLimitMap.set(clientIp, {
+			count: 1,
+			resetAt: now + RATE_LIMIT_WINDOW_MS,
+		});
 	} else {
 		entry.count++;
 		if (entry.count > RATE_LIMIT_MAX_REQUESTS) {
@@ -151,7 +154,10 @@ const MAX_EVENT_CACHE_RUNS = 100;
 
 setInterval(() => {
 	if (eventCache.size > MAX_EVENT_CACHE_RUNS) {
-		const keys = [...eventCache.keys()].slice(0, eventCache.size - MAX_EVENT_CACHE_RUNS);
+		const keys = [...eventCache.keys()].slice(
+			0,
+			eventCache.size - MAX_EVENT_CACHE_RUNS,
+		);
 		for (const k of keys) {
 			eventCache.delete(k);
 			clientMap.delete(k);
@@ -275,14 +281,14 @@ const runnerWorker = config.useMemoryQueue
 					maxOutputLines: config.maxOutputLines,
 				};
 
-				const result = await runInWorker({
+				return await runInWorker({
 					payload,
 					onEvent: (event) => {
-						job.updateProgress(event);
+						job.updateProgress(event).catch(() => {
+							// Progress updates are best-effort; ignore errors
+						});
 					},
 				});
-
-				return result;
 			},
 			{
 				connection,

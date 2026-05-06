@@ -1,0 +1,51 @@
+.challengeInfo {
+	padding: 10px 12px;
+	border-bottom: 1px solid var(--border-dim);
+	background: var(--bg-panel);
+	flex-shrink: 0;
+}
+
+.challengeHeader {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 6px;
+}
+
+.challengeIcon {
+	font-size: 11px;
+}
+
+.challengeLabel {
+	font-size: 9px;
+	letter-spacing: 2px;
+	color: var(--neon-pink);
+	text-shadow: var(--glow-pink);
+	text-transform: uppercase;
+}
+
+.challengePrompt {
+	font-size: 11px;
+	color: var(--text-primary);
+	line-height: 1.5;
+}
+
+.challengeHints {
+	margin-top: 6px;
+}
+
+.hintsLabel {
+	font-size: 9px;
+	color: var(--neon-yellow);
+	letter-spacing: 1px;
+}
+
+.noChallenge {
+	padding: 10px 12px;
+	font-size: 10px;
+	color: var(--text-muted);
+	border-bottom: 1px solid var(--border-dim);
+	background: var(--bg-panel);
+	font-style: italic;
+	flex-shrink: 0;
+}

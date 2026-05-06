@@ -1,50 +1,57 @@
-import React from 'react'
-import { useLessonStore } from '../../store/lessonStore'
-import { Sidebar } from './Sidebar'
-import { LessonPanel } from '../lesson/LessonPanel'
-import { EditorPanel } from '../editor/EditorPanel'
-import { MobileTabBar } from './MobileTabBar'
-import styles from './Workspace.module.css'
+import type React from "react";
+import { Group, Panel, Separator } from "react-resizable-panels";
+import { useLessonStore } from "../../store/lessonStore";
+import { EditorPanel } from "../editor/EditorPanel";
+import { LessonPanel } from "../lesson/LessonPanel";
+import { MobileTabBar } from "./MobileTabBar";
+import { Sidebar } from "./Sidebar";
+import styles from "./Workspace.module.css";
 
 export const Workspace: React.FC = () => {
-  const { activePanel } = useLessonStore()
+	const { activePanel } = useLessonStore();
 
-  return (
-    <div className={styles.workspace}>
-      <div className={styles.panels}>
-        {/* Panel 1: Lessons Sidebar */}
-        <aside 
-          className={`${styles.panel} ${styles.sidebar} ${
-            activePanel === 'lessons' ? styles.active : ''
-          }`}
-          id="panel-lessons"
-        >
-          <Sidebar />
-        </aside>
+	return (
+		<div className={styles.workspace}>
+			<div className={styles.desktopLayout}>
+				<Group orientation="horizontal">
+					<Panel defaultSize="15%" minSize="15%" maxSize="20%">
+						<aside className={styles.sidebar}>
+							<Sidebar />
+						</aside>
+					</Panel>
+					<Separator className="resizeHandle" />
+					<Panel defaultSize="45%" minSize="25%" maxSize="50%">
+						<section className={styles.lessonPanel}>
+							<LessonPanel />
+						</section>
+					</Panel>
+					<Separator className="resizeHandle" />
+					<Panel defaultSize="45%" minSize="25%" maxSize="55%">
+						<div className={styles.rightColumn}>
+							<EditorPanel />
+						</div>
+					</Panel>
+				</Group>
+			</div>
 
-        {/* Panel 2: Lesson Content */}
-        <section 
-          className={`${styles.panel} ${styles.lessonPanel} ${
-            activePanel === 'lesson' ? styles.active : ''
-          }`}
-          id="panel-lesson"
-        >
-          <LessonPanel />
-        </section>
-
-        {/* Panel 3: Editor + Feedback + Console */}
-        <div 
-          className={`${styles.panel} ${styles.rightColumn} ${
-            activePanel === 'editor' ? styles.active : ''
-          }`}
-          id="panel-editor"
-        >
-          <EditorPanel />
-        </div>
-      </div>
-
-      {/* Mobile Tab Bar */}
-      <MobileTabBar />
-    </div>
-  )
-}
+			<div className={styles.mobileLayout}>
+				{activePanel === "lessons" && (
+					<aside className={styles.panel}>
+						<Sidebar />
+					</aside>
+				)}
+				{activePanel === "lesson" && (
+					<section className={styles.panel}>
+						<LessonPanel />
+					</section>
+				)}
+				{activePanel === "editor" && (
+					<div className={styles.panel}>
+						<EditorPanel />
+					</div>
+				)}
+				<MobileTabBar />
+			</div>
+		</div>
+	);
+};
