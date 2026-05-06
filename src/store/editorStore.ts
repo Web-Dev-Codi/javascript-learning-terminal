@@ -36,6 +36,9 @@ interface EditorState {
   consoleMessages: ConsoleMessage[]
   maxConsoleMessages: number
   
+  isConsoleLive: boolean
+  setIsConsoleLive: (live: boolean) => void
+
   // Run history
   runHistory: RunHistory[]
   
@@ -98,6 +101,7 @@ export const useEditorStore = create<EditorState>()(
       cursorPosition: { line: 1, column: 1 },
       issueSummary: { errors: 0, warnings: 0, info: 0 },
       runnerStatus: 'idle',
+      isConsoleLive: false,
 
       // Code management
       setCode: (lessonId: string, code: string) => {
@@ -191,7 +195,7 @@ export const useEditorStore = create<EditorState>()(
       },
 
       clearConsole: () => {
-        set({ consoleMessages: [] })
+        set({ consoleMessages: [], isConsoleLive: false })
       },
 
       // Run history
@@ -220,6 +224,10 @@ export const useEditorStore = create<EditorState>()(
       setIssueSummary: (summary: IssueSummary) => {
         set({ issueSummary: summary })
       },
+      setIsConsoleLive: (live: boolean) => {
+        set({ isConsoleLive: live })
+      },
+
       setRunnerStatus: (status: EditorState['runnerStatus']) => {
         set({ runnerStatus: status })
       }

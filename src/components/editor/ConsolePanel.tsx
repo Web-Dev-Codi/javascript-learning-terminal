@@ -3,7 +3,7 @@ import { useEditorStore } from "../../store/editorStore";
 import styles from "./ConsolePanel.module.css";
 
 export const ConsolePanel: React.FC = () => {
-	const { consoleMessages, clearConsole } = useEditorStore();
+	const { consoleMessages, clearConsole, isConsoleLive } = useEditorStore();
 
 	const handleClear = () => {
 		clearConsole();
@@ -41,11 +41,11 @@ export const ConsolePanel: React.FC = () => {
 			</div>
 
 			<div className={styles.consoleOutput}>
-				{consoleMessages.length === 0 ? (
+				{!isConsoleLive || consoleMessages.length === 0 ? (
 					<div className={styles.emptyMessage}>
 						<span className={styles.emptyType}>[info]</span>
 						<span className={styles.emptyContent}>
-							Console ready. Run some code to see output here.
+							Console ready. Press RUN to see output.
 						</span>
 					</div>
 				) : (

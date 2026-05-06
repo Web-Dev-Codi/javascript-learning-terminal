@@ -15,6 +15,7 @@ export function EditorPanel () {
     clearConsole,
     addConsoleMessage,
     setRunnerStatus,
+    setIsConsoleLive,
   } = useEditorStore()
   const { runCode, isExecuting, isReady, status } = useRunner()
   const [runtimeDiagnostics, setRuntimeDiagnostics] = useState<Diagnostic[]>([])
@@ -39,6 +40,7 @@ console.log("Hello, world!");`
     const currentCode = getCurrentCode()
     setRuntimeDiagnostics([])
     clearConsole()
+    setIsConsoleLive(true)
     addConsoleMessage('info', '▶ Running code...')
     setRunnerStatus('running')
 
