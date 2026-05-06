@@ -21,7 +21,7 @@ export const QuizBlock: React.FC<QuizBlockProps> = ({
 }) => {
 	const { getQuizAnswer, saveQuizAnswer } = useLessonStore();
 	const storedAnswer = getQuizAnswer(lessonId, questionIndex);
-	const [selectedOption, setSelectedOption] = useState<number | null>(storedAnswer ?? null);
+	const [selectedOption, setSelectedOption] = useState<number | null>(storedAnswer !== null ? storedAnswer : null);
 	const [showExplanation, setShowExplanation] = useState(storedAnswer !== null);
 
 	const handleOptionClick = (optionIndex: number) => {
