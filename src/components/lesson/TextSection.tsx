@@ -27,7 +27,7 @@ export const TextSection: React.FC<TextSectionProps> = ({ content }) => {
 			let match;
 			let boldIndex = 0;
 
-			while ((match = boldRegex.exec(text)) !== null) {
+			while ((match = boldRegex.exec(line)) !== null) {
 				// Add text before the bold
 				if (match.index > lastIndex) {
 					parts.push(
