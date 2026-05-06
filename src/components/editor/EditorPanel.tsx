@@ -161,9 +161,9 @@ console.log("Hello, world!");`
               type="button"
               className={`${styles.editorButton} ${styles.runButton} ${isExecuting ? styles.executing : ''}`}
               onClick={handleRun}
-              disabled={isExecuting || !isReady || shouldBlockExecution}
+              disabled={isExecuting}
             >
-              {isExecuting ? '⏳ RUNNING...' : '▶ RUN'} <span className={styles.shortcut}>^↵</span>
+              {isExecuting ? '⏳ RUNNING...' : !isReady ? '▶ RUN (offline)' : '▶ RUN'} <span className={styles.shortcut}>^↵</span>
             </button>
           </div>
         </div>
