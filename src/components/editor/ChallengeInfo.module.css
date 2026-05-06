@@ -30,16 +30,6 @@
 	line-height: 1.5;
 }
 
-.challengeHints {
-	margin-top: 6px;
-}
-
-.hintsLabel {
-	font-size: 9px;
-	color: var(--neon-yellow);
-	letter-spacing: 1px;
-}
-
 .noChallenge {
 	padding: 10px 12px;
 	font-size: 10px;
@@ -48,4 +38,61 @@
 	background: var(--bg-panel);
 	font-style: italic;
 	flex-shrink: 0;
+}
+
+/* Interactive hint styles */
+.hintsArea {
+	margin-top: 8px;
+}
+
+.hintReveal {
+	background: rgba(255, 230, 0, 0.06);
+	border: 1px solid var(--neon-yellow);
+	border-radius: var(--radius-sm);
+	padding: 8px 10px;
+}
+
+.hintText {
+	font-size: 12px;
+	color: var(--text-primary);
+	line-height: 1.5;
+}
+
+.hintText strong {
+	color: var(--neon-yellow);
+}
+
+.hintActions {
+	display: flex;
+	gap: 6px;
+	margin-top: 6px;
+}
+
+.hintButton,
+.hideHintButton {
+	font-family: var(--font-mono);
+	font-size: 10px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	padding: 4px 8px;
+	background: transparent;
+	border: 1px solid var(--neon-yellow);
+	color: var(--neon-yellow);
+	cursor: pointer;
+	border-radius: var(--radius-sm);
+	transition: all 0.12s ease;
+}
+
+.hintButton:hover {
+	background: rgba(255, 230, 0, 0.15);
+}
+
+.hideHintButton {
+	border-color: var(--border-mid);
+	color: var(--text-dim);
+}
+
+.hideHintButton:hover {
+	border-color: var(--text-primary);
+	color: var(--text-primary);
 }
