@@ -55,8 +55,8 @@
 	color: var(--neon-pink);
 }
 .pillTime {
-	border-color: var(--text-muted);
-	color: var(--text-muted);
+	border-color: var(--neon-cyan);
+	color: var(--neon-cyan);
 }
 .pillParent {
 	border-color: var(--neon-purple);
