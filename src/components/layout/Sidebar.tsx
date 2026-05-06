@@ -142,12 +142,21 @@ export const Sidebar: React.FC = () => {
 										<React.Fragment key={lesson.id}>
 											{/* Main lesson row */}
 											<div
+												role="button"
+												tabIndex={0}
+												aria-current={status === "active" ? "step" : undefined}
 												className={`
                         ${styles.lessonItem}
                         ${styles[status]}
                         ${isActiveParent ? styles.parentOfActive : ""}
                       `}
 												onClick={() => handleLessonClick(lesson)}
+												onKeyDown={(e) => {
+													if (e.key === 'Enter' || e.key === ' ') {
+														e.preventDefault()
+														handleLessonClick(lesson)
+													}
+												}}
 											>
 												<span
 													className={`${styles.statusIcon} ${styles[status]}`}
@@ -180,10 +189,19 @@ export const Sidebar: React.FC = () => {
 													return (
 														<div
 															key={sub.id}
+															role="button"
+															tabIndex={0}
+															aria-current={subStatus === "active" ? "step" : undefined}
 															className={`${styles.subLessonItem} ${styles[subStatus]}`}
 															onClick={() =>
 																handleSubLessonClick(sub.id, lesson.id)
 															}
+															onKeyDown={(e) => {
+																if (e.key === 'Enter' || e.key === ' ') {
+																	e.preventDefault()
+																	handleSubLessonClick(sub.id, lesson.id)
+																}
+															}}
 														>
 															<span className={styles.subIndent} />
 															<span

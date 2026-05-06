@@ -19,10 +19,21 @@ interface MemoryJob {
 const memoryQueue: MemoryJob[] = [];
 const isProcessingMemoryQueue = { value: false };
 
+interface RateLimitEntry {
+	count: number;
+	resetAt: number;
+}
+const rateLimitMap = new Map<string, RateLimitEntry>();
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 20;
+const MAX_CONCURRENT_JOBS = 5;
+const activeJobCount = { value: 0 };
+
 const processMemoryQueue = async () => {
 	if (isProcessingMemoryQueue.value || memoryQueue.length === 0) return;
 
 	isProcessingMemoryQueue.value = true;
+	activeJobCount.value++;
 	const job = memoryQueue.shift();
 	if (!job) {
 		isProcessingMemoryQueue.value = false;
@@ -61,16 +72,18 @@ const processMemoryQueue = async () => {
 		job.reject(error as Error);
 	} finally {
 		isProcessingMemoryQueue.value = false;
-		// Process next job
+		activeJobCount.value--;
 		setImmediate(processMemoryQueue);
 	}
 };
 
 const addMemoryJob = (data: { code: string }): { id: string } => {
 	const id = `job-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-	void new Promise((resolve, reject) => {
+	new Promise((resolve, reject) => {
 		memoryQueue.push({ id, data, resolve, reject });
 		processMemoryQueue();
+	}).catch((error: unknown) => {
+		console.error(`Job ${id} failed:`, error);
 	});
 	return { id };
 };
@@ -84,6 +97,24 @@ app.get("/health", (_req: Request, res: Response) => {
 });
 
 app.post("/api/runs", async (req: Request, res: Response) => {
+	const clientIp = req.ip ?? req.socket.remoteAddress ?? "unknown";
+	const now = Date.now();
+	const entry = rateLimitMap.get(clientIp);
+	if (!entry || now > entry.resetAt) {
+		rateLimitMap.set(clientIp, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+	} else {
+		entry.count++;
+		if (entry.count > RATE_LIMIT_MAX_REQUESTS) {
+			res.status(429).json({ error: "Rate limit exceeded. Try again later." });
+			return;
+		}
+	}
+
+	if (activeJobCount.value >= MAX_CONCURRENT_JOBS) {
+		res.status(503).json({ error: "Server busy. Try again later." });
+		return;
+	}
+
 	const code = typeof req.body?.code === "string" ? req.body.code : "";
 
 	if (!code.trim()) {
@@ -115,6 +146,18 @@ const wss = new WebSocketServer({ noServer: true });
 
 const clientMap = new Map<string, Set<WebSocket>>();
 const eventCache = new Map<string, RunnerEvent[]>();
+
+const MAX_EVENT_CACHE_RUNS = 100;
+
+setInterval(() => {
+	if (eventCache.size > MAX_EVENT_CACHE_RUNS) {
+		const keys = [...eventCache.keys()].slice(0, eventCache.size - MAX_EVENT_CACHE_RUNS);
+		for (const k of keys) {
+			eventCache.delete(k);
+			clientMap.delete(k);
+		}
+	}
+}, 60_000);
 
 const cacheEvent = (runId: string, event: RunnerEvent) => {
 	const events = eventCache.get(runId) ?? [];
@@ -174,9 +217,8 @@ server.on("upgrade", (req: IncomingMessage, socket, head) => {
 
 runQueueEvents?.on(
 	"progress",
-	({ jobId, data }: { jobId: string | number; data: RunnerEvent }) => {
-		const runId = String(jobId);
-		publishEvent(runId, data);
+	(args: { jobId: string; data: unknown }, id: string) => {
+		publishEvent(id, args.data as RunnerEvent);
 	},
 );
 
@@ -221,32 +263,34 @@ runQueueEvents?.on(
 	},
 );
 
-const runnerWorker = new BullWorker(
-	"runs",
-	async (job: Job<{ code: string }>) => {
-		const payload: RunPayload = {
-			code: job.data.code,
-			timeoutMs: config.workerTimeoutMs,
-			memoryMb: config.workerMemoryMb,
-			maxOutputLines: config.maxOutputLines,
-		};
+const runnerWorker = config.useMemoryQueue
+	? null
+	: new BullWorker(
+			"runs",
+			async (job: Job<{ code: string }>) => {
+				const payload: RunPayload = {
+					code: job.data.code,
+					timeoutMs: config.workerTimeoutMs,
+					memoryMb: config.workerMemoryMb,
+					maxOutputLines: config.maxOutputLines,
+				};
 
-		const result = await runInWorker({
-			payload,
-			onEvent: (event) => {
-				job.updateProgress(event);
+				const result = await runInWorker({
+					payload,
+					onEvent: (event) => {
+						job.updateProgress(event);
+					},
+				});
+
+				return result;
 			},
-		});
+			{
+				connection,
+				concurrency: config.concurrency,
+			},
+		);
 
-		return result;
-	},
-	{
-		connection,
-		concurrency: config.concurrency,
-	},
-);
-
-runnerWorker.on("error", (error: Error) => {
+runnerWorker?.on("error", (error: Error) => {
 	console.error("Runner worker error:", error);
 });
 

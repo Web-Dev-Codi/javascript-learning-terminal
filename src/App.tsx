@@ -1,4 +1,5 @@
 import styles from "./App.module.css";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Header } from "./components/layout/Header";
 import { StatusBar } from "./components/layout/StatusBar";
 import { Workspace } from "./components/layout/Workspace";
@@ -6,9 +7,13 @@ import { Workspace } from "./components/layout/Workspace";
 function App() {
 	return (
 		<div className={styles.app}>
-			<Header />
-			<Workspace />
-			<StatusBar />
+			<ErrorBoundary>
+				<Header />
+				<ErrorBoundary>
+					<Workspace />
+				</ErrorBoundary>
+				<StatusBar />
+			</ErrorBoundary>
 		</div>
 	);
 }

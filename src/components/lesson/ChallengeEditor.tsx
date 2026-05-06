@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useEditorStore } from "../../store/editorStore";
+import { findLessonById, useLessonStore } from "../../store/lessonStore";
+import { useSyntaxChecker } from "../checker/useSyntaxChecker";
 import { useCodeMirror } from "../editor/useCodeMirror";
 import type { RunnerEvent } from "../runner/types";
 import { useRunner } from "../runner/useRunner";
@@ -22,9 +24,34 @@ export const ChallengeEditor: React.FC<ChallengeEditorProps> = ({
 		addConsoleMessage,
 		clearConsole,
 	} = useEditorStore();
+	const { activeLesson } = useLessonStore();
 	const savedCode = getChallengeCode(challengeId);
 	const [code, setCode] = useState(() => savedCode ?? starterCode);
 	const { runCode, isExecuting, isReady } = useRunner();
+	const { checkSyntax, shouldBlockExecution } = useSyntaxChecker();
+	const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+	const handleCodeChange = (newCode: string) => {
+		setCode(newCode);
+		setChallengeCode(challengeId, newCode);
+		if (debounceRef.current) clearTimeout(debounceRef.current);
+		debounceRef.current = setTimeout(() => {
+			checkSyntax(newCode);
+		}, 300);
+	};
+
+	useEffect(() => {
+		return () => {
+			if (debounceRef.current) clearTimeout(debounceRef.current);
+		};
+	}, []);
+
+	useEffect(() => {
+		const lesson = activeLesson ? findLessonById(activeLesson) : null;
+		if (lesson?.activeRules?.length) {
+			checkSyntax(code);
+		}
+	}, [activeLesson, checkSyntax, code]);
 
 	const handleRun = async () => {
 		clearConsole();
@@ -77,10 +104,7 @@ export const ChallengeEditor: React.FC<ChallengeEditorProps> = ({
 		setCode: setEditorCode,
 	} = useCodeMirror({
 		initialCode: code,
-		onChange: (newCode) => {
-			setCode(newCode);
-			setChallengeCode(challengeId, newCode);
-		},
+		onChange: handleCodeChange,
 		onRun: handleRun,
 	});
 
@@ -104,7 +128,7 @@ export const ChallengeEditor: React.FC<ChallengeEditorProps> = ({
 				<button
 					className={styles.runButton}
 					onClick={handleRun}
-					disabled={isExecuting || !isReady}
+					disabled={isExecuting || !isReady || shouldBlockExecution}
 					type="button"
 				>
 					{isExecuting ? "RUNNING..." : "RUN"}

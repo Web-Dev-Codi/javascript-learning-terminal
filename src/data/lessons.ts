@@ -764,7 +764,7 @@ console.log(\`\${playerName}: \${percentage}%\`)`,
         estimatedMinutes: 8,
         category: 'fundamentals',
         parentId: '04-syntax-rules',
-        activeRules: ['require-semicolons', 'missing-closing-bracket'],
+        activeRules: ['require-semicolons'],
         sections: [
           {
             type: 'text',

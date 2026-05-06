@@ -75,7 +75,6 @@ export type RuleId =
   | 'no-var'
   | 'const-reassignment'
   | 'undefined-variable'
-  | 'missing-closing-bracket'
 
 export type PanelType = 'lessons' | 'lesson' | 'editor'
 

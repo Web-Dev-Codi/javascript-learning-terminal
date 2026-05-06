@@ -20,10 +20,9 @@ export const QuizBlock: React.FC<QuizBlockProps> = ({
 	questionIndex = 0,
 }) => {
 	const { getQuizAnswer, saveQuizAnswer } = useLessonStore();
-	const [selectedOption, setSelectedOption] = useState<number | null>(
-		getQuizAnswer(lessonId, questionIndex),
-	);
-	const [showExplanation, setShowExplanation] = useState(false);
+	const storedAnswer = getQuizAnswer(lessonId, questionIndex);
+	const [selectedOption, setSelectedOption] = useState<number | null>(storedAnswer ?? null);
+	const [showExplanation, setShowExplanation] = useState(storedAnswer !== null);
 
 	const handleOptionClick = (optionIndex: number) => {
 		if (selectedOption !== null) return; // Already answered
@@ -61,8 +60,17 @@ export const QuizBlock: React.FC<QuizBlockProps> = ({
 				{options.map((option, index) => (
 					<div
 						key={index}
+						role="button"
+						tabIndex={0}
+						aria-pressed={selectedOption === index}
 						className={getOptionClass(index)}
 						onClick={() => handleOptionClick(index)}
+						onKeyDown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								e.preventDefault()
+								handleOptionClick(index)
+							}
+						}}
 					>
 						<span className={styles.optionKey}>{getOptionIcon(index)}</span>
 						<span className={styles.optionText}>{option}</span>

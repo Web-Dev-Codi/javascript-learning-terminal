@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useEditorStore } from '../../store/editorStore'
-import { useLessonStore } from '../../store/lessonStore'
-import type { Diagnostic } from '../../types/lesson'
+import { findLessonById, useLessonStore } from '../../store/lessonStore'
+import type { Diagnostic, ChallengeSection } from '../../types/lesson'
 import { FeedbackPanel } from '../checker/FeedbackPanel'
 import { useRunner } from '../runner/useRunner'
 import { ConsolePanel } from './ConsolePanel'
@@ -18,18 +18,13 @@ export function EditorPanel () {
   const { runCode, isExecuting, isReady, status } = useRunner()
   const [runtimeDiagnostics, setRuntimeDiagnostics] = useState<Diagnostic[]>([])
 
-  // Get current lesson data for starter code
   const getCurrentLessonData = () => {
-    // This would be expanded to get actual lesson data
-    const starterCode = `// 🎯 CHALLENGE: Fix the errors below
+    const lesson = activeLesson ? findLessonById(activeLesson) : null
+    const starterCode = lesson?.sections?.find(
+      (s): s is ChallengeSection => s.type === 'challenge'
+    )?.starterCode ?? `// Welcome! Write your code here.
 
-let playerName = "Brian";
-let highScore 9500  // ← fix me
-const level = 3;
-
-console.log("Player: " + playerName);
-console.log("Score: " + highScore);
-console.log("Level: " + level);`
+console.log("Hello, world!");`
 
     return {
       lessonId: activeLesson || 'scratch',
@@ -103,7 +98,8 @@ console.log("Level: " + level);`
     activeTab,
     setActiveTab,
     diagnostics,
-    goToLine
+    goToLine,
+    shouldBlockExecution,
   } = useEditor({
     lessonId,
     starterCode,
@@ -163,7 +159,7 @@ console.log("Level: " + level);`
               type="button"
               className={`${styles.editorButton} ${styles.runButton} ${isExecuting ? styles.executing : ''}`}
               onClick={handleRun}
-              disabled={isExecuting || !isReady}
+              disabled={isExecuting || !isReady || shouldBlockExecution}
             >
               {isExecuting ? '⏳ RUNNING...' : '▶ RUN'} <span className={styles.shortcut}>^↵</span>
             </button>

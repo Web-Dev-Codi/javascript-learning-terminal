@@ -226,12 +226,17 @@ export const useEditorStore = create<EditorState>()(
     }),
     {
       name: 'synthscript-editor-store',
-      partialize: (state) => ({
-        codeByLessonId: state.codeByLessonId,
-        challengeCodeById: state.challengeCodeById,
-        tabs: state.tabs,
-        runHistory: state.runHistory.slice(0, 10) // Only persist last 10 runs
-      })
+      partialize: (state) => {
+        const maxEntries = 50
+        const codeEntries = Object.entries(state.codeByLessonId).slice(-maxEntries)
+        const challengeEntries = Object.entries(state.challengeCodeById).slice(-maxEntries)
+        return {
+          codeByLessonId: Object.fromEntries(codeEntries),
+          challengeCodeById: Object.fromEntries(challengeEntries),
+          tabs: state.tabs,
+          runHistory: state.runHistory.slice(0, 10)
+        }
+      }
     }
   )
 )

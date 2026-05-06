@@ -1,7 +1,6 @@
-import { useCallback, useMemo, useState } from 'react'
-import { lessons } from '../../data/lessons'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useEditorStore } from '../../store/editorStore'
-import { useLessonStore } from '../../store/lessonStore'
+import { findLessonById, useLessonStore } from '../../store/lessonStore'
 import type { Diagnostic, RuleId } from '../../types/lesson'
 import { MessageDictionary } from './messages'
 import type { ESTreeAST } from './ruleEngine'
@@ -27,29 +26,26 @@ export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
 
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([])
   const [isChecking, setIsChecking] = useState(false)
-  const [lastCheckedCode, setLastCheckedCode] = useState<string>('')
+  const lastCheckedCodeRef = useRef<string>('')
 
-  // Get active rules for current lesson from lessons.ts (LC-02, SC-06)
   const getActiveRules = useCallback((): RuleId[] => {
     if (!activeLesson) return []
-    const lesson = lessons.find(l => l.id === activeLesson)
+    const lesson = findLessonById(activeLesson)
     return lesson?.activeRules ?? []
   }, [activeLesson])
 
   const checkSyntax = useCallback((code: string, activeRules?: RuleId[]) => {
-    if (code === lastCheckedCode) {
-      return // Don't re-check the same code
+    if (code === lastCheckedCodeRef.current) {
+      return
     }
 
+    lastCheckedCodeRef.current = code
     setIsChecking(true)
-    setLastCheckedCode(code)
 
     try {
-      // Layer 1: Syntax parsing with Babel
       const syntaxResult = SyntaxChecker.checkSyntax(code)
 
       if (!syntaxResult.success) {
-        // If there are syntax errors, show them and stop
         const formattedDiagnostics = syntaxResult.errors.map(diag =>
           MessageDictionary.formatDiagnostic(diag)
         )
@@ -59,14 +55,12 @@ export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
         return
       }
 
-      // Layer 2: Rule engine for style and logical issues
       const rulesToCheck = activeRules || getActiveRules()
-      const ruleDiagnostics = RuleEngine.runRules(syntaxResult.ast as unknown as ESTreeAST, rulesToCheck)
+      const ruleDiagnostics = RuleEngine.runRules(syntaxResult.ast as unknown as ESTreeAST, code, rulesToCheck)
 
-      // If strictMode, escalate warnings to errors (LC-02 strictMode)
       let finalDiagnostics = ruleDiagnostics
       if (activeLesson) {
-        const lesson = lessons.find(l => l.id === activeLesson)
+        const lesson = findLessonById(activeLesson)
         if (lesson?.strictMode) {
           finalDiagnostics = ruleDiagnostics.map(d =>
             d.severity === 'warning' ? { ...d, severity: 'error' as const } : d
@@ -74,7 +68,6 @@ export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
         }
       }
 
-      // Combine all diagnostics
       const allDiagnostics = [...syntaxResult.errors, ...finalDiagnostics]
       const formattedDiagnostics = allDiagnostics.map(diag =>
         MessageDictionary.formatDiagnostic(diag)
@@ -82,7 +75,6 @@ export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
 
       setDiagnostics(formattedDiagnostics)
 
-      // Provide console feedback
       const summary = SyntaxChecker.getIssueSummary(formattedDiagnostics)
       if (summary.errors === 0 && summary.warnings === 0) {
         addConsoleMessage('info', '✓ No issues found')
@@ -115,11 +107,11 @@ export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
     } finally {
       setIsChecking(false)
     }
-  }, [lastCheckedCode, getActiveRules, addConsoleMessage, activeLesson])
+  }, [getActiveRules, addConsoleMessage, activeLesson])
 
   const clearDiagnostics = useCallback(() => {
     setDiagnostics([])
-    setLastCheckedCode('')
+    lastCheckedCodeRef.current = ''
   }, [])
 
   const shouldBlockExecution = diagnostics.some(d => d.severity === 'error')

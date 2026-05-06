@@ -28,11 +28,6 @@ export const ConsolePanel: React.FC = () => {
 		}
 	};
 
-	const formatMessage = (message: string) => {
-		// Handle multiple arguments by joining with spaces
-		return message;
-	};
-
 	return (
 		<div className={styles.consoleWrap}>
 			<div className={styles.consoleBar}>
@@ -61,7 +56,7 @@ export const ConsolePanel: React.FC = () => {
 						>
 							<span className={styles.consoleType}>[{message.type}]</span>
 							<span className={styles.consoleMessage}>
-								{formatMessage(message.content)}
+								{message.content}
 							</span>
 						</div>
 					))

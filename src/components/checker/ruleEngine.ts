@@ -28,15 +28,11 @@ export interface Rule {
   name: string
   description: string
   severity: 'error' | 'warning' | 'info'
-  check: (ast: ESTreeAST) => Diagnostic[]
+  check: (ctx: { ast: ESTreeAST; source: string }) => Diagnostic[]
 }
 
 export class RuleEngine {
   private static rules: Map<RuleId, Rule> = new Map()
-
-  static {
-    // Register all available rules - moved after rule definitions
-  }
 
   /**
    * Register a new rule
@@ -62,14 +58,14 @@ export class RuleEngine {
   /**
    * Run specified rules against the AST
    */
-  static runRules(ast: ESTreeAST, activeRules: RuleId[]): Diagnostic[] {
+  static runRules(ast: ESTreeAST, source: string, activeRules: RuleId[]): Diagnostic[] {
     const diagnostics: Diagnostic[] = []
 
     for (const ruleId of activeRules) {
       const rule = this.rules.get(ruleId)
       if (rule) {
         try {
-          const ruleDiagnostics = rule.check(ast)
+          const ruleDiagnostics = rule.check({ ast, source })
           diagnostics.push(...ruleDiagnostics)
         } catch (error) {
           console.warn(`Rule ${ruleId} failed:`, error)
@@ -120,32 +116,87 @@ const requireSemicolonsRule: Rule = {
   name: 'Require Semicolons',
   description: 'All statements must end with a semicolon',
   severity: 'error',
-  check: (ast: ESTreeAST): Diagnostic[] => {
+  check: ({ ast, source }: { ast: ESTreeAST; source: string }): Diagnostic[] => {
     const diagnostics: Diagnostic[] = []
+    const lines = source.split('\n')
 
     RuleEngine.walkAST(ast, {
       ExpressionStatement: (node: ESTreeNode) => {
-        if (node.loc) {
-          // Check if the statement ends with a semicolon
-          const expression = node.expression as ESTreeNode
-          if (expression && expression.type !== 'Literal' && expression.type !== 'Identifier') {
-            // This is a simplified check - in a real implementation we'd need the source code
-            // For now, we'll assume most expression statements should have semicolons
-            if (expression.type === 'CallExpression' ||
-              expression.type === 'AssignmentExpression') {
-              diagnostics.push({
-                ruleId: 'require-semicolons',
-                severity: 'error',
-                line: node.loc.end.line,
-                column: node.loc.end.column,
-                messages: {
-                  short: 'Missing semicolon',
-                  long: 'Statements must end with a semicolon (;)',
-                  hint: 'Add a semicolon at the end of this statement'
-                }
-              })
+        if (!node.loc) return
+        const expression = node.expression as ESTreeNode
+        if (!expression) return
+
+        const endLine = node.loc.end.line
+        const endCol = node.loc.end.column
+
+        const lineIndex = endLine - 1
+        if (lineIndex < 0 || lineIndex >= lines.length) return
+
+        const lineText = lines[lineIndex]
+        const charBeforeEnd = endCol > 0 ? lineText[endCol - 1] : ''
+
+        if (charBeforeEnd !== ';') {
+          diagnostics.push({
+            ruleId: 'require-semicolons',
+            severity: 'error',
+            line: endLine,
+            column: endCol,
+            messages: {
+              short: 'Missing semicolon',
+              long: 'Statements must end with a semicolon (;)',
+              hint: 'Add a semicolon at the end of this statement'
             }
-          }
+          })
+        }
+      },
+      VariableDeclaration: (node: ESTreeNode) => {
+        if (!node.loc) return
+        const endLine = node.loc.end.line
+        const endCol = node.loc.end.column
+
+        const lineIndex = endLine - 1
+        if (lineIndex < 0 || lineIndex >= lines.length) return
+
+        const lineText = lines[lineIndex]
+        const charBeforeEnd = endCol > 0 ? lineText[endCol - 1] : ''
+
+        if (charBeforeEnd !== ';') {
+          diagnostics.push({
+            ruleId: 'require-semicolons',
+            severity: 'error',
+            line: endLine,
+            column: endCol,
+            messages: {
+              short: 'Missing semicolon',
+              long: 'Variable declarations must end with a semicolon (;)',
+              hint: 'Add a semicolon at the end of this declaration'
+            }
+          })
+        }
+      },
+      ReturnStatement: (node: ESTreeNode) => {
+        if (!node.loc) return
+        const endLine = node.loc.end.line
+        const endCol = node.loc.end.column
+
+        const lineIndex = endLine - 1
+        if (lineIndex < 0 || lineIndex >= lines.length) return
+
+        const lineText = lines[lineIndex]
+        const charBeforeEnd = endCol > 0 ? lineText[endCol - 1] : ''
+
+        if (charBeforeEnd !== ';') {
+          diagnostics.push({
+            ruleId: 'require-semicolons',
+            severity: 'error',
+            line: endLine,
+            column: endCol,
+            messages: {
+              short: 'Missing semicolon',
+              long: 'Return statements must end with a semicolon (;)',
+              hint: 'Add a semicolon at the end of this return statement'
+            }
+          })
         }
       }
     })
@@ -160,7 +211,7 @@ const requireAssignmentOperatorRule: Rule = {
   name: 'Require Assignment Operator',
   description: 'Variable declarations must use assignment operator (=)',
   severity: 'error',
-  check: (ast: ESTreeAST): Diagnostic[] => {
+  check: ({ ast }: { ast: ESTreeAST; source: string }): Diagnostic[] => {
     const diagnostics: Diagnostic[] = []
 
     RuleEngine.walkAST(ast, {
@@ -198,7 +249,7 @@ const noVarRule: Rule = {
   name: 'No var Keyword',
   description: 'Use let or const instead of var',
   severity: 'warning',
-  check: (ast: ESTreeAST): Diagnostic[] => {
+  check: ({ ast }: { ast: ESTreeAST; source: string }): Diagnostic[] => {
     const diagnostics: Diagnostic[] = []
 
     RuleEngine.walkAST(ast, {
@@ -229,7 +280,7 @@ const constReassignmentRule: Rule = {
   name: 'Const Reassignment',
   description: 'Cannot reassign const variables',
   severity: 'error',
-  check: (ast: ESTreeAST): Diagnostic[] => {
+  check: ({ ast }: { ast: ESTreeAST; source: string }): Diagnostic[] => {
     const diagnostics: Diagnostic[] = []
     const constDeclarations = new Map<string, { line: number; column: number }>()
 
@@ -281,17 +332,63 @@ const constReassignmentRule: Rule = {
   }
 }
 
+const JS_BUILTINS = new Set([
+  'console', 'Math', 'Date', 'Array', 'Object', 'String', 'Number', 'Boolean',
+  'Symbol', 'BigInt', 'JSON', 'Promise', 'Map', 'Set', 'WeakMap', 'WeakSet',
+  'Error', 'EvalError', 'RangeError', 'ReferenceError', 'SyntaxError', 'TypeError',
+  'URIError', 'AggregateError', 'RegExp', 'Function', 'ArrayBuffer',
+  'SharedArrayBuffer', 'DataView', 'Float32Array', 'Float64Array',
+  'Int8Array', 'Int16Array', 'Int32Array', 'Uint8Array', 'Uint16Array',
+  'Uint32Array', 'Uint8ClampedArray', 'parseInt', 'parseFloat',
+  'isNaN', 'isFinite', 'NaN', 'Infinity', 'undefined', 'globalThis',
+  'decodeURI', 'decodeURIComponent', 'encodeURI', 'encodeURIComponent',
+  'escape', 'unescape', 'eval', 'setTimeout', 'setInterval',
+  'clearTimeout', 'clearInterval', 'requestAnimationFrame',
+  'cancelAnimationFrame', 'queueMicrotask',
+  'window', 'document', 'navigator', 'localStorage', 'sessionStorage',
+  'fetch', 'Response', 'Request', 'URL', 'URLSearchParams', 'FormData',
+  'HTMLElement', 'Event', 'CustomEvent', 'Node', 'Element',
+  'alert', 'confirm', 'prompt', 'atob', 'btoa',
+  'performance', 'crypto', 'Proxy', 'Reflect', 'Iterator',
+  'AbortController', 'AbortSignal', 'Blob', 'File', 'FileReader',
+  'Image', 'Audio', 'WebSocket', 'Worker', 'MessageChannel',
+  'Notification', 'IntersectionObserver', 'MutationObserver',
+  'ResizeObserver', 'MediaQueryList',
+])
+
 // Rule: Undefined variable
 const undefinedVariableRule: Rule = {
   id: 'undefined-variable',
   name: 'Undefined Variable',
   description: 'Variable is used before being defined',
   severity: 'warning',
-  check: (ast: ESTreeAST): Diagnostic[] => {
+  check: ({ ast }: { ast: ESTreeAST; source: string }): Diagnostic[] => {
     const diagnostics: Diagnostic[] = []
     const declaredVariables = new Set<string>()
+    const parentMap = new Map<ESTreeNode, ESTreeNode | null>()
 
-    // First pass: collect all declared variables
+    // Build parent map and collect declarations
+    const buildParentMap = (node: ESTreeNode, parent: ESTreeNode | null) => {
+      if (!node || typeof node !== 'object') return
+      parentMap.set(node, parent)
+      for (const key in node) {
+        if (key === 'type' || key === 'loc') continue
+        const child = node[key as keyof typeof node]
+        if (Array.isArray(child)) {
+          for (const item of child) {
+            if (item && typeof item === 'object') buildParentMap(item as ESTreeNode, node)
+          }
+        } else if (child && typeof child === 'object' && (child as ESTreeNode).type) {
+          buildParentMap(child as ESTreeNode, node)
+        }
+      }
+    }
+
+    if (ast.program) {
+      buildParentMap(ast.program as unknown as ESTreeNode, null)
+    }
+
+    // First pass: collect all declared variables and scope-relevant nodes
     RuleEngine.walkAST(ast, {
       VariableDeclaration: (node: ESTreeNode) => {
         const declarations = node.declarations as ESTreeNode[]
@@ -303,53 +400,131 @@ const undefinedVariableRule: Rule = {
             }
           }
         }
-      }
+      },
+      FunctionDeclaration: (node: ESTreeNode) => {
+        const id = node.id as ESTreeNode & { name?: string } | undefined
+        if (id?.name) declaredVariables.add(id.name)
+        // Collect function parameters
+        const params = node.params as ESTreeNode[] | undefined
+        if (params) {
+          for (const param of params) {
+            collectBindingNames(param, declaredVariables)
+          }
+        }
+      },
+      FunctionExpression: (node: ESTreeNode) => {
+        const params = node.params as ESTreeNode[] | undefined
+        if (params) {
+          for (const param of params) {
+            collectBindingNames(param, declaredVariables)
+          }
+        }
+      },
+      ArrowFunctionExpression: (node: ESTreeNode) => {
+        const params = node.params as ESTreeNode[] | undefined
+        if (params) {
+          for (const param of params) {
+            collectBindingNames(param, declaredVariables)
+          }
+        }
+      },
+      CatchClause: (node: ESTreeNode) => {
+        const param = node.param as ESTreeNode & { name?: string } | undefined
+        if (param?.name) declaredVariables.add(param.name)
+      },
+      ForOfStatement: (node: ESTreeNode) => {
+        const left = node.left as ESTreeNode
+        if (left) collectBindingNames(left, declaredVariables)
+      },
+      ForInStatement: (node: ESTreeNode) => {
+        const left = node.left as ESTreeNode
+        if (left) collectBindingNames(left, declaredVariables)
+      },
+      ClassDeclaration: (node: ESTreeNode) => {
+        const id = node.id as ESTreeNode & { name?: string } | undefined
+        if (id?.name) declaredVariables.add(id.name)
+      },
+      ImportDeclaration: (node: ESTreeNode) => {
+        const specifiers = node.specifiers as ESTreeNode[] | undefined
+        if (specifiers) {
+          for (const spec of specifiers) {
+            const local = spec.local as ESTreeNode & { name?: string } | undefined
+            if (local?.name) declaredVariables.add(local.name)
+          }
+        }
+      },
     })
 
-    // Second pass: check for undefined variables
+    // Second pass: check for undefined variables, skipping property accesses
     RuleEngine.walkAST(ast, {
       Identifier: (node: ESTreeNode) => {
         const identifier = node as ESTreeNode & { name?: string }
-        // Skip if this is a declaration or property
-        if (identifier.name && !declaredVariables.has(identifier.name) && identifier.loc) {
-          // Check if this looks like a built-in or global
-          const builtIns = ['console', 'Math', 'Date', 'Array', 'Object', 'String', 'Number', 'Boolean', 'JSON']
-          if (!builtIns.includes(identifier.name)) {
-            diagnostics.push({
-              ruleId: 'undefined-variable',
-              severity: 'warning',
-              line: identifier.loc.start.line,
-              column: identifier.loc.start.column,
-              tokenName: identifier.name,
-              messages: {
-                short: 'Undefined variable',
-                long: `Variable '${identifier.name}' is used but not declared`,
-                hint: 'Declare this variable before using it'
-              }
-            })
-          }
+        if (!identifier.name || !identifier.loc) return
+        if (declaredVariables.has(identifier.name)) return
+        if (JS_BUILTINS.has(identifier.name)) return
+
+        // Skip if this identifier is a property access (e.g., obj.prop)
+        const parent = parentMap.get(node)
+        if (parent?.type === 'MemberExpression' && (parent as ESTreeNode & { property?: ESTreeNode }).property === node && !(parent as ESTreeNode & { computed?: boolean }).computed) {
+          return
         }
-      }
+
+        // Skip if this is an object key in ObjectExpression
+        if (parent?.type === 'Property' && (parent as ESTreeNode & { key?: ESTreeNode }).key === node && !(parent as ESTreeNode & { computed?: boolean }).computed) {
+          return
+        }
+
+        // Skip identifiers that are shorthand property values
+        if (parent?.type === 'Property' && (parent as ESTreeNode & { shorthand?: boolean }).shorthand) {
+          return
+        }
+
+        diagnostics.push({
+          ruleId: 'undefined-variable',
+          severity: 'warning',
+          line: identifier.loc.start.line,
+          column: identifier.loc.start.column,
+          tokenName: identifier.name,
+          messages: {
+            short: 'Undefined variable',
+            long: `Variable '${identifier.name}' is used but not declared`,
+            hint: 'Declare this variable before using it'
+          }
+        })
+      },
     })
 
     return diagnostics
   }
 }
 
-// Rule: Missing closing bracket
-const missingClosingBracketRule: Rule = {
-  id: 'missing-closing-bracket',
-  name: 'Missing Closing Bracket',
-  description: 'Brackets, braces, or parentheses are not properly closed',
-  severity: 'error',
-  check: (): Diagnostic[] => {
-    const diagnostics: Diagnostic[] = []
-
-    // This is a simplified check - in a real implementation we'd need to analyze the source code
-    // For now, we'll rely on Babel's parser to catch most bracket issues
-    // This rule could be enhanced to check for specific patterns
-
-    return diagnostics
+function collectBindingNames(pattern: ESTreeNode, set: Set<string>) {
+  if (!pattern || typeof pattern !== 'object') return
+  if (pattern.type === 'Identifier') {
+    const id = pattern as ESTreeNode & { name?: string }
+    if (id.name) set.add(id.name)
+  } else if (pattern.type === 'ObjectPattern') {
+    const properties = pattern.properties as ESTreeNode[] | undefined
+    if (properties) {
+      for (const prop of properties) {
+        if ((prop as ESTreeNode & { type?: string }).type === 'RestElement') {
+          collectBindingNames(prop as ESTreeNode, set)
+        } else {
+          const value = (prop as ESTreeNode & { value?: ESTreeNode }).value
+          if (value) collectBindingNames(value, set)
+        }
+      }
+    }
+  } else if (pattern.type === 'ArrayPattern') {
+    const elements = pattern.elements as (ESTreeNode | null)[] | undefined
+    if (elements) {
+      for (const el of elements) {
+        if (el) collectBindingNames(el, set)
+      }
+    }
+  } else if (pattern.type === 'RestElement' || pattern.type === 'AssignmentPattern') {
+    const arg = (pattern as ESTreeNode & { argument?: ESTreeNode }).argument
+    if (arg) collectBindingNames(arg, set)
   }
 }
 
@@ -359,4 +534,3 @@ RuleEngine.registerRule(requireAssignmentOperatorRule)
 RuleEngine.registerRule(noVarRule)
 RuleEngine.registerRule(constReassignmentRule)
 RuleEngine.registerRule(undefinedVariableRule)
-RuleEngine.registerRule(missingClosingBracketRule)

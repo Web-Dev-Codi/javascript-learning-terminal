@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useEditorStore } from '../../store/editorStore'
 import type { Diagnostic } from '../../types/lesson'
 import { useSyntaxChecker } from '../checker/useSyntaxChecker'
@@ -39,15 +39,18 @@ export const useEditor = ({
 		? getCode(lessonId) || starterCode
 		: starterCode
 
-	const handleChange = useCallback((newCode: string) => {
-		if (!lessonId) return
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
 
-		setCode(lessonId, newCode)
-		clearDiagnostics()
-		setTimeout(() => {
-			checkSyntax(newCode)
-		}, 300)
-	}, [lessonId, setCode, checkSyntax, clearDiagnostics])
+  const handleChange = useCallback((newCode: string) => {
+    if (!lessonId) return
+
+    setCode(lessonId, newCode)
+    clearDiagnostics()
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      checkSyntax(newCode)
+    }, 300)
+  }, [lessonId, setCode, checkSyntax, clearDiagnostics])
 
 	const handleCursorChange = useCallback((line: number, column: number) => {
 		setCursorPosition(line, column)
@@ -76,9 +79,15 @@ export const useEditor = ({
 		[diagnostics, extraDiagnostics],
 	)
 
-	useEffect(() => {
-		setEditorCode(initialCode)
-	}, [initialCode, setEditorCode])
+  useEffect(() => {
+    setEditorCode(initialCode)
+  }, [initialCode, setEditorCode])
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [])
 
 	useEffect(() => {
 		setEditorDiagnostics(mergedDiagnostics)

@@ -16,10 +16,12 @@ export const MobileTabBar: React.FC = () => {
 	};
 
 	return (
-		<div className={styles.tabBar}>
+		<div className={styles.tabBar} role="tablist">
 			{tabs.map((tab) => (
 				<button
 					key={tab.id}
+					role="tab"
+					aria-selected={activePanel === tab.id}
 					className={`${styles.tabButton} ${
 						activePanel === tab.id ? styles.active : ""
 					}`}

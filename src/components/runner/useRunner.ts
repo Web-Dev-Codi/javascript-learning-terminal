@@ -55,8 +55,10 @@ export const useRunner = (): UseRunnerResult => {
 		}
 
 		checkHealth()
+		const interval = setInterval(checkHealth, 10_000)
 
 		return () => {
+			clearInterval(interval)
 			if (socketRef.current) {
 				socketRef.current.close()
 				socketRef.current = null
@@ -103,9 +105,14 @@ export const useRunner = (): UseRunnerResult => {
 					options?.onEvent?.(message)
 
 					if (message.type === 'status') {
-						if (message.data.status === 'failed') {
+						const status = message.data.status
+						if (status === 'failed') {
 							setStatus('error')
 							setError('Runner failed')
+						} else if (status === 'waiting' || status === 'active') {
+							setStatus('running')
+						} else if (status === 'completed') {
+							setStatus('ready')
 						}
 					}
 
@@ -137,6 +144,19 @@ export const useRunner = (): UseRunnerResult => {
 						runtimeMs: 0,
 						error: 'Runner WebSocket error',
 					})
+				}
+
+				socket.onclose = () => {
+					if (socketRef.current === socket) {
+						setIsExecuting(false)
+						setStatus('ready')
+						socketRef.current = null
+						resolve({
+							success: false,
+							runtimeMs: 0,
+							error: 'Connection closed unexpectedly',
+						})
+					}
 				}
 			})
 		} catch (err) {
