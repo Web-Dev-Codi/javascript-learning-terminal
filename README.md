@@ -133,7 +133,7 @@ _[Placeholder: Screenshot showing the mobile-optimized interface with tab naviga
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/javascript-learning-terminal.git
+git clone https://github.com/web-dev-codi/javascript-learning-terminal.git
 cd javascript-learning-terminal
 ```
 
@@ -265,9 +265,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 📧 Contact
 
-Your Name — [@yourtwitter](https://twitter.com/yourusername) — <email@example.com>
+Web Dev Codi — [@webdevcodi](https://twitter.com/webdevcodi) — <webdevcodi@gmail.com>
 
-Project Link: [https://github.com/yourusername/javascript-learning-terminal](https://github.com/yourusername/javascript-learning-terminal)
+Project Link: [https://github.com/web-dev-codi/javascript-learning-terminal](https://github.com/web-dev-codi/javascript-learning-terminal)
 
 ---
 
