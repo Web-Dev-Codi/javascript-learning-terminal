@@ -10,7 +10,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 8px 14px;
+	padding: var(--spacing-sm) var(--spacing-md);
 	border-bottom: 1px solid var(--border-dim);
 	background: var(--bg-panel);
 	flex-shrink: 0;
@@ -29,7 +29,7 @@
 
 .panelPills {
 	display: flex;
-	gap: 6px;
+	gap: var(--spacing-xs);
 	flex-wrap: wrap;
 }
 
@@ -68,8 +68,8 @@
 .lessonBody {
 	flex: 1;
 	overflow-y: auto;
-	padding: 20px 18px 0;
-	line-height: 1.7;
+	padding: var(--spacing-lg) var(--spacing-md) 0;
+	line-height: var(--line-height-relaxed);
 }
 
 .lessonTitle {
@@ -89,7 +89,7 @@
 	margin-bottom: 20px;
 	border-left: 2px solid var(--neon-purple);
 	padding-left: 14px;
-	line-height: 1.9;
+	line-height: var(--line-height-relaxed);
 }
 
 /* ─── Breadcrumb ─── */
@@ -172,7 +172,7 @@
 
 /* ─── Footer navigation ─── */
 .lessonFooter {
-	padding: 12px 14px;
+	padding: var(--spacing-sm) var(--spacing-md);
 	border-top: 1px solid var(--border-dim);
 	background: var(--bg-panel);
 	display: flex;
