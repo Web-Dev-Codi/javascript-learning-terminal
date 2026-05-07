@@ -5,7 +5,12 @@ import { useLessonStore } from "../../store/lessonStore";
 import type { Lesson } from "../../types/lesson";
 import styles from "./Sidebar.module.css";
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+	overlay?: boolean;
+	onLessonSelect?: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ overlay, onLessonSelect }) => {
 	const { activeLesson, setActiveLesson, isLessonCompleted, isLessonStarted } =
 		useLessonStore();
 
@@ -89,6 +94,7 @@ export const Sidebar: React.FC = () => {
 
 	const handleLessonClick = (lesson: Lesson) => {
 		setActiveLesson(lesson.id);
+		onLessonSelect?.();
 		// Auto-expand when clicking a main lesson that has sub-lessons
 		if (lesson.subLessons?.length) {
 			setExpandedLessons((prev) => {
@@ -101,6 +107,7 @@ export const Sidebar: React.FC = () => {
 
 	const handleSubLessonClick = (subId: string, parentId: string) => {
 		setActiveLesson(subId);
+		onLessonSelect?.();
 		setExpandedLessons((prev) => {
 			const next = new Set(prev);
 			next.add(parentId);
@@ -109,7 +116,7 @@ export const Sidebar: React.FC = () => {
 	};
 
 	return (
-		<div className={styles.sidebar}>
+		<div className={`${styles.sidebar} ${overlay ? styles.overlay : ""}`}>
 			<div className={styles.sidebarHeader}>
 				<span>// LESSONS</span>
 				<span className={styles.totalCount}>{lessons.length} MODULES</span>

@@ -188,3 +188,7 @@
 
 .expandBtn:hover { color: var(--neon-cyan); }
 .expandBtn.expanded { color: var(--neon-purple); }
+
+.sidebar.overlay {
+	border-right: none;
+}

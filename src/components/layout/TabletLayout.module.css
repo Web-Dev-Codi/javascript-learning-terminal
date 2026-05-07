@@ -1,0 +1,70 @@
+.tabletLayout {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0%;
+	overflow: hidden;
+}
+
+.contentArea {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0%;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.contentBody {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0%;
+	overflow: hidden;
+}
+
+.panel {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0%;
+	min-height: 0;
+}
+
+.sidebarOverlay {
+	position: fixed;
+	inset: 0;
+	z-index: var(--z-sidebar-overlay);
+	display: flex;
+}
+
+.sidebarBackdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(7, 0, 26, 0.8);
+}
+
+.sidebarPanel {
+	position: relative;
+	width: 280px;
+	max-width: 85vw;
+	height: 100%;
+	background: var(--bg-panel);
+	border-right: 1px solid var(--border-mid);
+	z-index: 1;
+	animation: slideIn 0.2s ease-out;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+@keyframes slideIn {
+	from {
+		transform: translateX(-100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
