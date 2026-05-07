@@ -191,5 +191,21 @@ console.log(lives);`
       expect(results[2].pass).toBe(false)
       expect(results[3].pass).toBe(false)
     })
+
+    it('validates without codeChecks when only expectedOutput is provided', () => {
+      const code = 'console.log("hello");'
+      const output = ['hello']
+      const results = validateChallenge(code, output, undefined, ['hello'])
+      expect(results[0].pass).toBe(true)
+    })
+
+    it('validates without expectedOutput when only codeChecks are provided', () => {
+      const code = 'let x = 5;'
+      const checks: CodeCheck[] = [
+        { type: 'declares-let', name: 'x', description: 'Declare x as let' },
+      ]
+      const results = validateChallenge(code, [], checks, undefined)
+      expect(results[0].pass).toBe(true)
+    })
   })
 })
