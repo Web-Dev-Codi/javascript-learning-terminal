@@ -1610,6 +1610,10 @@ console.log("Insufficient funds. Final balance: €" + balance);`,
             hints: ['This is complete — run it', 'Try changing withdrawal to see different results'],
             expectedOutput: ['Remaining balance: €850', 'Insufficient funds. Final balance: €100'],
           }
+        ]
+      },
+      {
+        id: '07-c-do-while',
         title: 'do...while Loop',
         difficulty: 'beginner',
         estimatedMinutes: 8,
@@ -1692,6 +1696,9 @@ console.log("Total:", total); // 133`,
             hints: ['This is complete — run it', 'Try adding more numbers to the array'],
             expectedOutput: ['Total: 133'],
           }
+        ]
+      },
+      {
         id: '07-e-for-in',
         title: 'for...in Loop',
         difficulty: 'beginner',
@@ -1772,6 +1779,10 @@ for (let i = 0; i < 8; i++) {
             hints: ['This is complete — run it and verify the output', 'Should log: 1, 2, 4, 5, 7, 8, 10, 11, 13, 14'],
             expectedOutput: ['1', '2', '4', '5', '7', '8', '10', '11', '13', '14'],
           }
+        ]
+      }
+    ]
+  },
 
   /* ══════════════════════════════════════════
      08 — FUNCTIONS
@@ -1844,6 +1855,10 @@ console.log("Area:", area.toFixed(2)); // Area: 78.54`,
             hints: ['Math.PI is the built-in pi constant', 'radius ** 2 squares the radius', 'toFixed(2) rounds to 2 decimal places'],
             expectedOutput: ['Area: 78.54'],
           }
+        ]
+      },
+      {
+        id: '08-b-expressions-fn',
         title: 'Function Expressions',
         difficulty: 'beginner',
         estimatedMinutes: 10,
@@ -1942,6 +1957,8 @@ console.log(greet("Sam")); // Hi, Sam!`,
               { type: 'contains-string', text: '=>', description: 'Use arrow function syntax' },
             ],
           }
+        ]
+      },
       {
         id: '08-d-params-args',
         title: 'Parameters & Arguments',
@@ -2023,6 +2040,10 @@ console.log(clamp(15, 0, 10));  // 10`,
             hints: ['This is complete — run it', 'Early returns handle the edge cases cleanly'],
             expectedOutput: ['5', '0', '10'],
           }
+        ]
+      },
+      {
+        id: '08-f-defaults-rest',
         title: 'Default Params & Rest',
         difficulty: 'intermediate',
         estimatedMinutes: 12,
@@ -2064,6 +2085,10 @@ greetAll(undefined, "Merlin");  // uses default greeting`,
             hints: ['This is complete — run it', 'undefined as first arg triggers the default'],
             expectedOutput: ['Hi, Brian!', 'Hi, Alex!', 'Hi, Sam!', 'Hello, Merlin!'],
           }
+        ]
+      }
+    ]
+  },
 
   /* ══════════════════════════════════════════
      09 — SCOPE & CLOSURES
@@ -2176,6 +2201,10 @@ console.log(makeCounter()); // 1`,
             hints: ['Each function call gets a fresh count=0', 'To persist count across calls you need a closure (next lesson)'],
             expectedOutput: ['1', '1', '1'],
           }
+        ]
+      },
+      {
+        id: '09-c-block-scope',
         title: 'Block Scope',
         difficulty: 'intermediate',
         estimatedMinutes: 10,
@@ -2275,6 +2304,10 @@ console.log(double(10));  // 20`,
             hints: ['This is complete — run it', 'Each call to makeMultiplier creates a new closure with its own factor'],
             expectedOutput: ['10', '15', '20'],
           }
+        ]
+      },
+      {
+        id: '09-e-hoisting',
         title: 'Hoisting',
         difficulty: 'intermediate',
         estimatedMinutes: 10,
@@ -2385,6 +2418,10 @@ console.log("Middle:", middle);`,
             hints: ['This is complete — run it and change the games array'],
             expectedOutput: ['First: Zelda', 'Last: Doom', 'Middle: Minecraft'],
           }
+        ]
+      },
+      {
+        id: '10-b-array-methods-mutate',
         title: 'Array Methods — Mutation',
         difficulty: 'intermediate',
         estimatedMinutes: 12,
@@ -2468,6 +2505,8 @@ console.log("Result:", result); // 240`,
             hints: ['This is complete — run it and verify', 'Chain: filter → map → reduce'],
             expectedOutput: ['Result: 240'],
           }
+        ]
+      },
       {
         id: '10-d-object-basics',
         title: 'Object Basics',
@@ -2524,6 +2563,10 @@ console.log(carSummary(car));`,
             hints: ['toLocaleString() formats numbers with commas', 'Access properties with dot notation inside the template literal'],
             expectedOutput: ['2019 Toyota Corolla — 45,000 miles'],
           }
+        ]
+      },
+      {
+        id: '10-e-object-methods',
         title: 'Object Methods & Spread',
         difficulty: 'intermediate',
         estimatedMinutes: 12,
@@ -2559,6 +2602,10 @@ for (const [key, value] of Object.entries(config)) {
             hints: ['Object.entries returns [key, value] pairs', 'Destructure each pair in the for...of: [key, value]'],
             expectedOutput: ['fps = 60', 'resolution = 1080p', 'fullscreen = true'],
           }
+        ]
+      },
+      {
+        id: '10-f-destructuring',
         title: 'Destructuring',
         difficulty: 'intermediate',
         estimatedMinutes: 12,
@@ -2611,6 +2658,10 @@ console.log(score);   // 9500`,
             hints: ['This is complete — run it', 'Destructure nested objects in two separate statements or use nested destructuring'],
             expectedOutput: ['200', 'Brian', '9500'],
           }
+        ]
+      }
+    ]
+  },
 
   /* ══════════════════════════════════════════
      11 — PROMISES & ASYNC
@@ -2812,6 +2863,10 @@ getUser(1)
             hints: ['This is complete — run it', 'Each .then() receives the return value of the previous one'],
             expectedOutput: ['Result: 42'],
           }
+        ]
+      },
+      {
+        id: '11-e-async-await',
         title: 'async / await',
         difficulty: 'intermediate',
         estimatedMinutes: 15,
@@ -2910,6 +2965,10 @@ runSafely(false);`,
             hints: ['This is complete — run it', 'true → success path, false → catch path'],
             expectedOutput: ['Operation successful!', 'Handled: Operation failed!'],
           }
+        ]
+      }
+    ]
+  },
 
   /* ══════════════════════════════════════════
      12 — DOM MANIPULATION
