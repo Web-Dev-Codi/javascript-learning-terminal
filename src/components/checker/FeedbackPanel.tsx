@@ -6,11 +6,15 @@ import { MessageDictionary } from "./messages";
 interface FeedbackPanelProps {
 	diagnostics: Diagnostic[];
 	onGoToLine?: (line: number) => void;
+	collapsible?: boolean;
+	expanded?: boolean;
 }
 
 export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 	diagnostics,
 	onGoToLine,
+	collapsible,
+	expanded,
 }) => {
 	const [expandedDiagnostics, setExpandedDiagnostics] = useState<Set<string>>(
 		new Set(),
@@ -79,6 +83,19 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 		);
 	}
 
+	if (collapsible && !expanded) {
+		return (
+			<div className={`${styles.feedbackPanel} ${styles.collapsible}`}>
+				<div className={styles.header}>
+					<span className={styles.title}>ISSUES</span>
+					<span className={styles.count}>
+						{diagnostics.length}
+					</span>
+				</div>
+			</div>
+		);
+	}
+
 	const errorCount = diagnostics.filter((d) => d.severity === "error").length;
 	const warningCount = diagnostics.filter(
 		(d) => d.severity === "warning",
@@ -95,7 +112,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 	}
 
 	return (
-		<div className={styles.feedbackPanel}>
+		<div className={`${styles.feedbackPanel} ${collapsible ? styles.collapsible : ""}`}>
 			<div className={styles.header}>
 				<span className={styles.title}>ISSUES</span>
 				<span className={`${styles.count} ${countSeverityClass}`}>
