@@ -5,7 +5,7 @@ import { createServer, type IncomingMessage } from "node:http";
 import { WebSocket, WebSocketServer } from "ws";
 import { config } from "./config.js";
 import { connection, runQueue, runQueueEvents } from "./queue.js";
-import { runInWorker } from "./runner/runInWorker.js";
+import { runInPool } from "./runner/workerPool.js";
 import type { RunnerEvent, RunPayload } from "./runner/types.js";
 
 // Simple in-memory queue for development without Redis
@@ -48,11 +48,8 @@ const processMemoryQueue = async () => {
 			maxOutputLines: config.maxOutputLines,
 		};
 
-		const result = await runInWorker({
-			payload,
-			onEvent: (event) => {
-				publishEvent(job.id, event);
-			},
+		const result = await runInPool(payload, (event) => {
+			publishEvent(job.id, event);
 		});
 
 		publishEvent(job.id, {
@@ -281,13 +278,10 @@ const runnerWorker = config.useMemoryQueue
 					maxOutputLines: config.maxOutputLines,
 				};
 
-				return await runInWorker({
-					payload,
-					onEvent: (event) => {
-						job.updateProgress(event).catch(() => {
-							// Progress updates are best-effort; ignore errors
-						});
-					},
+				return await runInPool(payload, (event) => {
+					job.updateProgress(event).catch(() => {
+						// Progress updates are best-effort; ignore errors
+					});
 				});
 			},
 			{

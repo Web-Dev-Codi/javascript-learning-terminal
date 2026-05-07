@@ -34,11 +34,21 @@ body::before {
     0deg, 
     transparent, 
     transparent 2px,
-    rgba(0,0,0,0.13) 2px, 
-    rgba(0,0,0,0.13) 4px
+    rgba(0,0,0,0.28) 2px, 
+    rgba(0,0,0,0.28) 4px
   );
   pointer-events: none;
   z-index: var(--z-overlay);
+  animation: scanlinesMove 6s linear infinite;
+}
+
+@keyframes scanlinesMove {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 100vh;
+  }
 }
 
 /* Perspective Grid */
@@ -140,27 +150,34 @@ body::after {
   background: var(--bg-input);
 }
 
-/* Border Utilities */
-.border-dim {
-  border: 1px solid var(--border-dim);
+/* Neon Tooltip System */
+[data-tooltip] {
+  position: relative;
 }
 
-.border-mid {
-  border: 1px solid var(--border-mid);
-}
-
-.border-cyan {
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-panel);
+  color: var(--neon-cyan);
   border: 1px solid var(--neon-cyan);
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: var(--z-overlay);
+  box-shadow: var(--glow-cyan);
+  border-radius: var(--radius-sm);
 }
 
-.border-pink {
-  border: 1px solid var(--neon-pink);
-}
-
-.border-purple {
-  border: 1px solid var(--neon-purple);
-}
-
-.border-green {
-  border: 1px solid var(--neon-green);
+[data-tooltip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
 }

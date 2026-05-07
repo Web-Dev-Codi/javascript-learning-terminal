@@ -12,6 +12,8 @@ import {
 	keymap,
 	lineNumbers,
 } from '@codemirror/view'
+import { syntaxHighlighting, HighlightStyle } from '@codemirror/language'
+import { tags } from '@lezer/highlight'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Diagnostic as AppDiagnostic } from '../../types/lesson'
 
@@ -24,12 +26,31 @@ interface UseCodeMirrorOptions {
 	highlightLines?: number[]
 }
 
+const synthHighlightStyle = HighlightStyle.define([
+  { tag: tags.keyword, color: 'var(--neon-pink)' },
+  { tag: tags.controlKeyword, color: 'var(--neon-pink)' },
+  { tag: tags.definitionKeyword, color: 'var(--neon-pink)' },
+  { tag: tags.typeKeyword, color: 'var(--neon-pink)' },
+  { tag: tags.variableName, color: 'var(--neon-cyan)' },
+  { tag: tags.name, color: 'var(--neon-cyan)' },
+  { tag: tags.propertyName, color: 'var(--neon-purple)' },
+  { tag: tags.string, color: 'var(--neon-yellow)' },
+  { tag: tags.number, color: 'var(--neon-orange)' },
+  { tag: tags.comment, color: 'var(--text-muted)', fontStyle: 'italic' },
+  { tag: tags.operator, color: 'var(--text-primary)' },
+  { tag: tags.punctuation, color: 'var(--text-primary)' },
+  { tag: tags.bracket, color: 'var(--text-primary)' },
+  { tag: tags.function(tags.variableName), color: 'var(--neon-green)' },
+  { tag: tags.className, color: 'var(--neon-green)' },
+  { tag: tags.special(tags.brace), color: 'var(--neon-cyan)' },
+])
+
 const synthTheme = EditorView.theme({
 	'&': {
 		color: 'var(--text-primary)',
 		backgroundColor: 'var(--bg-input)',
 		fontFamily: 'var(--font-mono)',
-		fontSize: '12px',
+    fontSize: '14px',
 	},
 	'.cm-content': {
 		caretColor: 'var(--neon-cyan)',
@@ -43,7 +64,7 @@ const synthTheme = EditorView.theme({
 		backgroundColor: 'var(--bg-panel)',
 		borderRight: '1px solid var(--border-dim)',
 		color: 'var(--text-muted)',
-		fontSize: '11px',
+  fontSize: '13px',
 	},
 	'.cm-lineNumbers .cm-gutterElement': {
 		padding: '0 7px',
@@ -166,6 +187,7 @@ export const useCodeMirror = ({
 			synthTheme,
 			lineNumbers(),
 			javascript(),
+			syntaxHighlighting(synthHighlightStyle),
 			lintGutter(),
 			EditorView.editable.of(!readOnly),
 			keymap.of(defaultKeymap),

@@ -13,7 +13,7 @@
 }
 
 .challengeTitle {
-	font-size: 14px;
+	font-size: 21px;
 	font-weight: 700;
 	color: var(--neon-pink);
 	text-shadow: var(--glow-pink);
@@ -21,7 +21,7 @@
 }
 
 .challengePrompt {
-	font-size: 12px;
+	font-size: 21px;
 	color: var(--text-primary);
 	line-height: 1.6;
 	margin-bottom: 16px;
@@ -48,7 +48,7 @@
 }
 
 .editorLabel {
-	font-size: 9px;
+	font-size: 21px;
 	letter-spacing: 2px;
 	text-transform: uppercase;
 	color: var(--neon-pink);
@@ -57,7 +57,7 @@
 
 .resetButton {
 	font-family: var(--font-mono);
-	font-size: 9px;
+	font-size: 21px;
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	padding: 3px 8px;
@@ -78,7 +78,7 @@
 	background: var(--bg-input);
 	padding: 12px;
 	font-family: var(--font-mono);
-	font-size: 11px;
+	font-size: 17px;
 	line-height: 1.6;
 	color: var(--text-primary);
 	overflow-x: auto;
@@ -96,7 +96,7 @@
 
 .hintButton {
 	font-family: var(--font-mono);
-	font-size: 10px;
+	font-size: 21px;
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	padding: 6px 12px;
@@ -121,7 +121,7 @@
 }
 
 .hintItem {
-	font-size: 11px;
+	font-size: 17px;
 	color: var(--text-primary);
 	line-height: 1.6;
 }
@@ -132,7 +132,7 @@
 
 .nextHintButton {
 	font-family: var(--font-mono);
-	font-size: 9px;
+	font-size: 21px;
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	padding: 4px 8px;
@@ -154,7 +154,7 @@
 }
 
 .testsTitle {
-	font-size: 12px;
+	font-size: 21px;
 	font-weight: 600;
 	color: var(--neon-cyan);
 	text-shadow: var(--glow-cyan);
@@ -167,7 +167,7 @@
 }
 
 .testItem {
-	font-size: 11px;
+	font-size: 17px;
 	color: var(--text-primary);
 	line-height: 1.6;
 	margin-bottom: 4px;
