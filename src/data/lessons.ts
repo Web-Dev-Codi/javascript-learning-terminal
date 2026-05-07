@@ -310,7 +310,11 @@ console.log(message);`,
               'Template literals use backticks: `text here`',
               'Embed variables with ${variableName}',
               'Result should be: Player: Brian Schmidt — Level 7'
-            ]
+            ],
+            expectedOutput: ['Player: Brian Schmidt — Level 7'],
+            codeChecks: [
+              { type: 'contains-string', text: '`Player:', description: 'Use a template literal with backticks' },
+            ],
           }
         ]
       },
@@ -363,7 +367,11 @@ console.log(\`Seconds: \${seconds}\`);`,
               'Remaining seconds: use modulo % — totalSeconds % 60, then Math.floor it',
               'Math.floor(137.6 / 60) = 2 minutes',
               'Math.floor(137.6 % 60) = 17 seconds'
-            ]
+            ],
+            expectedOutput: ['Minutes: 2', 'Seconds: 17'],
+            codeChecks: [
+              { type: 'contains-string', text: '%', description: 'Use modulo % to get remaining seconds' },
+            ],
           }
         ]
       },
@@ -413,7 +421,8 @@ values.forEach(function(val) {
   const result = Boolean(val);
   console.log(val, "=>", result);
 });`,
-            hints: ['Run this as-is first — it should work!', 'Notice that "0" (string) is truthy but 0 (number) is falsy']
+            hints: ['Run this as-is first — it should work!', 'Notice that "0" (string) is truthy but 0 (number) is falsy'],
+            expectedOutput: ['0 => false', 'hello => true', '42 => true', '0 => true'],
           }
         ]
       },
@@ -493,7 +502,13 @@ describeValue("hello");
 describeValue(true);
 describeValue(null);
 describeValue(undefined);`,
-            hints: ['typeof val gives you the type string', 'Use a template literal to build the message', 'null will show "object" — that is the expected quirk']
+            hints: ['typeof val gives you the type string', 'Use a template literal to build the message', 'null will show "object" — that is the expected quirk'],
+            expectedOutput: [
+              'The value 42 is of type number',
+              'The value hello is of type string',
+              'The value true is of type boolean',
+              'The value null is of type object',
+            ],
           }
         ]
       }
@@ -568,7 +583,11 @@ const bonus = 150;
 const totalXP
 
 console.log("Total XP:", totalXP); // should be 750`,
-            hints: ['totalXP = (baseXP * difficulty) + bonus', 'Use parentheses to make the order clear', 'Expected result: 750']
+            hints: ['totalXP = (baseXP * difficulty) + bonus', 'Use parentheses to make the order clear', 'Expected result: 750'],
+            expectedOutput: ['Total XP: 750'],
+            codeChecks: [
+              { type: 'contains-string', text: '*', description: 'Multiply baseXP by difficulty' },
+            ],
           }
         ]
       },
@@ -661,7 +680,11 @@ const aIsHigher
 
 console.log("Equal:", areEqual);
 console.log("A is higher:", aIsHigher);`,
-            hints: ['Use > to compare which is higher', 'areEqual should be false', 'aIsHigher should be false since 8500 < 9000']
+            hints: ['Use > to compare which is higher', 'areEqual should be false', 'aIsHigher should be false since 8500 < 9000'],
+            expectedOutput: ['Equal: false', 'A is higher: false'],
+            codeChecks: [
+              { type: 'contains-string', text: '>', description: 'Use > to compare scores' },
+            ],
           }
         ]
       },
@@ -789,7 +812,8 @@ const MAX_SCORE = 1000
 const percentage = (score / MAX_SCORE) * 100
 
 console.log(\`\${playerName}: \${percentage}%\`)`,
-            hints: ['Every statement should end with ;', 'There are 5 statements that need semicolons', 'The last line needs one too']
+            hints: ['Every statement should end with ;', 'There are 5 statements that need semicolons', 'The last line needs one too'],
+            expectedOutput: ['Brian: 50%'],
           }
         ]
       },
@@ -949,7 +973,8 @@ console.log("Lap:", lap);
 
 lap++;
 console.log("Lap:", lap);`,
-            hints: ['Just run it — this one works as starter code', 'Try converting to a loop in scratch.js for bonus practice']
+            hints: ['Just run it — this one works as starter code', 'Try converting to a loop in scratch.js for bonus practice'],
+            expectedOutput: ['Lap: 1', 'Lap: 5'],
           }
         ]
       },
@@ -1030,7 +1055,11 @@ const hasEnoughLevel
 const canUnlock = hasEnoughXP && hasEnoughLevel;
 
 console.log("Can unlock bonus stage:", canUnlock); // false — level is only 4`,
-            hints: ['hasEnoughLevel: level >= 5', 'canUnlock uses && to combine both conditions', 'With level=4, canUnlock should be false']
+            hints: ['hasEnoughLevel: level >= 5', 'canUnlock uses && to combine both conditions', 'With level=4, canUnlock should be false'],
+            expectedOutput: ['Can unlock bonus stage: false'],
+            codeChecks: [
+              { type: 'contains-string', text: '>= 5', description: 'Check level >= 5 using comparison' },
+            ],
           }
         ]
       },
@@ -1123,7 +1152,8 @@ const climate = temp < 0 ? "freezing"
   : "hot";
 
 console.log(\`\${temp}°C is \${climate}\`); // 18°C is mild`,
-            hints: ['This one is complete — run it and then try changing temp to test other ranges']
+            hints: ['This one is complete — run it and then try changing temp to test other ranges'],
+            expectedOutput: ['18°C is mild'],
           }
         ]
       }
@@ -1203,7 +1233,11 @@ console.log("Check complete");`
 
 
 console.log("Check done");`,
-            hints: ['if (condition) { ... }', 'condition: playerScore > 10000', 'Log "High score!" inside the block']
+            hints: ['if (condition) { ... }', 'condition: playerScore > 10000', 'Log "High score!" inside the block'],
+            expectedOutput: ['High score!'],
+            codeChecks: [
+              { type: 'uses-if', description: 'Use an if statement' },
+            ],
           }
         ]
       },
@@ -1251,7 +1285,8 @@ if (number % 2 === 0) {
 } else {
   console.log(number, "is odd");
 }`,
-            hints: ['This one is complete — run it', 'Try changing number to 4 to see the even branch']
+            hints: ['This one is complete — run it', 'Try changing number to 4 to see the even branch'],
+            expectedOutput: ['17 is odd'],
           }
         ]
       },
@@ -1309,7 +1344,12 @@ if (xp < 100) {
 } else {
 
 }`,
-            hints: ['Fill in the Gold and Diamond branches', '750 XP should output Silver', '5000+ should output Diamond']
+            hints: ['Fill in the Gold and Diamond branches', '750 XP should output Silver', '5000+ should output Diamond'],
+            expectedOutput: ['Silver'],
+            codeChecks: [
+              { type: 'contains-string', text: 'console.log("Gold")', description: 'Add log for Gold rank' },
+              { type: 'contains-string', text: 'console.log("Diamond")', description: 'Add log for Diamond rank' },
+            ],
           }
         ]
       },
@@ -1391,7 +1431,12 @@ console.log(getStatusMessage(200));   // OK
 console.log(getStatusMessage(404));   // Not Found
 console.log(getStatusMessage(500));   // Server Error
 console.log(getStatusMessage(418));   // Unknown`,
-            hints: ['Each case needs a return statement (return works like break in a function)', 'case 404: return "Not Found";', 'default: return "Unknown";']
+            hints: ['Each case needs a return statement (return works like break in a function)', 'case 404: return "Not Found";', 'default: return "Unknown";'],
+            expectedOutput: ['OK', 'Not Found', 'Server Error', 'Unknown'],
+            codeChecks: [
+              { type: 'contains-string', text: 'return "Not Found"', description: 'Return "Not Found" for 404' },
+              { type: 'contains-string', text: 'return "Unknown"', description: 'Return "Unknown" as default' },
+            ],
           }
         ]
       },
@@ -1503,7 +1548,11 @@ for (let i = 0; i < weapons.length; i++) {
   const result
   console.log(\`7 × \${i} = \${result}\`);
 }`,
-            hints: ['result = 7 * i', 'The loop goes from i=1 to i=10 inclusive']
+            hints: ['result = 7 * i', 'The loop goes from i=1 to i=10 inclusive'],
+            expectedOutput: ['7 × 1 = 7', '7 × 10 = 70'],
+            codeChecks: [
+              { type: 'contains-string', text: '7 * i', description: 'Multiply 7 by i inside the loop' },
+            ],
           }
         ]
       },
@@ -1558,12 +1607,9 @@ while (balance >= withdrawal) {
 }
 
 console.log("Insufficient funds. Final balance: €" + balance);`,
-            hints: ['This is complete — run it', 'Try changing withdrawal to see different results']
+            hints: ['This is complete — run it', 'Try changing withdrawal to see different results'],
+            expectedOutput: ['Remaining balance: €850', 'Insufficient funds. Final balance: €100'],
           }
-        ]
-      },
-      {
-        id: '07-c-do-while',
         title: 'do...while Loop',
         difficulty: 'beginner',
         estimatedMinutes: 8,
@@ -1643,11 +1689,9 @@ for (const num of numbers) {
 }
 
 console.log("Total:", total); // 133`,
-            hints: ['This is complete — run it', 'Try adding more numbers to the array']
+            hints: ['This is complete — run it', 'Try adding more numbers to the array'],
+            expectedOutput: ['Total: 133'],
           }
-        ]
-      },
-      {
         id: '07-e-for-in',
         title: 'for...in Loop',
         difficulty: 'beginner',
@@ -1725,12 +1769,9 @@ for (let i = 0; i < 8; i++) {
   if (i % 3 === 0) continue;
   console.log(i);
 }`,
-            hints: ['This is complete — run it and verify the output', 'Should log: 1, 2, 4, 5, 7, 8, 10, 11, 13, 14']
+            hints: ['This is complete — run it and verify the output', 'Should log: 1, 2, 4, 5, 7, 8, 10, 11, 13, 14'],
+            expectedOutput: ['1', '2', '4', '5', '7', '8', '10', '11', '13', '14'],
           }
-        ]
-      }
-    ]
-  },
 
   /* ══════════════════════════════════════════
      08 — FUNCTIONS
@@ -1800,12 +1841,9 @@ console.log("Sum:", sum);  // 10`
 
 const area = circleArea(5);
 console.log("Area:", area.toFixed(2)); // Area: 78.54`,
-            hints: ['Math.PI is the built-in pi constant', 'radius ** 2 squares the radius', 'toFixed(2) rounds to 2 decimal places']
+            hints: ['Math.PI is the built-in pi constant', 'radius ** 2 squares the radius', 'toFixed(2) rounds to 2 decimal places'],
+            expectedOutput: ['Area: 78.54'],
           }
-        ]
-      },
-      {
-        id: '08-b-expressions-fn',
         title: 'Function Expressions',
         difficulty: 'beginner',
         estimatedMinutes: 10,
@@ -1898,10 +1936,12 @@ console.log(greet("Sam")); // Hi, Sam!`,
               'const square = x => x * x;',
               'const isEven = n => n % 2 === 0;',
               'const greet = name => `Hi, ${name}!`;'
-            ]
+            ],
+            expectedOutput: ['25', 'true', 'Hi, Sam!'],
+            codeChecks: [
+              { type: 'contains-string', text: '=>', description: 'Use arrow function syntax' },
+            ],
           }
-        ]
-      },
       {
         id: '08-d-params-args',
         title: 'Parameters & Arguments',
@@ -1980,12 +2020,9 @@ console.log(divide(10, 0));  // Cannot divide by zero`
 console.log(clamp(5, 0, 10));   // 5
 console.log(clamp(-3, 0, 10));  // 0
 console.log(clamp(15, 0, 10));  // 10`,
-            hints: ['This is complete — run it', 'Early returns handle the edge cases cleanly']
+            hints: ['This is complete — run it', 'Early returns handle the edge cases cleanly'],
+            expectedOutput: ['5', '0', '10'],
           }
-        ]
-      },
-      {
-        id: '08-f-defaults-rest',
         title: 'Default Params & Rest',
         difficulty: 'intermediate',
         estimatedMinutes: 12,
@@ -2024,12 +2061,9 @@ console.log(sum(1, 2, 3, 4, 5)); // 15`
 
 greetAll("Hi", "Brian", "Alex", "Sam");
 greetAll(undefined, "Merlin");  // uses default greeting`,
-            hints: ['This is complete — run it', 'undefined as first arg triggers the default']
+            hints: ['This is complete — run it', 'undefined as first arg triggers the default'],
+            expectedOutput: ['Hi, Brian!', 'Hi, Alex!', 'Hi, Sam!', 'Hello, Merlin!'],
           }
-        ]
-      }
-    ]
-  },
 
   /* ══════════════════════════════════════════
      09 — SCOPE & CLOSURES
@@ -2139,12 +2173,9 @@ createSecret();
 console.log(makeCounter()); // 1
 console.log(makeCounter()); // 1 — each call has its own count
 console.log(makeCounter()); // 1`,
-            hints: ['Each function call gets a fresh count=0', 'To persist count across calls you need a closure (next lesson)']
+            hints: ['Each function call gets a fresh count=0', 'To persist count across calls you need a closure (next lesson)'],
+            expectedOutput: ['1', '1', '1'],
           }
-        ]
-      },
-      {
-        id: '09-c-block-scope',
         title: 'Block Scope',
         difficulty: 'intermediate',
         estimatedMinutes: 10,
@@ -2241,12 +2272,9 @@ const triple = makeMultiplier(3);
 console.log(double(5));   // 10
 console.log(triple(5));   // 15
 console.log(double(10));  // 20`,
-            hints: ['This is complete — run it', 'Each call to makeMultiplier creates a new closure with its own factor']
+            hints: ['This is complete — run it', 'Each call to makeMultiplier creates a new closure with its own factor'],
+            expectedOutput: ['10', '15', '20'],
           }
-        ]
-      },
-      {
-        id: '09-e-hoisting',
         title: 'Hoisting',
         difficulty: 'intermediate',
         estimatedMinutes: 10,
@@ -2354,12 +2382,9 @@ const middle = games[Math.floor(games.length / 2)];
 console.log("First:", first);
 console.log("Last:", last);
 console.log("Middle:", middle);`,
-            hints: ['This is complete — run it and change the games array']
+            hints: ['This is complete — run it and change the games array'],
+            expectedOutput: ['First: Zelda', 'Last: Doom', 'Middle: Minecraft'],
           }
-        ]
-      },
-      {
-        id: '10-b-array-methods-mutate',
         title: 'Array Methods — Mutation',
         difficulty: 'intermediate',
         estimatedMinutes: 12,
@@ -2440,10 +2465,9 @@ const result = prices
   .reduce((sum, p) => sum + p, 0);
 
 console.log("Result:", result); // 240`,
-            hints: ['This is complete — run it and verify', 'Chain: filter → map → reduce']
+            hints: ['This is complete — run it and verify', 'Chain: filter → map → reduce'],
+            expectedOutput: ['Result: 240'],
           }
-        ]
-      },
       {
         id: '10-d-object-basics',
         title: 'Object Basics',
@@ -2497,12 +2521,9 @@ function carSummary(car) {
 }
 
 console.log(carSummary(car));`,
-            hints: ['toLocaleString() formats numbers with commas', 'Access properties with dot notation inside the template literal']
+            hints: ['toLocaleString() formats numbers with commas', 'Access properties with dot notation inside the template literal'],
+            expectedOutput: ['2019 Toyota Corolla — 45,000 miles'],
           }
-        ]
-      },
-      {
-        id: '10-e-object-methods',
         title: 'Object Methods & Spread',
         difficulty: 'intermediate',
         estimatedMinutes: 12,
@@ -2535,12 +2556,9 @@ console.log(settings);         // unchanged!`
 for (const [key, value] of Object.entries(config)) {
   console.log(\`\${key} = \${value}\`);
 }`,
-            hints: ['Object.entries returns [key, value] pairs', 'Destructure each pair in the for...of: [key, value]']
+            hints: ['Object.entries returns [key, value] pairs', 'Destructure each pair in the for...of: [key, value]'],
+            expectedOutput: ['fps = 60', 'resolution = 1080p', 'fullscreen = true'],
           }
-        ]
-      },
-      {
-        id: '10-f-destructuring',
         title: 'Destructuring',
         difficulty: 'intermediate',
         estimatedMinutes: 12,
@@ -2590,12 +2608,9 @@ const { name, score } = response.data;
 console.log(status);  // 200
 console.log(name);    // Brian
 console.log(score);   // 9500`,
-            hints: ['This is complete — run it', 'Destructure nested objects in two separate statements or use nested destructuring']
+            hints: ['This is complete — run it', 'Destructure nested objects in two separate statements or use nested destructuring'],
+            expectedOutput: ['200', 'Brian', '9500'],
           }
-        ]
-      }
-    ]
-  },
 
   /* ══════════════════════════════════════════
      11 — PROMISES & ASYNC
@@ -2794,12 +2809,9 @@ getUser(1)
   .then(n => n * 2)
   .then(n => console.log("Result:", n))  // 42
   .catch(err => console.error(err));`,
-            hints: ['This is complete — run it', 'Each .then() receives the return value of the previous one']
+            hints: ['This is complete — run it', 'Each .then() receives the return value of the previous one'],
+            expectedOutput: ['Result: 42'],
           }
-        ]
-      },
-      {
-        id: '11-e-async-await',
         title: 'async / await',
         difficulty: 'intermediate',
         estimatedMinutes: 15,
@@ -2895,12 +2907,9 @@ async function runSafely(succeed) {
 
 runSafely(true);
 runSafely(false);`,
-            hints: ['This is complete — run it', 'true → success path, false → catch path']
+            hints: ['This is complete — run it', 'true → success path, false → catch path'],
+            expectedOutput: ['Operation successful!', 'Handled: Operation failed!'],
           }
-        ]
-      }
-    ]
-  },
 
   /* ══════════════════════════════════════════
      12 — DOM MANIPULATION
