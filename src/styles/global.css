@@ -69,6 +69,7 @@ body::after {
 	transform: perspective(300px) rotateX(60deg);
 	transform-origin: bottom center;
 	pointer-events: none;
+	z-index: var(--z-base);
 }
 
 /* Scrollbar Styling */

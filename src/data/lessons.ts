@@ -2911,7 +2911,7 @@ runSafely(false);`,
           {
             type: 'code-example',
             label: 'DOM tree structure (conceptual)',
-            code: `/*
+            code: `
   HTML:
   <html>
     <body>
@@ -2926,7 +2926,7 @@ runSafely(false);`,
       └── body
           ├── h1 #title ("Hello")
           └── p .intro ("World")
-*/
+
 
 // In a browser environment:
 // console.log(document.title);      // page title
@@ -2958,7 +2958,7 @@ runSafely(false);`,
           {
             type: 'code-example',
             label: 'Selection methods',
-            code: `/*  In a browser — these would work on the page:
+            code: `//  In a browser — these would work on the page:
 
 // By ID
 const title = document.getElementById("title");
@@ -2976,7 +2976,7 @@ const firstLink = document.querySelector("nav a:first-child");
 // Convert NodeList to Array for array methods
 const itemArray = Array.from(items);
 itemArray.forEach(el => console.log(el.textContent));
-*/
+
 
 console.log("DOM APIs require a browser environment");
 console.log("Run this lesson code in the browser console");`
@@ -3006,7 +3006,7 @@ console.log("Run this lesson code in the browser console");`
           {
             type: 'code-example',
             label: 'Modifying elements',
-            code: `/*  In a browser:
+            code: `//  In a browser:
 
 const heading = document.querySelector("h1");
 
@@ -3026,7 +3026,7 @@ heading.classList.toggle("active");
 const link = document.querySelector("a");
 link.setAttribute("href", "https://example.com");
 link.setAttribute("target", "_blank");
-*/
+
 
 console.log("Try these in your browser DevTools console!");`
           }
@@ -3048,7 +3048,7 @@ console.log("Try these in your browser DevTools console!");`
           {
             type: 'code-example',
             label: 'Creating and removing elements',
-            code: `/*  In a browser:
+            code: `//  In a browser:
 
 // Create a new list item
 const li = document.createElement("li");
@@ -3068,7 +3068,7 @@ document.body.appendChild(card);
 const oldItem = document.querySelector(".old");
 oldItem.remove();  // modern
 // oldItem.parentNode.removeChild(oldItem);  // older
-*/
+
 
 console.log("createElement + appendChild in the browser!");`
           },
@@ -3097,7 +3097,7 @@ console.log("createElement + appendChild in the browser!");`
           {
             type: 'code-example',
             label: 'Event listeners',
-            code: `/*  In a browser:
+            code: `//  In a browser:
 
 const button = document.querySelector("button");
 
@@ -3120,7 +3120,7 @@ const input = document.querySelector("input");
 input.addEventListener("input", (e) => {
   console.log("Value:", e.target.value);
 });
-*/
+
 
 console.log("Add event listeners in the browser!");`
           },
@@ -3149,7 +3149,7 @@ console.log("Add event listeners in the browser!");`
           {
             type: 'code-example',
             label: 'Event delegation',
-            code: `/*  In a browser:
+            code: `// In a browser:
 
 // Instead of this (one listener per button — bad at scale):
 document.querySelectorAll("button").forEach(btn => {
@@ -3172,7 +3172,7 @@ toolbar.addEventListener("click", (e) => {
   }
 });
 // Works for buttons added dynamically after page load!
-*/
+
 
 console.log("Event delegation — one listener rules them all");`
           },
