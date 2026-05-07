@@ -48,12 +48,29 @@ export interface ChallengeSection {
   starterCode: string
   hints?: string[]
   tests?: ChallengeTest[]
+  expectedOutput?: string[]
+  codeChecks?: CodeCheck[]
 }
 
 export interface ChallengeTest {
   id: string
   description: string
   fn: string
+}
+
+export type CodeCheck =
+  | { type: 'declares-const'; name: string; description: string }
+  | { type: 'declares-let'; name: string; description: string }
+  | { type: 'declares-function'; name: string; description: string }
+  | { type: 'uses-if'; description: string }
+  | { type: 'has-return'; description: string }
+  | { type: 'contains-string'; text: string; description: string }
+  | { type: 'custom'; description: string; check: string }
+
+export interface ValidationResult {
+  pass: boolean
+  description: string
+  message: string
 }
 
 export interface Diagnostic {
