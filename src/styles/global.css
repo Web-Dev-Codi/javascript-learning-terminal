@@ -34,11 +34,21 @@ body::before {
     0deg, 
     transparent, 
     transparent 2px,
-    rgba(0,0,0,0.13) 2px, 
-    rgba(0,0,0,0.13) 4px
+    rgba(0,0,0,0.28) 2px, 
+    rgba(0,0,0,0.28) 4px
   );
   pointer-events: none;
   z-index: var(--z-overlay);
+  animation: scanlinesMove 6s linear infinite;
+}
+
+@keyframes scanlinesMove {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 100vh;
+  }
 }
 
 /* Perspective Grid */

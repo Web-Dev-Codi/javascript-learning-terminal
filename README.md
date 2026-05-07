@@ -8,7 +8,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
-*Immerse yourself in a synthwave-inspired coding experience while mastering JavaScript fundamentals*
+_Immerse yourself in a synthwave-inspired coding experience while mastering JavaScript fundamentals_
 
 </div>
 
@@ -73,25 +73,25 @@ Whether you're a complete beginner or looking to reinforce your JavaScript knowl
 
 <!-- ![Main Workspace](docs/screenshots/workspace.png) -->
 
-*[Placeholder: Screenshot of the main workspace showing the three-panel layout with sidebar, lesson panel, and code editor]*
+_[Placeholder: Screenshot of the main workspace showing the three-panel layout with sidebar, lesson panel, and code editor]_
 
 ### Code Editor in Action
 
 <!-- ![Code Editor](docs/screenshots/editor.png) -->
 
-*[Placeholder: Screenshot showing the code editor with syntax highlighting, console output, and run button]*
+_[Placeholder: Screenshot showing the code editor with syntax highlighting, console output, and run button]_
 
 ### Lesson Navigation
 
 <!-- ![Lesson Navigation](docs/screenshots/navigation.png) -->
 
-*[Placeholder: Screenshot of the sidebar with lesson tree and progress indicators]*
+_[Placeholder: Screenshot of the sidebar with lesson tree and progress indicators]_
 
 ### Mobile View
 
 <!-- ![Mobile View](docs/screenshots/mobile.png) -->
 
-*[Placeholder: Screenshot showing the mobile-optimized interface with tab navigation]*
+_[Placeholder: Screenshot showing the mobile-optimized interface with tab navigation]_
 
 ---
 

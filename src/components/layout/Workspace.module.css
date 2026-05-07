@@ -22,7 +22,7 @@
 	display: none;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 768px) {
 	.desktopLayout {
 		display: none;
 	}
@@ -34,6 +34,12 @@
 		flex-shrink: 1;
 		flex-basis: 0%;
 		overflow: hidden;
+	}
+}
+
+@media (max-width: 480px) {
+	.panel {
+		min-height: 0;
 	}
 }
 
