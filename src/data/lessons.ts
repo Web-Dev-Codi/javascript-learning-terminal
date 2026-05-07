@@ -84,7 +84,12 @@ console.log(lives);`,
               'const requires an immediate value: const x = value;',
               'Don\'t forget the semicolons at the end of each line',
               'Strings need quote marks: "like this"'
-            ]
+            ],
+            expectedOutput: ['SYNTHSCRIPT', '3'],
+            codeChecks: [
+              { type: 'declares-const', name: 'gameName', description: 'Declare gameName as a const' },
+              { type: 'declares-let', name: 'lives', description: 'Declare lives as a let' },
+            ],
           }
         ]
       },
@@ -138,7 +143,25 @@ console.log(CURRENT_score);`,
               'camelCase: first word lowercase, rest capitalised — maxLevel',
               'Replace underscores and fix capitalisation',
               'The values stay the same, only the names change'
-            ]
+            ],
+            expectedOutput: ['10', 'Brian', '500'],
+            codeChecks: [
+              {
+                type: 'contains-string',
+                text: 'maxLevel',
+                description: 'Rename max_level to camelCase maxLevel',
+              },
+              {
+                type: 'contains-string',
+                text: 'playerName',
+                description: 'Rename Player_Name to camelCase playerName',
+              },
+              {
+                type: 'contains-string',
+                text: 'currentScore',
+                description: 'Rename CURRENT_score to camelCase currentScore',
+              },
+            ],
           }
         ]
       },
@@ -191,7 +214,20 @@ console.log("Final health:", health); // should print 90`,
               'Subtraction reassignment: health = health - 30; or health -= 30;',
               'Addition reassignment: health = health + 20; or health += 20;',
               'The final value should be 90'
-            ]
+            ],
+            expectedOutput: ['Final health: 90'],
+            codeChecks: [
+              {
+                type: 'contains-string',
+                text: '- 30',
+                description: 'Subtract 30 damage from health',
+              },
+              {
+                type: 'contains-string',
+                text: '+ 20',
+                description: 'Add 20 health from potion',
+              },
+            ],
           }
         ]
       }
