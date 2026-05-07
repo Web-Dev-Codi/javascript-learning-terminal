@@ -1,0 +1,30 @@
+.desktopLayout {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0%;
+	overflow: hidden;
+}
+
+.sidebar {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	border-right: 1px solid var(--border-mid);
+	background: var(--bg-panel);
+}
+
+.lessonPanel {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	background: var(--bg-panel-alt);
+}
+
+.editorPanel {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	background: var(--bg-void);
+}
