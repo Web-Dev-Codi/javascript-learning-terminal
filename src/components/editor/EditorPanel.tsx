@@ -9,6 +9,7 @@ import { ChallengeInfo } from "./ChallengeInfo";
 import { ConsolePanel } from "./ConsolePanel";
 import styles from "./EditorPanel.module.css";
 import { useEditor } from "./useEditor";
+import { useResponsive } from "../../hooks/useResponsive";
 
 export function EditorPanel() {
 	const { activeLesson } = useLessonStore();
@@ -147,6 +148,8 @@ console.log("Hello, world!");`;
 		extraDiagnostics: runtimeDiagnostics,
 	});
 
+	const { isMobile, isTablet } = useResponsive();
+
 	const handleReset = () => {
 		resetCode();
 		clearConsole();
@@ -178,7 +181,7 @@ console.log("Hello, world!");`;
 		<div className={styles.editorPanel}>
 			{activeTab !== "scratch" && <ChallengeInfo />}
 			{/* Editor Section */}
-			<div className={styles.editorWrap}>
+			<div className={isMobile ? styles.editorWrapMobile : styles.editorWrap}>
 				<div className={styles.editorBar}>
 					<div className={styles.editorTabs}>
 						<button
@@ -224,18 +227,20 @@ console.log("Hello, world!");`;
 			</div>
 
 			{/* Console Section */}
-			<div className={styles.bottomSection}>
-				<div className={styles.consoleWrap}>
+			<div className={isMobile || isTablet ? styles.bottomSectionStacked : styles.bottomSection}>
+				<div className={isMobile || isTablet ? styles.consoleWrapFull : styles.consoleWrap}>
 					<ConsolePanel />
 				</div>
 
 				{/* Feedback Panel */}
-				<div className={styles.feedbackWrap}>
-					<FeedbackPanel
-						diagnostics={diagnostics}
-						onGoToLine={(line) => goToLine(line)}
-					/>
-				</div>
+				{!isMobile && (
+					<div className={styles.feedbackWrap}>
+						<FeedbackPanel
+							diagnostics={diagnostics}
+							onGoToLine={(line) => goToLine(line)}
+						/>
+					</div>
+				)}
 			</div>
 		</div>
 	);
