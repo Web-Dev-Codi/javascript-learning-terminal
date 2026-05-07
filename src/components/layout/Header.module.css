@@ -108,3 +108,24 @@
 		display: none;
 	}
 }
+
+.hamburgerButton {
+	font-size: var(--text-2xl);
+	color: var(--neon-cyan);
+	background: transparent;
+	border: 1px solid var(--border-dim);
+	padding: var(--spacing-xs) var(--spacing-sm);
+	cursor: pointer;
+	transition: all 0.12s ease;
+	flex-shrink: 0;
+	min-height: var(--touch-target);
+	min-width: var(--touch-target);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.hamburgerButton:hover {
+	border-color: var(--neon-cyan);
+	box-shadow: var(--glow-cyan);
+}

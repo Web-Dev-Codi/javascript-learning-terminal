@@ -1,9 +1,11 @@
 import type React from 'react'
+import { useResponsive } from '../../hooks/useResponsive'
 import { useLessonStore } from '../../store/lessonStore'
 import styles from './Header.module.css'
 
 export const Header: React.FC = () => {
-  const { getProgress, activeLesson, currentStreak } = useLessonStore()
+  const { getProgress, activeLesson, currentStreak, sidebarOpen, toggleSidebar } = useLessonStore()
+  const { isDesktop } = useResponsive()
   const progress = getProgress()
   
   // Get lesson number from active lesson ID
@@ -17,6 +19,17 @@ export const Header: React.FC = () => {
 
   return (
     <header className={styles.header}>
+      {!isDesktop && (
+        <button
+          type="button"
+          className={styles.hamburgerButton}
+          onClick={toggleSidebar}
+          aria-expanded={sidebarOpen}
+          aria-label="Toggle lesson sidebar"
+        >
+          {sidebarOpen ? '✕' : '☰'}
+        </button>
+      )}
       <div className={styles.logoSection}>
         <div className={styles.logo}>
           <span className={styles.logoBracket}>{'{'}</span>
