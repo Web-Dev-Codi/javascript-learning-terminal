@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl";
 
@@ -50,17 +50,15 @@ export function useResponsiveValue(): ResponsiveInfo {
 	useEffect(() => {
 		if (typeof document === "undefined") return;
 
-		const observer = new ResizeObserver(
-			useCallback((entries: ResizeObserverEntry[]) => {
-				const width = entries[0]?.contentRect.width ?? document.documentElement.clientWidth;
-				const orientation: "portrait" | "landscape" = window.matchMedia(
-					"(orientation: portrait)",
-				).matches
-					? "portrait"
-					: "landscape";
-				setInfo(deriveResponsiveInfo(width, orientation));
-			}, []),
-		);
+		const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+			const width = entries[0]?.contentRect.width ?? document.documentElement.clientWidth;
+			const orientation: "portrait" | "landscape" = window.matchMedia(
+				"(orientation: portrait)",
+			).matches
+				? "portrait"
+				: "landscape";
+			setInfo(deriveResponsiveInfo(width, orientation));
+		});
 
 		observer.observe(document.documentElement);
 
@@ -79,7 +77,7 @@ export function useResponsiveValue(): ResponsiveInfo {
 		};
 	}, []);
 
-	return useMemo(() => info, [info]);
+	return info;
 }
 
 export function useResponsive(): ResponsiveInfo {
