@@ -1,19 +1,22 @@
 import "./App.css";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Header } from "./components/layout/Header";
+import { ResponsiveShell } from "./components/layout/ResponsiveShell";
 import { StatusBar } from "./components/layout/StatusBar";
 import { Workspace } from "./components/layout/Workspace";
 
 function App() {
 	return (
 		<div className="App">
-			<ErrorBoundary>
-				<Header />
+			<ResponsiveShell>
 				<ErrorBoundary>
-					<Workspace />
+					<Header />
+					<ErrorBoundary>
+						<Workspace />
+					</ErrorBoundary>
+					<StatusBar />
 				</ErrorBoundary>
-				<StatusBar />
-			</ErrorBoundary>
+			</ResponsiveShell>
 		</div>
 	);
 }
