@@ -6,4 +6,5 @@
 	flex-direction: column;
 	overflow: hidden;
 	background: var(--bg-void);
+	z-index: var(--base);
 }

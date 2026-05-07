@@ -129,9 +129,6 @@ export function LessonPanel() {
 							currentLesson.subLessons &&
 							currentLesson.subLessons.length > 0 && (
 								<div className={styles.subLessonList}>
-									<div className={styles.subLessonLabel}>
-										{"// IN THIS LESSON"}
-									</div>
 									{currentLesson.subLessons.map((sub, idx) => (
 										<div
 											key={sub.id}

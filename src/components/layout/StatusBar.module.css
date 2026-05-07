@@ -13,6 +13,7 @@
   color: var(--text-dim);
   text-shadow: 0 0 6px #7a5a9e44;
   flex-shrink: 0;
+  position: relative;
   z-index: var(--z-header);
   gap: 10px;
   overflow: hidden;

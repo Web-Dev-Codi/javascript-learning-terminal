@@ -11,6 +11,7 @@
 		0 1px 0 #bf00ff33,
 		0 2px 20px #bf00ff22;
 	background: linear-gradient(90deg, #0d0028 0%, #150040 50%, #0d0028 100%);
+	position: relative;
 	z-index: var(--z-header);
 	flex-shrink: 0;
 	gap: 10px;

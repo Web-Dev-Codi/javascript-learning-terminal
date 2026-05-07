@@ -6,6 +6,7 @@
   background: var(--bg-panel);
   border-top: 1px solid var(--border-mid);
   box-shadow: 0 -1px 0 #bf00ff33;
+  position: relative;
   z-index: var(--z-header);
   flex-shrink: 0;
 }

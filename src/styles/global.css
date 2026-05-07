@@ -69,7 +69,6 @@ body::after {
 	transform: perspective(300px) rotateX(60deg);
 	transform-origin: bottom center;
 	pointer-events: none;
-	z-index: var(--z-base);
 }
 
 /* Scrollbar Styling */
@@ -177,7 +176,7 @@ body::after {
 	transition:
 		opacity 0.18s ease,
 		transform 0.18s ease;
-	z-index: var(--z-overlay);
+	z-index: var(--z-tooltip);
 	box-shadow: var(--glow-cyan);
 	border-radius: var(--radius-sm);
 }
