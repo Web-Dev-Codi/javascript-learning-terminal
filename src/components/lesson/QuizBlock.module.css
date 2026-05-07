@@ -9,7 +9,7 @@
 }
 
 .quizLabel {
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	letter-spacing: 3px;
 	text-transform: uppercase;
 	color: var(--neon-purple);
@@ -18,7 +18,7 @@
 }
 
 .quizQuestion {
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	color: var(--text-primary);
 	margin-bottom: 12px;
 	line-height: 1.6;
@@ -37,7 +37,7 @@
 	padding: 8px 12px;
 	border: 1px solid var(--border-dim);
 	cursor: pointer;
-	font-size: 17px;
+	font-size: var(--text-xl);
 	color: var(--text-dim);
 	line-height: 1.5;
 	transition: all 0.12s ease;
@@ -66,7 +66,7 @@
 }
 
 .optionKey {
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	border: 1px solid currentColor;
 	padding: 1px 5px;
 	flex-shrink: 0;
@@ -99,7 +99,7 @@
 }
 
 .explanationContent {
-	font-size: 17px;
+	font-size: var(--text-xl);
 	color: var(--text-primary);
 	line-height: 1.6;
 }

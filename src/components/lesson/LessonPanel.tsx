@@ -140,9 +140,9 @@ export function LessonPanel() {
 											className={styles.subLessonPill}
 											onClick={() => setActiveLesson(sub.id)}
 											onKeyDown={(e) => {
-												if (e.key === 'Enter' || e.key === ' ') {
-													e.preventDefault()
-													setActiveLesson(sub.id)
+												if (e.key === "Enter" || e.key === " ") {
+													e.preventDefault();
+													setActiveLesson(sub.id);
 												}
 											}}
 										>
@@ -165,36 +165,36 @@ export function LessonPanel() {
 									: `${currentLesson.id}-${section.type}-${index}`;
 
 							return (
-							<LessonSection
-								key={sectionKey}
-								lessonId={currentLesson.id}
-								sectionIndex={index}
-								section={section}
-							/>
+								<LessonSection
+									key={sectionKey}
+									lessonId={currentLesson.id}
+									sectionIndex={index}
+									section={section}
+								/>
 							);
 						})}
 
 						{/* Navigation footer */}
 						<div className={styles.lessonFooter}>
-						<button
-							className={`${styles.pageButton} ${isPrevDisabled ? styles.disabled : ""}`}
-							onClick={handlePrev}
-							disabled={isPrevDisabled}
-							type="button"
-							data-tooltip="Previous lesson"
-						>
-							← PREV
-						</button>
+							<button
+								className={`${styles.pageButton} ${isPrevDisabled ? styles.disabled : ""}`}
+								onClick={handlePrev}
+								disabled={isPrevDisabled}
+								type="button"
+								data-tooltip="Previous lesson"
+							>
+								← PREV
+							</button>
 
 							<div className={styles.navInfo}>
 								{dots.length > 0 ? (
 									<div className={styles.dots}>
 										{dots.map((d) => (
-<div
-										key={d.id}
-										className={`${styles.dot} ${d.active ? styles.active : ""} ${d.isSub ? styles.dotSub : ""}`}
-										data-tooltip={d.id}
-									/>
+											<div
+												key={d.id}
+												className={`${styles.dot} ${d.active ? styles.active : ""} ${d.isSub ? styles.dotSub : ""}`}
+												data-tooltip={d.id}
+											/>
 										))}
 									</div>
 								) : (
@@ -204,15 +204,15 @@ export function LessonPanel() {
 								)}
 							</div>
 
-						<button
-							className={`${styles.pageButton} ${styles.nextBtn} ${isNextDisabled ? styles.disabled : ""}`}
-							onClick={handleNext}
-							disabled={isNextDisabled}
-							type="button"
-							data-tooltip="Next lesson"
-						>
-							{canNext ? "NEXT →" : "COMPLETE ✓"}
-						</button>
+							<button
+								className={`${styles.pageButton} ${styles.nextBtn} ${isNextDisabled ? styles.disabled : ""}`}
+								onClick={handleNext}
+								disabled={isNextDisabled}
+								type="button"
+								data-tooltip="Next lesson"
+							>
+								{canNext ? "NEXT →" : "COMPLETE ✓"}
+							</button>
 						</div>
 					</div>
 				) : (

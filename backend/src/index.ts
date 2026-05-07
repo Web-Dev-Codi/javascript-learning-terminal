@@ -52,14 +52,6 @@ const processMemoryQueue = async () => {
 			publishEvent(job.id, event);
 		});
 
-		publishEvent(job.id, {
-			type: "done",
-			data: {
-				success: true,
-				runtimeMs: result.runtimeMs,
-			},
-		});
-
 		job.resolve(result);
 	} catch (error) {
 		publishEvent(job.id, {
@@ -220,8 +212,8 @@ server.on("upgrade", (req: IncomingMessage, socket, head) => {
 
 runQueueEvents?.on(
 	"progress",
-	(args: { jobId: string; data: unknown }, id: string) => {
-		publishEvent(id, args.data as RunnerEvent);
+	({ jobId, data }: { jobId: string; data: unknown }) => {
+		publishEvent(jobId, data as RunnerEvent);
 	},
 );
 

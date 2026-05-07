@@ -17,7 +17,7 @@
 }
 
 .challengeLabel {
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	letter-spacing: 2px;
 	color: var(--neon-pink);
 	text-shadow: var(--glow-pink);
@@ -32,7 +32,7 @@
 
 .noChallenge {
 	padding: 10px 12px;
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	color: var(--text-muted);
 	border-bottom: 1px solid var(--border-dim);
 	background: var(--bg-panel);
@@ -53,7 +53,7 @@
 }
 
 .hintText {
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	color: var(--text-primary);
 	line-height: 1.5;
 }
@@ -71,7 +71,7 @@
 .hintButton,
 .hideHintButton {
 	font-family: var(--font-mono);
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	padding: 4px 8px;

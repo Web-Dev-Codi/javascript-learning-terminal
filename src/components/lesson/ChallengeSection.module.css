@@ -13,7 +13,7 @@
 }
 
 .challengeTitle {
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	font-weight: 700;
 	color: var(--neon-pink);
 	text-shadow: var(--glow-pink);
@@ -21,7 +21,7 @@
 }
 
 .challengePrompt {
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	color: var(--text-primary);
 	line-height: 1.6;
 	margin-bottom: 16px;
@@ -48,7 +48,7 @@
 }
 
 .editorLabel {
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	letter-spacing: 2px;
 	text-transform: uppercase;
 	color: var(--neon-pink);
@@ -57,7 +57,7 @@
 
 .resetButton {
 	font-family: var(--font-mono);
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	padding: 3px 8px;
@@ -96,7 +96,7 @@
 
 .hintButton {
 	font-family: var(--font-mono);
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	padding: 6px 12px;
@@ -132,7 +132,7 @@
 
 .nextHintButton {
 	font-family: var(--font-mono);
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	padding: 4px 8px;
@@ -154,7 +154,7 @@
 }
 
 .testsTitle {
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	font-weight: 600;
 	color: var(--neon-cyan);
 	text-shadow: var(--glow-cyan);
@@ -167,7 +167,7 @@
 }
 
 .testItem {
-	font-size: 17px;
+	font-size: var(--text-xl);
 	color: var(--text-primary);
 	line-height: 1.6;
 	margin-bottom: 4px;

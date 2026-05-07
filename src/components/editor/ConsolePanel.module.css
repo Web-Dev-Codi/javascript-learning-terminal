@@ -19,7 +19,7 @@
 }
 
 .consoleTitle {
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	letter-spacing: 2px;
 	text-transform: uppercase;
 	color: var(--neon-green);
@@ -52,7 +52,7 @@
 
 .clearButton {
 	font-family: var(--font-mono);
-	font-size: 21px;
+	font-size: var(--text-2xl);	
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	padding: 3px 9px;
@@ -78,18 +78,18 @@
 
 .consoleLine {
 	display: flex;
-	gap: 8px;
+	gap: 21px;
 	align-items: baseline;
 	padding: 3px 0;
 	height: 22px;
 }
 
 .consoleType {
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	letter-spacing: 1px;
 	flex-shrink: 0;
 	width: 42px;
-	text-align: right;
+	text-align: left;
 	opacity: 0.7;
 }
 
@@ -135,7 +135,7 @@
 /* Empty state */
 .emptyMessage {
 	display: flex;
-	gap: 8px;
+	gap: 21px;
 	align-items: baseline;
 	padding: 20px 0;
 	justify-content: center;
@@ -143,11 +143,11 @@
 }
 
 .emptyType {
-	font-size: 21px;
+	font-size: var(--text-2xl);
 	letter-spacing: 1px;
 	flex-shrink: 0;
 	width: 42px;
-	text-align: right;
+	text-align: left;
 	color: var(--text-muted);
 }
 
