@@ -5,8 +5,8 @@ import { createServer, type IncomingMessage } from "node:http";
 import { WebSocket, WebSocketServer } from "ws";
 import { config } from "./config.js";
 import { connection, runQueue, runQueueEvents } from "./queue.js";
-import { runInPool } from "./runner/workerPool.js";
 import type { RunnerEvent, RunPayload } from "./runner/types.js";
+import { runInPool } from "./runner/workerPool.js";
 
 // Simple in-memory queue for development without Redis
 interface MemoryJob {

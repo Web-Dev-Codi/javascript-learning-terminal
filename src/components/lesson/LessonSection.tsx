@@ -39,8 +39,10 @@ export function LessonSection({
 				/>
 			);
 
+		case "challenge":
+			return null;
+
 		default:
-			console.warn("Unknown lesson section type:", section);
 			return null;
 	}
 }
