@@ -17,8 +17,14 @@ interface LessonState {
 	quizAnswers: QuizAnswer[];
 	currentStreak: number;
 	lastCompletedDate: string | null;
+	sidebarOpen: boolean;
+	feedbackOpen: boolean;
 
 	// Actions
+	toggleSidebar: () => void;
+	closeSidebar: () => void;
+	toggleFeedback: () => void;
+	closeFeedback: () => void;
 	setActiveLesson: (lessonId: string) => void;
 	setActivePanel: (panel: PanelType) => void;
 	markLessonStarted: (lessonId: string) => void;
@@ -76,6 +82,8 @@ export const useLessonStore = create<LessonState>()(
 			quizAnswers: [],
 			currentStreak: 0,
 			lastCompletedDate: null,
+			sidebarOpen: false,
+			feedbackOpen: false,
 
 			setActiveLesson: (lessonId: string) => {
 				set((state) => ({
@@ -193,6 +201,19 @@ export const useLessonStore = create<LessonState>()(
 				if (!activeLesson) return;
 				const idx = getCurrentIndex(activeLesson);
 				if (idx > 0) setActiveLesson(flatNav[idx - 1].lessonId);
+			},
+
+			toggleSidebar: () => {
+				set((state) => ({ sidebarOpen: !state.sidebarOpen }));
+			},
+			closeSidebar: () => {
+				set({ sidebarOpen: false });
+			},
+			toggleFeedback: () => {
+				set((state) => ({ feedbackOpen: !state.feedbackOpen }));
+			},
+			closeFeedback: () => {
+				set({ feedbackOpen: false });
 			},
 		}),
 		{
