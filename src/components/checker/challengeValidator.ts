@@ -7,7 +7,7 @@ function parseCode(code: string): ESTreeAST | null {
   try {
     const ast = parse(code, {
       sourceType: 'module',
-      ecmaVersion: 'latest',
+      errorRecovery: true,
     }) as unknown as ESTreeAST
     return ast
   } catch {
@@ -41,14 +41,6 @@ function checkDeclaresFunction(node: ESTreeNode, targetName: string): boolean {
   if (node.type !== 'FunctionDeclaration') return false
   const id = node.id as ESTreeNode & { name?: string }
   return id?.name === targetName
-}
-
-function checkUsesIf(node: ESTreeNode): boolean {
-  return node.type === 'IfStatement'
-}
-
-function checkHasReturn(node: ESTreeNode): boolean {
-  return node.type === 'ReturnStatement'
 }
 
 function checkContainsString(source: string, text: string): boolean {
@@ -167,8 +159,16 @@ export function validateChallenge(
           break
         }
 
+        case 'custom': {
+          results.push({
+            pass: false,
+            description: check.description,
+            message: 'Custom checks are not supported yet.',
+          })
+          break
+        }
+
         default: {
-          const _exhaustive: never = check
           break
         }
       }
