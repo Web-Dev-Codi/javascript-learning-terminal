@@ -143,6 +143,15 @@ console.log("Hello, world!");`;
 		setActiveTab(tabId);
 	};
 
+	let runButtonText: string;
+	if (isExecuting) {
+		runButtonText = "⏳ RUNNING...";
+	} else if (isReady) {
+		runButtonText = "▶ RUN";
+	} else {
+		runButtonText = "▶ RUN (offline)";
+	}
+
 	return (
 		<div className={styles.editorPanel}>
 			{activeTab !== "scratch" && <ChallengeInfo />}
@@ -166,27 +175,24 @@ console.log("Hello, world!");`;
 						</button>
 					</div>
 					<div className={styles.editorActions}>
-					<button
-						type="button"
-						className={`${styles.editorButton} ${styles.resetButton}`}
-						onClick={handleReset}
-						data-tooltip="Reset code to starter template"
-					>
-						↺ RESET
-					</button>
-					<button
-						type="button"
-						className={`${styles.editorButton} ${styles.runButton} ${isExecuting ? styles.executing : ""}`}
-						onClick={handleRun}
-						disabled={isExecuting}
-						data-tooltip={isExecuting ? "Code is running…" : "Run code (Ctrl+Enter)"}
-					>
-							{isExecuting
-								? "⏳ RUNNING..."
-								: isReady
-									? "▶ RUN"
-									: "▶ RUN (offline)"}{" "}
-							<span className={styles.shortcut}>^↵</span>
+						<button
+							type="button"
+							className={`${styles.editorButton} ${styles.resetButton}`}
+							onClick={handleReset}
+							data-tooltip="Reset code to starter template"
+						>
+							↺ RESET
+						</button>
+						<button
+							type="button"
+							className={`${styles.editorButton} ${styles.runButton} ${isExecuting ? styles.executing : ""}`}
+							onClick={handleRun}
+							disabled={isExecuting}
+							data-tooltip={
+								isExecuting ? "Code is running…" : "Run code (Ctrl+Enter)"
+							}
+						>
+							{runButtonText} <span className={styles.shortcut}>^↵</span>
 						</button>
 					</div>
 				</div>

@@ -21,7 +21,9 @@ export const QuizBlock: React.FC<QuizBlockProps> = ({
 }) => {
 	const { getQuizAnswer, saveQuizAnswer } = useLessonStore();
 	const storedAnswer = getQuizAnswer(lessonId, questionIndex);
-	const [selectedOption, setSelectedOption] = useState<number | null>(storedAnswer !== null ? storedAnswer : null);
+	const [selectedOption, setSelectedOption] = useState<number | null>(
+		storedAnswer ?? null,
+	);
 	const [showExplanation, setShowExplanation] = useState(storedAnswer !== null);
 
 	const handleOptionClick = (optionIndex: number) => {
@@ -43,12 +45,12 @@ export const QuizBlock: React.FC<QuizBlockProps> = ({
 	};
 
 	const getOptionIcon = (index: number) => {
-		if (selectedOption === null) return String.fromCharCode(65 + index); // A, B, C, D
+		if (selectedOption === null) return String.fromCodePoint(65 + index); // A, B, C, D
 
 		if (index === correctIndex) return "✓";
 		if (index === selectedOption && index !== correctIndex) return "✕";
 
-		return String.fromCharCode(65 + index);
+		return String.fromCodePoint(65 + index);
 	};
 
 	return (
@@ -66,9 +68,9 @@ export const QuizBlock: React.FC<QuizBlockProps> = ({
 						className={getOptionClass(index)}
 						onClick={() => handleOptionClick(index)}
 						onKeyDown={(e) => {
-							if (e.key === 'Enter' || e.key === ' ') {
-								e.preventDefault()
-								handleOptionClick(index)
+							if (e.key === "Enter" || e.key === " ") {
+								e.preventDefault();
+								handleOptionClick(index);
 							}
 						}}
 					>

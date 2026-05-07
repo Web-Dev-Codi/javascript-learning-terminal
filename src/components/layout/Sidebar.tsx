@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noCommentText: <explanation> */
 import React, { useMemo, useState } from "react";
 import { lessons } from "../../data/lessons";
 import { useLessonStore } from "../../store/lessonStore";
@@ -53,10 +54,10 @@ export const Sidebar: React.FC = () => {
 		};
 		filteredLessons.forEach((lesson) => {
 			if (lesson.category === "fundamentals")
-				groups["FUNDAMENTALS"].push(lesson);
+				groups.FUNDAMENTALS.push(lesson);
 			else if (lesson.category === "control-flow")
 				groups["CONTROL FLOW"].push(lesson);
-			else groups["ADVANCED"].push(lesson);
+			else groups.ADVANCED.push(lesson);
 		});
 		return groups;
 	}, [filteredLessons]);
