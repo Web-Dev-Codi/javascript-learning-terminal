@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useEditorStore } from "../../store/editorStore";
 import { findLessonById, useLessonStore } from "../../store/lessonStore";
-import type { ChallengeSection, Diagnostic } from "../../types/lesson";
+import { validateChallenge } from "../checker/challengeValidator";
+import type { ChallengeSection, Diagnostic, ValidationResult } from "../../types/lesson";
 import { FeedbackPanel } from "../checker/FeedbackPanel";
 import { useRunner } from "../runner/useRunner";
 import { ChallengeInfo } from "./ChallengeInfo";
@@ -20,6 +21,8 @@ export function EditorPanel() {
 	const [runtimeDiagnostics, setRuntimeDiagnostics] = useState<Diagnostic[]>(
 		[],
 	);
+	const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
+	const consoleOutputRef = useRef<string[]>([]);
 
 	const getCurrentLessonData = () => {
 		if (activeTab === "scratch") {
@@ -49,6 +52,8 @@ console.log("Hello, world!");`;
 	const handleRun = async () => {
 		const currentCode = getCurrentCode();
 		setRuntimeDiagnostics([]);
+		setValidationResults([]);
+		consoleOutputRef.current = [];
 		clearConsole();
 		addConsoleMessage("info", "▶ Running code...");
 
@@ -56,6 +61,7 @@ console.log("Hello, world!");`;
 			onEvent: (event) => {
 				switch (event.type) {
 					case "stdout":
+						consoleOutputRef.current.push(event.data.message ?? "");
 						addConsoleMessage("log", event.data.message ?? "");
 						break;
 					case "stderr":
@@ -89,6 +95,34 @@ console.log("Hello, world!");`;
 								"error",
 								`✕ Execution failed (${event.data.runtimeMs ?? 0}ms)`,
 							);
+						}
+
+						{
+							const lesson = activeLesson ? findLessonById(activeLesson) : null;
+							const challengeSection = lesson?.sections?.find(
+								(s): s is ChallengeSection => s.type === "challenge",
+							);
+							if (challengeSection?.codeChecks || challengeSection?.expectedOutput) {
+								const results = validateChallenge(
+									currentCode,
+									consoleOutputRef.current,
+									challengeSection.codeChecks,
+									challengeSection.expectedOutput,
+								);
+								setValidationResults(results);
+
+								const allPass = results.every((r) => r.pass);
+								if (allPass) {
+									addConsoleMessage("pass", "✓ Challenge completed! All checks passed.");
+									useLessonStore.getState().markLessonCompleted(activeLesson ?? "");
+								} else {
+									addConsoleMessage("fail", "✕ Some checks failed:");
+									const failed = results.filter((r) => !r.pass);
+									for (const result of failed) {
+										addConsoleMessage("fail", `  • ${result.description}: ${result.message}`);
+									}
+								}
+							}
 						}
 						break;
 					default:
