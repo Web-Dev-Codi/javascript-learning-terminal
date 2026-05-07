@@ -1,8 +1,12 @@
+import { useResponsive } from "../../hooks/useResponsive";
 import { useEditorStore } from "../../store/editorStore";
+import { useLessonStore } from "../../store/lessonStore";
 import styles from "./ConsolePanel.module.css";
 
 export const ConsolePanel: React.FC = () => {
 	const { consoleMessages, clearConsole } = useEditorStore();
+	const { feedbackOpen, toggleFeedback } = useLessonStore();
+	const { isDesktop } = useResponsive();
 
 	const handleClear = () => {
 		clearConsole();
@@ -34,9 +38,16 @@ export const ConsolePanel: React.FC = () => {
 					<div className={styles.statusDot}></div>
 					CONSOLE
 				</div>
-				<button className={styles.clearButton} type="button" onClick={handleClear}>
-					CLEAR
-				</button>
+				<div className={styles.consoleActions}>
+					{!isDesktop && (
+						<button className={styles.clearButton} type="button" onClick={toggleFeedback}>
+							{feedbackOpen ? "HIDE ISSUES" : "ISSUES"}
+						</button>
+					)}
+					<button className={styles.clearButton} type="button" onClick={handleClear}>
+						CLEAR
+					</button>
+				</div>
 			</div>
 
 			<div className={styles.consoleOutput}>

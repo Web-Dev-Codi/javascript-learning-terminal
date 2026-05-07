@@ -50,6 +50,12 @@
 	}
 }
 
+.consoleActions {
+	display: flex;
+	gap: var(--spacing-xs);
+	flex-shrink: 0;
+}
+
 .clearButton {
 	font-family: var(--font-mono);
 	font-size: var(--text-2xl);	
