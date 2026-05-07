@@ -6,7 +6,14 @@ import { WebSocket, WebSocketServer } from "ws";
 import { config } from "./config.js";
 import { connection, runQueue, runQueueEvents } from "./queue.js";
 import type { RunnerEvent, RunPayload } from "./runner/types.js";
-import { runInPool } from "./runner/workerPool.js";
+import { initPool, runInPool } from "./runner/workerPool.js";
+
+const buildPayload = (code: string): RunPayload => ({
+	code,
+	timeoutMs: config.workerTimeoutMs,
+	memoryMb: config.workerMemoryMb,
+	maxOutputLines: config.maxOutputLines,
+});
 
 // Simple in-memory queue for development without Redis
 interface MemoryJob {
@@ -19,34 +26,44 @@ interface MemoryJob {
 const memoryQueue: MemoryJob[] = [];
 const isProcessingMemoryQueue = { value: false };
 
-interface RateLimitEntry {
-	count: number;
-	resetAt: number;
-}
-const rateLimitMap = new Map<string, RateLimitEntry>();
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_REQUESTS = 20;
 const MAX_CONCURRENT_JOBS = 5;
 const activeJobCount = { value: 0 };
 
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+
+const rateLimitMiddleware = (req: Request, res: Response, next: () => void) => {
+	const clientIp = req.ip ?? req.socket.remoteAddress ?? "unknown";
+	const now = Date.now();
+	const entry = rateLimitStore.get(clientIp);
+	if (!entry || now > entry.resetAt) {
+		rateLimitStore.set(clientIp, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+		next();
+		return;
+	}
+	entry.count++;
+	if (entry.count > RATE_LIMIT_MAX_REQUESTS) {
+		res.status(429).json({ error: "Rate limit exceeded. Try again later." });
+		return;
+	}
+	next();
+};
+
 const processMemoryQueue = async () => {
 	if (isProcessingMemoryQueue.value || memoryQueue.length === 0) return;
 
 	isProcessingMemoryQueue.value = true;
-	activeJobCount.value++;
 	const job = memoryQueue.shift();
 	if (!job) {
 		isProcessingMemoryQueue.value = false;
 		return;
 	}
 
+	activeJobCount.value++;
+
 	try {
-		const payload: RunPayload = {
-			code: job.data.code,
-			timeoutMs: config.workerTimeoutMs,
-			memoryMb: config.workerMemoryMb,
-			maxOutputLines: config.maxOutputLines,
-		};
+		const payload = buildPayload(job.data.code);
 
 		const result = await runInPool(payload, (event) => {
 			publishEvent(job.id, event);
@@ -85,23 +102,7 @@ app.get("/health", (_req: Request, res: Response) => {
 	res.json({ status: "ok" });
 });
 
-app.post("/api/runs", async (req: Request, res: Response) => {
-	const clientIp = req.ip ?? req.socket.remoteAddress ?? "unknown";
-	const now = Date.now();
-	const entry = rateLimitMap.get(clientIp);
-	if (!entry || now > entry.resetAt) {
-		rateLimitMap.set(clientIp, {
-			count: 1,
-			resetAt: now + RATE_LIMIT_WINDOW_MS,
-		});
-	} else {
-		entry.count++;
-		if (entry.count > RATE_LIMIT_MAX_REQUESTS) {
-			res.status(429).json({ error: "Rate limit exceeded. Try again later." });
-			return;
-		}
-	}
-
+app.post("/api/runs", rateLimitMiddleware, async (req: Request, res: Response) => {
 	if (activeJobCount.value >= MAX_CONCURRENT_JOBS) {
 		res.status(503).json({ error: "Server busy. Try again later." });
 		return;
@@ -182,14 +183,14 @@ const publishEvent = (runId: string, event: RunnerEvent) => {
 server.on("upgrade", (req: IncomingMessage, socket, head) => {
 	const host = req.headers.host ?? "localhost";
 	const url = new URL(req.url ?? "/", `http://${host}`);
-	const match = /^\/api\/runs\/(.+)$/.exec(url.pathname);
+	const match = /^\/api\/runs\/([a-zA-Z0-9_-]+)$/.exec(url.pathname);
 
 	if (!match) {
 		socket.destroy();
 		return;
 	}
 
-	const runId = decodeURIComponent(match[1]);
+	const runId = match[1];
 
 	wss.handleUpgrade(req, socket, head, (ws: WebSocket) => {
 		const clients = clientMap.get(runId) ?? new Set();
@@ -197,9 +198,13 @@ server.on("upgrade", (req: IncomingMessage, socket, head) => {
 		clientMap.set(runId, clients);
 
 		const cached = eventCache.get(runId) ?? [];
-		cached.forEach((event) => {
-			ws.send(JSON.stringify(event));
-		});
+		for (const event of cached) {
+			try {
+				ws.send(JSON.stringify(event));
+			} catch {
+				// WebSocket may have closed between cache check and send
+			}
+		}
 
 		ws.on("close", () => {
 			const current = clientMap.get(runId);
@@ -263,12 +268,7 @@ const runnerWorker = config.useMemoryQueue
 	: new BullWorker(
 			"runs",
 			async (job: Job<{ code: string }>) => {
-				const payload: RunPayload = {
-					code: job.data.code,
-					timeoutMs: config.workerTimeoutMs,
-					memoryMb: config.workerMemoryMb,
-					maxOutputLines: config.maxOutputLines,
-				};
+				const payload = buildPayload(job.data.code);
 
 				return await runInPool(payload, (event) => {
 					job.updateProgress(event).catch(() => {
@@ -285,6 +285,8 @@ const runnerWorker = config.useMemoryQueue
 runnerWorker?.on("error", (error: Error) => {
 	console.error("Runner worker error:", error);
 });
+
+initPool();
 
 server.listen(config.port, () => {
 	console.log(`Runner API listening on ${config.port}`);

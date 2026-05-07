@@ -9,12 +9,13 @@ interface Task {
 }
 
 const POOL_SIZE = Math.max(2, config.concurrency || 4);
-const workers: Worker[] = [];
+let workers: Worker[] = [];
 const queue: Task[] = [];
 const busy = new Set<Worker>();
 const CRASH_LOOP_WINDOW_MS = 10_000;
 const CRASH_LOOP_MAX = 5;
 const spawnTimestamps: number[] = [];
+let poolStarted = false;
 
 function isCrashLoop(): boolean {
 	const now = Date.now();
@@ -36,17 +37,23 @@ function spawnWorker(): Worker | null {
 	const workerUrl = new URL(`./executor.${config.workerExt}`, import.meta.url);
 	const worker = new Worker(workerUrl, {
 		execArgv: config.workerExt === "ts" ? ["--import", "tsx"] : [],
-	});
+	}) as Worker & { _replacing?: boolean };
 
 	worker.on("error", (err) => {
 		console.error("Worker pool error:", err);
-		replaceWorker(worker);
+		if (!worker._replacing) {
+			worker._replacing = true;
+			replaceWorker(worker);
+		}
 	});
 
 	worker.on("exit", (code) => {
 		if (code !== 0) {
 			console.error("Worker exited with code", code);
-			replaceWorker(worker);
+			if (!worker._replacing) {
+				worker._replacing = true;
+				replaceWorker(worker);
+			}
 		}
 	});
 
@@ -76,10 +83,22 @@ function processAllAvailable() {
 	}
 }
 
-for (let i = 0; i < POOL_SIZE; i++) {
-	const w = spawnWorker();
-	if (w) workers.push(w);
-}
+export const initPool = () => {
+	if (poolStarted) return;
+	poolStarted = true;
+	for (let i = 0; i < POOL_SIZE; i++) {
+		const w = spawnWorker();
+		if (w) workers.push(w);
+	}
+};
+
+export const shutdownPool = async () => {
+	const oldWorkers = workers;
+	workers = [];
+	queue.length = 0;
+	busy.clear();
+	await Promise.all(oldWorkers.map((w) => w.terminate().catch(() => {})));
+};
 
 function processNext(worker: Worker) {
 	if (queue.length === 0 || busy.has(worker)) return;

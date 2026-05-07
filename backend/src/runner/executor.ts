@@ -35,11 +35,15 @@ const execute = async (payload: RunPayload): Promise<void> => {
 		memoryLimit: payload.memoryMb,
 		onCatastrophicError: (err) => {
 			console.error("Isolate catastrophic error:", err);
-			sendEvent({
-				type: "error",
-				data: { message: "Runner crashed (catastrophic error)." },
-			});
-			sendEvent({ type: "done", data: { success: false, runtimeMs: 0 } });
+			try {
+				sendEvent({
+					type: "error",
+					data: { message: "Runner crashed (catastrophic error)." },
+				});
+				sendEvent({ type: "done", data: { success: false, runtimeMs: 0 } });
+			} catch {
+				// parentPort may be disconnected during catastrophic errors
+			}
 		},
 	});
 
@@ -57,7 +61,7 @@ const execute = async (payload: RunPayload): Promise<void> => {
 			outputLimited = true;
 			sendEvent({
 				type: "stderr",
-				data: { message: "Output limit reached (200 lines)." },
+				data: { message: `Output limit reached (${payload.maxOutputLines} lines).` },
 			});
 			return;
 		}
@@ -73,17 +77,24 @@ const execute = async (payload: RunPayload): Promise<void> => {
 
 	await jail.set("send", sendRef);
 
-	await context.eval(`
-		const __send__ = (type, args) =>
-			send.applySync(undefined, [type, args], { arguments: { copy: true } })
+	try {
+		await context.eval(`
+			const __send__ = (type, args) =>
+				send.applySync(undefined, [type, args], { arguments: { copy: true } })
 
-		globalThis.console = {
-			log: (...args) => __send__('stdout', args.map(String)),
-			info: (...args) => __send__('stdout', args.map(String)),
-			warn: (...args) => __send__('stderr', args.map(String)),
-			error: (...args) => __send__('stderr', args.map(String)),
-		}
-	`);
+			globalThis.console = {
+				log: (...args) => __send__('stdout', args.map(String)),
+				info: (...args) => __send__('stdout', args.map(String)),
+				warn: (...args) => __send__('stderr', args.map(String)),
+				error: (...args) => __send__('stderr', args.map(String)),
+			}
+		`);
+	} catch (consoleError) {
+		sendEvent({
+			type: "error",
+			data: { message: `Failed to set up console: ${(consoleError as Error).message}` },
+		});
+	}
 
 	const startTime = performance.now();
 	try {

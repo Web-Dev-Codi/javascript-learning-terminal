@@ -1,23 +1,10 @@
-export type RunnerEventType =
-	| 'stdout'
-	| 'stderr'
-	| 'error'
-	| 'status'
-	| 'done'
-
 export type RunnerStatus = 'idle' | 'ready' | 'running' | 'error'
 
-export type RunnerQueueStatus =
-	| 'waiting'
-	| 'active'
-	| 'completed'
-	| 'failed'
-
 export interface RunnerEvent {
-	type: RunnerEventType
+	type: 'stdout' | 'stderr' | 'error' | 'status' | 'done'
 	data: {
 		message?: string
-		status?: RunnerQueueStatus
+		status?: 'waiting' | 'active' | 'completed' | 'failed'
 		runtimeMs?: number
 		success?: boolean
 		line?: number
@@ -31,10 +18,6 @@ export interface RunnerResult {
 	error?: string
 	line?: number
 	column?: number
-}
-
-export interface RunRequest {
-	code: string
 }
 
 export interface RunResponse {

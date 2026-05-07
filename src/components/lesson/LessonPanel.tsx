@@ -87,11 +87,6 @@ export function LessonPanel() {
 				<span className={styles.panelTitle}>{getPanelTitle()}</span>
 				{currentLesson && (
 					<div className={styles.panelPills}>
-						{isSubLesson && parentLesson && (
-							<span className={`${styles.pill} ${styles.pillParent}`}>
-								↑ {parentLesson.title}
-							</span>
-						)}
 						<span
 							className={`${styles.pill} ${getDifficultyClass(currentLesson.difficulty)}`}
 						>

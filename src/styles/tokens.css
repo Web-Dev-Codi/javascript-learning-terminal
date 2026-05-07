@@ -29,34 +29,22 @@
   --glow-cyan:    0 0 6px #00ffe7, 0 0 18px #00ffe744;
   --glow-purple:  0 0 6px #bf00ff, 0 0 18px #bf00ff44;
   --glow-green:   0 0 6px #00ff9f, 0 0 18px #00ff9f44;
+  --glow-yellow:  0 0 6px #ffe600, 0 0 18px #ffe60044;
 
   /* Typography */
   --font-mono:    'Share Tech Mono', monospace;
   --font-heading: 'Orbitron', sans-serif;
 
   /* Font Sizes */
-  --text-xs:      10px;
   --text-sm:      11px;
-  --text-md:      12px;
-  --text-lg:      14px;
   --text-xl:      16px;
   --text-2xl:     18px;
 
-  /* Spacing */
-  --space-xs:     4px;
-  --space-sm:     8px;
-  --space-md:     12px;
-  --space-lg:     16px;
-  --space-xl:     20px;
-  --space-2xl:    24px;
-
   /* Border Radius */
   --radius-sm:    2px;
-  --radius-md:    4px;
 
   /* Z-Index Scale */
   --z-base:       0;
-  --z-panel:      10;
   --z-header:     100;
   --z-overlay:    9000;
   --z-tooltip:    9999;

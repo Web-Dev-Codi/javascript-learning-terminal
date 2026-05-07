@@ -14,11 +14,9 @@ export function EditorPanel() {
 	const {
 		clearConsole,
 		addConsoleMessage,
-		setRunnerStatus,
-		setIsConsoleLive,
 		activeTab,
 	} = useEditorStore();
-	const { runCode, isExecuting, isReady, status } = useRunner();
+	const { runCode, isExecuting, isReady } = useRunner();
 	const [runtimeDiagnostics, setRuntimeDiagnostics] = useState<Diagnostic[]>(
 		[],
 	);
@@ -52,9 +50,7 @@ console.log("Hello, world!");`;
 		const currentCode = getCurrentCode();
 		setRuntimeDiagnostics([]);
 		clearConsole();
-		setIsConsoleLive(true);
 		addConsoleMessage("info", "▶ Running code...");
-		setRunnerStatus("running");
 
 		await runCode(currentCode, {
 			onEvent: (event) => {
@@ -88,13 +84,11 @@ console.log("Hello, world!");`;
 								"info",
 								`✓ Code executed (${event.data.runtimeMs ?? 0}ms)`,
 							);
-							setRunnerStatus("ready");
 						} else {
 							addConsoleMessage(
 								"error",
 								`✕ Execution failed (${event.data.runtimeMs ?? 0}ms)`,
 							);
-							setRunnerStatus("error");
 						}
 						break;
 					default:
@@ -133,11 +127,6 @@ console.log("Hello, world!");`;
 			destroyEditor();
 		};
 	}, [createEditor, destroyEditor]);
-
-	// Clear sandbox when lesson changes (S-08)
-	useEffect(() => {
-		setRunnerStatus(status === "running" ? "running" : "ready");
-	}, [status, setRunnerStatus]);
 
 	const handleTabClick = (tabId: string) => {
 		setActiveTab(tabId);

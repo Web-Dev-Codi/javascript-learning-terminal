@@ -185,7 +185,7 @@
 }
 
 .longMessage {
-  font-size:var(--text-xl) 17px;
+  font-size: var(--text-xl);
   color: var(--text-primary);
   line-height: 1.5;
   margin-top: 8px;

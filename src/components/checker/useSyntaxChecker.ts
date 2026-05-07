@@ -8,7 +8,6 @@ import { SyntaxChecker } from "./syntaxChecker";
 
 interface UseSyntaxCheckerResult {
 	diagnostics: Diagnostic[];
-	isChecking: boolean;
 	shouldBlockExecution: boolean;
 	checkSyntax: (code: string, activeRules?: RuleId[]) => void;
 	clearDiagnostics: () => void;
@@ -24,7 +23,6 @@ export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
 	const { addConsoleMessage } = useEditorStore();
 
 	const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
-	const [isChecking, setIsChecking] = useState(false);
 	const lastCheckedCodeRef = useRef<string>("");
 
 	const getActiveRules = useCallback((): RuleId[] => {
@@ -40,7 +38,6 @@ export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
 			}
 
 			lastCheckedCodeRef.current = code;
-			setIsChecking(true);
 
 			try {
 				const syntaxResult = SyntaxChecker.checkSyntax(code);
@@ -116,8 +113,6 @@ export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
 				};
 				setDiagnostics([errorDiagnostic]);
 				addConsoleMessage("error", "✕ Syntax checker error");
-			} finally {
-				setIsChecking(false);
 			}
 		},
 		[getActiveRules, addConsoleMessage, activeLesson],
@@ -136,7 +131,6 @@ export const useSyntaxChecker = (): UseSyntaxCheckerResult => {
 
 	return {
 		diagnostics,
-		isChecking,
 		shouldBlockExecution,
 		checkSyntax,
 		clearDiagnostics,

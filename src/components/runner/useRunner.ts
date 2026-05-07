@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEditorStore } from '../../store/editorStore'
 import type {
 	RunnerEvent,
 	RunnerResult,
-	RunnerStatus,
 	RunResponse,
 } from './types'
 
@@ -13,9 +13,7 @@ interface RunOptions {
 interface UseRunnerResult {
 	runCode: (code: string, options?: RunOptions) => Promise<RunnerResult>
 	isExecuting: boolean
-	status: RunnerStatus
 	error: string | null
-	clearError: () => void
 	isReady: boolean
 }
 
@@ -33,10 +31,10 @@ const RUN_OVERALL_TIMEOUT_MS = 15_000
 
 export const useRunner = (): UseRunnerResult => {
 	const [isExecuting, setIsExecuting] = useState(false)
-	const [status, setStatus] = useState<RunnerStatus>('idle')
 	const [error, setError] = useState<string | null>(null)
 	const [isReady, setIsReady] = useState(false)
 	const socketRef = useRef<WebSocket | null>(null)
+	const setRunnerStatus = useEditorStore((s) => s.setRunnerStatus)
 
 	useEffect(() => {
 		const checkHealth = async () => {
@@ -69,17 +67,13 @@ export const useRunner = (): UseRunnerResult => {
 		}
 	}, [])
 
-	const clearError = useCallback(() => {
-		setError(null)
-	}, [])
-
 	const runCode = useCallback(async (
 		code: string,
 		options?: RunOptions,
 	): Promise<RunnerResult> => {
 		const baseUrl = getRunnerBaseUrl()
 		setIsExecuting(true)
-		setStatus('running')
+		setRunnerStatus('running')
 		setError(null)
 
 		const abortController = new AbortController()
@@ -124,12 +118,12 @@ export const useRunner = (): UseRunnerResult => {
 						if (message.type === 'status') {
 							const s = message.data.status
 							if (s === 'failed') {
-								setStatus('error')
+								setRunnerStatus('error')
 								setError('Runner failed')
 							} else if (s === 'waiting' || s === 'active') {
-								setStatus('running')
+								setRunnerStatus('running')
 							} else if (s === 'completed') {
-								setStatus('ready')
+								setRunnerStatus('ready')
 							}
 						}
 
@@ -138,7 +132,7 @@ export const useRunner = (): UseRunnerResult => {
 						}
 
 						if (message.type === 'done') {
-							setStatus('ready')
+							setRunnerStatus('ready')
 							safeResolve({
 								success: message.data.success ?? false,
 								runtimeMs: message.data.runtimeMs ?? 0,
@@ -151,7 +145,7 @@ export const useRunner = (): UseRunnerResult => {
 
 					socket.onerror = () => {
 						setError('Runner WebSocket error')
-						setStatus('error')
+						setRunnerStatus('error')
 						safeResolve({
 							success: false,
 							runtimeMs: 0,
@@ -170,7 +164,7 @@ export const useRunner = (): UseRunnerResult => {
 				new Promise<RunnerResult>((resolve) => {
 					setTimeout(() => {
 						setIsExecuting(false)
-						setStatus('error')
+						setRunnerStatus('error')
 						setError('Run timed out — runner may be stuck.')
 						socketRef.current?.close()
 						socketRef.current = null
@@ -186,7 +180,7 @@ export const useRunner = (): UseRunnerResult => {
 			clearTimeout(fetchTimeout)
 			const message = err instanceof Error ? err.message : 'Runner request failed'
 			setIsExecuting(false)
-			setStatus('error')
+			setRunnerStatus('error')
 			setError(message)
 			return {
 				success: false,
@@ -199,9 +193,7 @@ export const useRunner = (): UseRunnerResult => {
 	return {
 		runCode,
 		isExecuting,
-		status,
 		error,
-		clearError,
 		isReady,
 	}
 }

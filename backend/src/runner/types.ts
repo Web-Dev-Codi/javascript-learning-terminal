@@ -1,12 +1,12 @@
 export type RunnerEventType = "stdout" | "stderr" | "error" | "status" | "done";
 
-export type RunnerStatus = "waiting" | "active" | "completed" | "failed";
+export type RunnerQueueStatus = "waiting" | "active" | "completed" | "failed";
 
 export interface RunnerEvent {
 	type: RunnerEventType;
 	data: {
 		message?: string;
-		status?: RunnerStatus;
+		status?: RunnerQueueStatus;
 		runtimeMs?: number;
 		line?: number;
 		column?: number;

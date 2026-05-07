@@ -58,6 +58,14 @@ function buildFlatNavList(): NavEntry[] {
 
 const flatNav = buildFlatNavList();
 
+const getCurrentIndex = (activeLesson: string | null) => {
+	if (!activeLesson) return -1;
+	return flatNav.findIndex((e) => e.lessonId === activeLesson);
+};
+
+const addUnique = <T>(arr: T[], item: T) =>
+	arr.includes(item) ? arr : [...arr, item];
+
 export const useLessonStore = create<LessonState>()(
 	persist(
 		(set, get) => ({
@@ -70,11 +78,10 @@ export const useLessonStore = create<LessonState>()(
 			lastCompletedDate: null,
 
 			setActiveLesson: (lessonId: string) => {
-				set({ activeLesson: lessonId });
-				const state = get();
-				if (!state.startedLessons.includes(lessonId)) {
-					set({ startedLessons: [...state.startedLessons, lessonId] });
-				}
+				set((state) => ({
+					activeLesson: lessonId,
+					startedLessons: addUnique(state.startedLessons, lessonId),
+				}));
 			},
 
 			setActivePanel: (panel: PanelType) => {
@@ -82,10 +89,9 @@ export const useLessonStore = create<LessonState>()(
 			},
 
 			markLessonStarted: (lessonId: string) => {
-				const state = get();
-				if (!state.startedLessons.includes(lessonId)) {
-					set({ startedLessons: [...state.startedLessons, lessonId] });
-				}
+				set((state) => ({
+					startedLessons: addUnique(state.startedLessons, lessonId),
+				}));
 			},
 
 			markLessonCompleted: (lessonId: string) => {
@@ -159,14 +165,14 @@ export const useLessonStore = create<LessonState>()(
 			canNavigateNext: () => {
 				const { activeLesson } = get();
 				if (!activeLesson) return flatNav.length > 0;
-				const idx = flatNav.findIndex((e) => e.lessonId === activeLesson);
+				const idx = getCurrentIndex(activeLesson);
 				return idx >= 0 && idx < flatNav.length - 1;
 			},
 
 			canNavigatePrev: () => {
 				const { activeLesson } = get();
 				if (!activeLesson) return false;
-				const idx = flatNav.findIndex((e) => e.lessonId === activeLesson);
+				const idx = getCurrentIndex(activeLesson);
 				return idx > 0;
 			},
 
@@ -176,7 +182,7 @@ export const useLessonStore = create<LessonState>()(
 					if (flatNav.length > 0) setActiveLesson(flatNav[0].lessonId);
 					return;
 				}
-				const idx = flatNav.findIndex((e) => e.lessonId === activeLesson);
+				const idx = getCurrentIndex(activeLesson);
 				if (idx >= 0 && idx < flatNav.length - 1) {
 					setActiveLesson(flatNav[idx + 1].lessonId);
 				}
@@ -185,7 +191,7 @@ export const useLessonStore = create<LessonState>()(
 			navigatePrev: () => {
 				const { activeLesson, setActiveLesson } = get();
 				if (!activeLesson) return;
-				const idx = flatNav.findIndex((e) => e.lessonId === activeLesson);
+				const idx = getCurrentIndex(activeLesson);
 				if (idx > 0) setActiveLesson(flatNav[idx - 1].lessonId);
 			},
 		}),
