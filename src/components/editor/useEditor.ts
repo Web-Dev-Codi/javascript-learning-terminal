@@ -39,7 +39,7 @@ export const useEditor = ({
 		? getCode(lessonId) || starterCode
 		: starterCode
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   const handleChange = useCallback((newCode: string) => {
     if (!lessonId) return
