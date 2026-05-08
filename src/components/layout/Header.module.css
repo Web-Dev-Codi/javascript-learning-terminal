@@ -73,7 +73,6 @@
 	cursor: pointer;
 	transition: all 0.12s ease;
 	flex-shrink: 0;
-	min-height: var(--touch-target);
 }
 
 .statsPill:hover {
