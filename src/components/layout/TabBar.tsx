@@ -3,7 +3,7 @@ import type { PanelType } from "../../types/lesson";
 import styles from "./TabBar.module.css";
 
 interface TabBarProps {
-	variant: "mobile" | "tablet";
+	variant: "mobile" | "tablet" | "tablet-bottom";
 }
 
 const tabs: { id: PanelType; label: string; icon: string }[] = [
@@ -15,7 +15,11 @@ const tabs: { id: PanelType; label: string; icon: string }[] = [
 export function TabBar({ variant }: TabBarProps) {
 	const { activePanel, setActivePanel } = useLessonStore();
 
-	const variantClass = variant === "mobile" ? styles.variantMobile : styles.variantTablet;
+	const variantClass = variant === "mobile"
+		? styles.variantMobile
+		: variant === "tablet-bottom"
+			? styles.variantTabletBottom
+			: styles.variantTablet;
 
 	return (
 		<div className={`${styles.tabBar} ${variantClass}`} role="tablist">

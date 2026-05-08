@@ -91,3 +91,29 @@
 .variantTablet .tabIcon {
 	font-size: var(--text-sm);
 }
+
+/* Tablet bottom variant */
+.variantTabletBottom {
+	height: 54px;
+	background: var(--bg-panel);
+	border-top: 1px solid var(--border-mid);
+	box-shadow: 0 -1px 0 #bf00ff33;
+	z-index: var(--z-header);
+}
+
+.variantTabletBottom .tabButton {
+	flex-direction: column;
+	gap: 4px;
+	padding: 8px 0;
+	min-height: 54px;
+	font-size: var(--text-sm);
+}
+
+.variantTabletBottom .tabButton.active {
+	border-top: 2px solid currentColor;
+	border-bottom: none;
+}
+
+.variantTabletBottom .tabIcon {
+	font-size: var(--text-base);
+}
