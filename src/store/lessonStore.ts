@@ -79,7 +79,7 @@ export const useLessonStore = create<LessonState>()(
 	persist(
 		(set, get) => ({
 			activeLesson: null,
-			activePanel: "lessons",
+			activePanel: "lesson",
 			completedLessons: [],
 			startedLessons: [],
 			quizAnswers: [],

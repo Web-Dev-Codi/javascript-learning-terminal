@@ -21,9 +21,13 @@ export function TabBar({ variant }: TabBarProps) {
 			? styles.variantTabletBottom
 			: styles.variantTablet;
 
+	const visibleTabs = variant === "mobile" || variant === "tablet-bottom"
+		? tabs.filter((t) => t.id !== "lessons")
+		: tabs;
+
 	return (
 		<div className={`${styles.tabBar} ${variantClass}`} role="tablist">
-			{tabs.map((tab) => (
+			{visibleTabs.map((tab) => (
 				<button
 					key={tab.id}
 					type="button"

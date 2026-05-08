@@ -6,19 +6,9 @@ import { TabBar } from "./TabBar";
 import styles from "./TabletLayout.module.css";
 
 export function TabletLayout() {
-	const { activePanel, sidebarOpen, closeSidebar, setActivePanel } = useLessonStore();
-
-	const showOverlay = sidebarOpen || activePanel === "lessons";
-
-	const handleOverlayClose = () => {
-		closeSidebar();
-		if (activePanel === "lessons") {
-			setActivePanel("lesson");
-		}
-	};
+	const { activePanel, sidebarOpen, closeSidebar } = useLessonStore();
 
 	const handleLessonSelect = () => {
-		setActivePanel("lesson");
 		closeSidebar();
 	};
 
@@ -36,13 +26,13 @@ export function TabletLayout() {
 
 	return (
 		<div className={styles.tabletLayout}>
-			{showOverlay && (
+			{sidebarOpen && (
 				<div className={styles.sidebarOverlay}>
 					<div
 						className={styles.sidebarBackdrop}
-						onClick={handleOverlayClose}
+						onClick={closeSidebar}
 						onKeyDown={(e) => {
-							if (e.key === "Escape") handleOverlayClose();
+							if (e.key === "Escape") closeSidebar();
 						}}
 						role="presentation"
 					/>

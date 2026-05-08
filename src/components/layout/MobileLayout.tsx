@@ -30,11 +30,6 @@ export function MobileLayout() {
 				</div>
 			)}
 
-			{activePanel === "lessons" && (
-				<aside className={styles.panel}>
-					<Sidebar />
-				</aside>
-			)}
 			{activePanel === "lesson" && (
 				<section className={styles.panel}>
 					<LessonPanel />
