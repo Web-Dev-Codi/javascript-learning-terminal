@@ -11,8 +11,9 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ overlay, onLessonSelect }) => {
-	const { activeLesson, setActiveLesson, isLessonCompleted, isLessonStarted } =
+	const { activeLesson, setActiveLesson, isLessonCompleted, isLessonStarted, getProgress } =
 		useLessonStore();
+	const progress = getProgress()
 
 	const [searchQuery, setSearchQuery] = useState("");
 	const [expandedLessons, setExpandedLessons] = useState<Set<string>>(() => {
@@ -119,7 +120,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ overlay, onLessonSelect }) => 
 		<div className={`${styles.sidebar} ${overlay ? styles.overlay : ""}`}>
 			<div className={styles.sidebarHeader}>
 				<span>// LESSONS</span>
-				<span className={styles.totalCount}>{lessons.length} MODULES</span>
+				<span className={styles.totalCount}>
+					{!overlay && <span className={styles.headerProgress}>{progress.completed}/{progress.total} </span>}
+					{lessons.length} MODULES
+				</span>
 			</div>
 
 			<div className={styles.searchContainer}>

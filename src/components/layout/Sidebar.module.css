@@ -21,6 +21,12 @@
 
 .totalCount { color: var(--text-muted); }
 
+.headerProgress {
+	color: var(--neon-cyan);
+	text-shadow: var(--glow-cyan);
+	margin-right: 8px;
+}
+
 .searchContainer {
   margin: 10px 12px;
   position: relative;

@@ -46,6 +46,31 @@
 		flex: 1;
 	}
 
+	.editorTabs {
+		overflow: hidden;
+		min-width: 0;
+	}
+
+	.editorTab {
+		font-size: var(--text-sm);
+		padding: 4px 8px;
+	}
+
+	.editorActions {
+		flex-shrink: 1;
+		min-width: 0;
+		overflow: hidden;
+	}
+
+	.editorButton {
+		font-size: var(--text-sm);
+		padding: 4px 6px;
+	}
+
+	.shortcut {
+		display: none;
+	}
+
 	.bottomSection {
 		flex-direction: column;
 	}
@@ -67,6 +92,7 @@
 	background: var(--bg-panel);
 	flex-shrink: 0;
 	gap: 8px;
+	overflow: hidden;
 }
 
 .editorTabs {

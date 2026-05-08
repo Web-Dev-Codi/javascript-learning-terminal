@@ -43,28 +43,30 @@ export const Header: React.FC = () => {
         </div>
       </div>
       
-      <div className={styles.headerRight}>
-        <button
-          type="button"
-          className={styles.statsPill}
-          onClick={toggleStatsDrawer}
-          aria-expanded={statsDrawerOpen}
-          aria-label="Toggle stats"
-        >
-          <div className={styles.statsPillProgress}>
-            <div
-              className={styles.statsPillFill}
-              style={{ width: `${progressPercentage}%` }}
-            />
-          </div>
-          <span className={styles.statsPillText}>
-            {progress.completed}/{progress.total}
-          </span>
-          <span className={`${styles.statsPillChevron} ${statsDrawerOpen ? styles.chevronOpen : ''}`}>
-            ▼
-          </span>
-        </button>
-      </div>
+      {!isDesktop && (
+        <div className={styles.headerRight}>
+          <button
+            type="button"
+            className={styles.statsPill}
+            onClick={toggleStatsDrawer}
+            aria-expanded={statsDrawerOpen}
+            aria-label="Toggle stats"
+          >
+            <div className={styles.statsPillProgress}>
+              <div
+                className={styles.statsPillFill}
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </div>
+            <span className={styles.statsPillText}>
+              {progress.completed}/{progress.total}
+            </span>
+            <span className={`${styles.statsPillChevron} ${statsDrawerOpen ? styles.chevronOpen : ''}`}>
+              ▼
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* Stats drawer - only on non-desktop */}
       {!isDesktop && statsDrawerOpen && (
