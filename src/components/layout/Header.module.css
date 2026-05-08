@@ -15,7 +15,6 @@
 	z-index: var(--z-header);
 	flex-shrink: 0;
 	gap: 10px;
-	overflow: hidden;
 }
 
 .logo {
@@ -63,9 +62,127 @@
 	flex-shrink: 0;
 }
 
-.progressTrack {
-	width: 70px;
+/* Stats pill */
+.statsPill {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	background: transparent;
+	border: 1px solid var(--border-dim);
+	padding: 4px 10px;
+	cursor: pointer;
+	transition: all 0.12s ease;
+	flex-shrink: 0;
+	min-height: var(--touch-target);
+}
+
+.statsPill:hover {
+	border-color: var(--neon-purple);
+	box-shadow: 0 0 12px rgba(191, 0, 255, 0.2);
+}
+
+.statsPillProgress {
+	width: 30px;
 	height: 3px;
+	background: var(--border-dim);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+.statsPillFill {
+	height: 100%;
+	background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+	box-shadow: 0 0 8px var(--neon-pink);
+	transition: width 0.3s ease;
+}
+
+.statsPillText {
+	font-size: var(--text-2xl);
+	color: var(--neon-purple);
+	text-shadow: var(--glow-purple);
+}
+
+.statsPillChevron {
+	font-size: 10px;
+	color: var(--text-muted);
+	transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+	transform: rotate(180deg);
+}
+
+/* Drawer */
+.drawerBackdrop {
+	position: fixed;
+	inset: 0;
+	top: 48px;
+	z-index: calc(var(--z-header) - 1);
+	background: transparent;
+}
+
+.statsDrawer {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	z-index: var(--z-header);
+	background: linear-gradient(180deg, #0d0028 0%, #150040 50%, #0d0028 100%);
+	border-bottom: 1px solid var(--neon-purple);
+	box-shadow: 0 4px 20px rgba(191, 0, 255, 0.15);
+	padding: 14px 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	animation: drawerSlideDown 0.25s ease-out;
+}
+
+@keyframes drawerSlideDown {
+	from {
+		transform: translateY(-100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+.drawerRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	animation: drawerFadeIn 0.3s ease-out both;
+}
+
+@keyframes drawerFadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.drawerLabel {
+	font-family: var(--font-heading);
+	font-size: var(--text-sm);
+	letter-spacing: 2px;
+	color: var(--text-dim);
+}
+
+.drawerValue {
+	font-family: var(--font-mono);
+	font-size: var(--text-2xl);
+	color: var(--neon-cyan);
+	text-shadow: var(--glow-cyan);
+}
+
+.drawerProgressTrack {
+	width: 120px;
+	height: 4px;
 	background: var(--border-dim);
 	border-radius: 2px;
 	overflow: hidden;
@@ -76,37 +193,6 @@
 	background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
 	box-shadow: 0 0 8px var(--neon-pink);
 	transition: width 0.3s ease;
-}
-
-.progressText {
-	font-size: var(--text-2xl);
-	color: var(--neon-purple);
-	text-shadow: var(--glow-purple);
-}
-
-.badge {
-	font-size: var(--text-2xl);
-	padding: 2px 7px;
-	letter-spacing: 1px;
-	text-transform: uppercase;
-	white-space: nowrap;
-	border-radius: 2px;
-}
-
-.badgeLevel {
-	border: 1px solid var(--neon-cyan);
-	color: var(--neon-cyan);
-}
-
-.badgeStreak {
-	border: 1px solid var(--neon-orange);
-	color: var(--neon-orange);
-}
-
-@media (max-width: 380px) {
-	.badgeStreak {
-		display: none;
-	}
 }
 
 .hamburgerButton {

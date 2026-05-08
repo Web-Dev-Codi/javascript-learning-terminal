@@ -4,7 +4,7 @@ import { useLessonStore } from '../../store/lessonStore'
 import styles from './Header.module.css'
 
 export const Header: React.FC = () => {
-  const { getProgress, activeLesson, currentStreak, sidebarOpen, toggleSidebar } = useLessonStore()
+  const { getProgress, activeLesson, currentStreak, sidebarOpen, toggleSidebar, statsDrawerOpen, toggleStatsDrawer, closeStatsDrawer } = useLessonStore()
   const { isDesktop } = useResponsive()
   const progress = getProgress()
   
@@ -44,25 +44,57 @@ export const Header: React.FC = () => {
       </div>
       
       <div className={styles.headerRight}>
-        <div className={styles.progressTrack} data-tooltip="Course progress">
-          <div 
-            className={styles.progressFill}
-            style={{ width: `${progressPercentage}%` }}
-          />
-        </div>
-        
-        <span className={styles.progressText}>
-          {progress.completed}/{progress.total}
-        </span>
-        
-        <span className={`${styles.badge} ${styles.badgeLevel}`} data-tooltip="Current level">
-          L{getLessonNumber(activeLesson)}
-        </span>
-        
-        <span className={`${styles.badge} ${styles.badgeStreak}`} data-tooltip="Day streak">
-          🔥 {currentStreak}
-        </span>
+        <button
+          type="button"
+          className={styles.statsPill}
+          onClick={toggleStatsDrawer}
+          aria-expanded={statsDrawerOpen}
+          aria-label="Toggle stats"
+        >
+          <div className={styles.statsPillProgress}>
+            <div
+              className={styles.statsPillFill}
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+          <span className={styles.statsPillText}>
+            {progress.completed}/{progress.total}
+          </span>
+          <span className={`${styles.statsPillChevron} ${statsDrawerOpen ? styles.chevronOpen : ''}`}>
+            ▼
+          </span>
+        </button>
       </div>
+
+      {/* Stats drawer - only on non-desktop */}
+      {!isDesktop && statsDrawerOpen && (
+        <>
+          <div className={styles.drawerBackdrop} onClick={closeStatsDrawer} role="presentation" />
+          <div className={styles.statsDrawer}>
+            <div className={styles.drawerRow} style={{ animationDelay: '0ms' }}>
+              <span className={styles.drawerLabel}>PROGRESS</span>
+              <div className={styles.drawerProgressTrack}>
+                <div
+                  className={styles.progressFill}
+                  style={{ width: `${progressPercentage}%` }}
+                />
+              </div>
+            </div>
+            <div className={styles.drawerRow} style={{ animationDelay: '100ms' }}>
+              <span className={styles.drawerLabel}>COMPLETED</span>
+              <span className={styles.drawerValue}>{progress.completed}/{progress.total}</span>
+            </div>
+            <div className={styles.drawerRow} style={{ animationDelay: '200ms' }}>
+              <span className={styles.drawerLabel}>LEVEL</span>
+              <span className={styles.drawerValue}>L{getLessonNumber(activeLesson)}</span>
+            </div>
+            <div className={styles.drawerRow} style={{ animationDelay: '300ms' }}>
+              <span className={styles.drawerLabel}>STREAK</span>
+              <span className={styles.drawerValue}>🔥 {currentStreak}</span>
+            </div>
+          </div>
+        </>
+      )}
     </header>
   )
 }
