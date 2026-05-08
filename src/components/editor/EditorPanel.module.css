@@ -41,10 +41,22 @@
 	min-height: 0;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1023px) {
 	.editorWrap {
-		flex: 0 0 50%;
+		flex: 1;
 	}
+
+	.bottomSection {
+		flex-direction: column;
+	}
+
+	.feedbackWrap {
+		width: 100%;
+		border-left: none;
+		border-top: 1px solid var(--border-mid);
+		height: 200px;
+	}
+}
 }
 
 .editorBar {
