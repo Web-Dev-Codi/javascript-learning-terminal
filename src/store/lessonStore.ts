@@ -19,12 +19,15 @@ interface LessonState {
 	lastCompletedDate: string | null;
 	sidebarOpen: boolean;
 	feedbackOpen: boolean;
+	statsDrawerOpen: boolean;
 
 	// Actions
 	toggleSidebar: () => void;
 	closeSidebar: () => void;
 	toggleFeedback: () => void;
 	closeFeedback: () => void;
+	toggleStatsDrawer: () => void;
+	closeStatsDrawer: () => void;
 	setActiveLesson: (lessonId: string) => void;
 	setActivePanel: (panel: PanelType) => void;
 	markLessonStarted: (lessonId: string) => void;
@@ -84,6 +87,7 @@ export const useLessonStore = create<LessonState>()(
 			lastCompletedDate: null,
 			sidebarOpen: false,
 			feedbackOpen: false,
+			statsDrawerOpen: false,
 
 			setActiveLesson: (lessonId: string) => {
 				set((state) => ({
@@ -214,6 +218,12 @@ export const useLessonStore = create<LessonState>()(
 			},
 			closeFeedback: () => {
 				set({ feedbackOpen: false });
+			},
+			toggleStatsDrawer: () => {
+				set((state) => ({ statsDrawerOpen: !state.statsDrawerOpen }));
+			},
+			closeStatsDrawer: () => {
+				set({ statsDrawerOpen: false });
 			},
 		}),
 		{
