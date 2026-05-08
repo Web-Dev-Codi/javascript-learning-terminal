@@ -90,7 +90,7 @@ console.log("Hello, world!");`;
 								`✓ Code executed (${event.data.runtimeMs ?? 0}ms)`,
 							);
 
-							{
+							if (activeTab === "challenge") {
 								const lesson = activeLesson ? findLessonById(activeLesson) : null;
 								const challengeSection = lesson?.sections?.find(
 									(s): s is ChallengeSection => s.type === "challenge",
@@ -166,6 +166,8 @@ console.log("Hello, world!");`;
 
 	const handleTabClick = (tabId: string) => {
 		setActiveTab(tabId);
+		clearConsole();
+		setRuntimeDiagnostics([]);
 	};
 
 	let runButtonText: string;
