@@ -43,24 +43,24 @@
 .sidebarBackdrop {
 	position: absolute;
 	inset: 0;
-	background: rgba(7, 0, 26, 0.8);
+	background: rgba(7, 0, 26, 0.85);
 }
 
 .sidebarPanel {
 	position: relative;
-	width: 280px;
-	max-width: 85vw;
+	width: 60vw;
+	max-width: 400px;
 	height: 100%;
 	background: var(--bg-panel);
 	border-right: 1px solid var(--border-mid);
 	z-index: 1;
-	animation: slideIn 0.2s ease-out;
+	animation: overlaySlideIn 0.3s ease-out;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
 }
 
-@keyframes slideIn {
+@keyframes overlaySlideIn {
 	from {
 		transform: translateX(-100%);
 	}

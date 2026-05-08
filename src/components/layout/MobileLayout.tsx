@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useLessonStore } from "../../store/lessonStore";
 import { EditorPanel } from "../editor/EditorPanel";
 import { LessonPanel } from "../lesson/LessonPanel";
@@ -7,24 +6,33 @@ import { TabBar } from "./TabBar";
 import styles from "./MobileLayout.module.css";
 
 export function MobileLayout() {
-	const { activePanel, sidebarOpen, closeSidebar, setActivePanel } = useLessonStore();
-
-	useEffect(() => {
-		if (sidebarOpen) {
-			setActivePanel("lessons");
-		}
-	}, [sidebarOpen, setActivePanel]);
+	const { activePanel, sidebarOpen, closeSidebar } = useLessonStore();
 
 	const handleLessonSelect = () => {
-		setActivePanel("lesson");
 		closeSidebar();
 	};
 
 	return (
 		<div className={styles.mobileLayout}>
+			{sidebarOpen && (
+				<div className={styles.sidebarOverlay}>
+					<div
+						className={styles.sidebarBackdrop}
+						onClick={closeSidebar}
+						onKeyDown={(e) => {
+							if (e.key === "Escape") closeSidebar();
+						}}
+						role="presentation"
+					/>
+					<div className={styles.sidebarPanel}>
+						<Sidebar overlay onLessonSelect={handleLessonSelect} />
+					</div>
+				</div>
+			)}
+
 			{activePanel === "lessons" && (
 				<aside className={styles.panel}>
-					<Sidebar onLessonSelect={handleLessonSelect} />
+					<Sidebar />
 				</aside>
 			)}
 			{activePanel === "lesson" && (
