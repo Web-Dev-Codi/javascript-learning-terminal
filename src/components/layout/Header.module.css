@@ -62,6 +62,38 @@
 	flex-shrink: 0;
 }
 
+.desktopStats {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 14px;
+	flex: 1;
+	min-width: 0;
+	font-family: var(--font-mono);
+}
+
+.desktopProgressTrack {
+	width: min(180px, 18vw);
+	height: 4px;
+	background: var(--border-dim);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+.desktopProgressFill {
+	height: 100%;
+	background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+	box-shadow: 0 0 8px var(--neon-pink);
+	transition: width 0.3s ease;
+}
+
+.desktopStatValue {
+	color: var(--neon-purple);
+	text-shadow: var(--glow-purple);
+	font-size: var(--text-lg);
+	white-space: nowrap;
+}
+
 /* Stats pill */
 .statsPill {
 	display: flex;
