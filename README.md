@@ -69,29 +69,21 @@ Whether you're a complete beginner or looking to reinforce your JavaScript knowl
 
 ## 🎬 Screenshots
 
-### Main Workspace
+### Main Learning Interface
 
-<!-- ![Main Workspace](docs/screenshots/workspace.png) -->
-
-_[Placeholder: Screenshot of the main workspace showing the three-panel layout with sidebar, lesson panel, and code editor]_
+![Main Learning Interface](screenshots/workspace.png)
 
 ### Code Editor in Action
 
-<!-- ![Code Editor](docs/screenshots/editor.png) -->
-
-_[Placeholder: Screenshot showing the code editor with syntax highlighting, console output, and run button]_
+![Code Editor](screenshots/arraymethods.png)
 
 ### Lesson Navigation
 
-<!-- ![Lesson Navigation](docs/screenshots/navigation.png) -->
+![Lesson Navigation](screenshots/lessonnavigation.png)
 
-_[Placeholder: Screenshot of the sidebar with lesson tree and progress indicators]_
+### Error and Hint Highlighting
 
-### Mobile View
-
-<!-- ![Mobile View](docs/screenshots/mobile.png) -->
-
-_[Placeholder: Screenshot showing the mobile-optimized interface with tab navigation]_
+![Error and Hint Highlighting](screenshots/errorsandhints.png)
 
 ---
 
